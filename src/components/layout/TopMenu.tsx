@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useOrdersData } from "@/state/OrdersDataProvider";
+import styles from "./TopMenu.module.scss";
 
 const getCurrentTime = () => new Date();
 const weekdayFormatter = new Intl.DateTimeFormat("en-GB", { weekday: "long" });
@@ -35,12 +36,12 @@ export function TopMenu() {
     const time = now ? timeFormatter.format(now) : "--:--:--";
 
     return (
-        <header className="top-menu d-flex align-items-center">
-            <div className="top-menu__brand" aria-label="Orders Hub">
-                <span className="top-menu__badge">◆</span>
+        <header className={`${styles.topMenu} d-flex align-items-center`}>
+            <div className={styles.topMenu__brand} aria-label="Orders Hub">
+                <span className={styles.topMenu__badge}>◆</span>
                 <span>INVENTORY</span>
             </div>
-            <div className="top-menu__search flex-grow-1">
+            <div className={`${styles.topMenu__search} flex-grow-1`}>
                 <label className="visually-hidden" htmlFor="global-search">
                     Search orders and products
                 </label>
@@ -61,17 +62,17 @@ export function TopMenu() {
                     </button>
                 )}
             </div>
-            <div className="top-menu__time">
+            <div className={styles.topMenu__time}>
                 <span>{weekday}</span>
                 <strong>{date}</strong>
-                <span className="top-menu__clock">◷</span>
+                <span className={styles.topMenu__clock}>◷</span>
                 <time dateTime={now?.toTimeString().slice(0, 8)}>{time}</time>
             </div>
             <div
-                className="top-menu__sessions"
+                className={styles.topMenu__sessions}
                 title="Live session tracking will be enabled with Socket.IO"
             >
-                <span className="top-menu__session-dot" /> Sessions: unavailable
+                <span className={styles.topMenu__sessionDot} /> Sessions: unavailable
             </div>
         </header>
     );
