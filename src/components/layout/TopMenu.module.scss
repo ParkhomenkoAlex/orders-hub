@@ -19,17 +19,18 @@
         font-weight: 700;
         gap: 12px;
         margin-right: 10%;
+        text-decoration: none;
+
+        &:focus-visible {
+            border-radius: 4px;
+            outline: 3px solid rgba(76, 179, 122, 0.55);
+            outline-offset: 4px;
+        }
     }
 
-    &__badge {
-        align-items: center;
-        background: var(--green-dark);
-        clip-path: polygon(50% 0, 94% 20%, 94% 71%, 50% 100%, 6% 71%, 6% 20%);
-        color: #fff;
-        display: inline-flex;
-        font-size: 18px;
+    &__logo {
+        display: block;
         height: 44px;
-        justify-content: center;
         width: 38px;
     }
 
@@ -56,37 +57,6 @@
             right: 6px;
             top: 4px;
         }
-    }
-
-    &__time {
-        align-items: center;
-        display: grid;
-        font-size: 12px;
-        gap: 0 8px;
-        grid-template-columns: auto auto;
-        margin-left: auto;
-        text-align: left;
-
-        > span:first-child {
-            font-size: 14px;
-            grid-column: 1/-1;
-        }
-
-        strong {
-            font-weight: 700;
-        }
-
-        time {
-            grid-column: 3;
-            grid-row: 2;
-        }
-    }
-
-    &__clock {
-        color: var(--green);
-        font-size: 17px;
-        grid-column: 2;
-        grid-row: 2;
     }
 
     &__sessions {
@@ -135,7 +105,7 @@
             margin-right: auto;
         }
 
-        &__badge {
+        &__logo {
             height: 34px;
             width: 30px;
         }
@@ -148,14 +118,6 @@
 
             input {
                 width: 100%;
-            }
-        }
-
-        &__time {
-            font-size: 10px;
-
-            > span:first-child {
-                font-size: 11px;
             }
         }
     }

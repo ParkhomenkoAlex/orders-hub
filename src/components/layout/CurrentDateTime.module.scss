@@ -1,0 +1,41 @@
+.dateTime {
+    align-items: center;
+    display: grid;
+    font-size: 12px;
+    gap: 0 8px;
+    grid-template-columns: auto auto auto;
+    margin-left: auto;
+    text-align: left;
+
+    > span:first-child {
+        font-size: 14px;
+        grid-column: 1 / -1;
+    }
+
+    strong {
+        font-weight: 700;
+    }
+
+    time {
+        grid-column: 3;
+        grid-row: 2;
+    }
+
+    &__clock {
+        color: var(--green);
+        font-size: 17px;
+        grid-column: 2;
+        grid-row: 2;
+        transform: translateY(-2px);
+    }
+}
+
+@media (max-width: 760px) {
+    .dateTime {
+        font-size: 10px;
+
+        > span:first-child {
+            font-size: 11px;
+        }
+    }
+}
