@@ -1,161 +1,228 @@
 # Orders Hub — Development Workflow
 
-> Temporary working checklist for the dZENcode React / Next.js Middle+ test assignment.
-> Update this file after every completed phase. Remove it from the public repository before final handoff if it contains temporary notes.
+> Working roadmap for the dZENcode React / Next.js Middle+ test assignment.
+> Status legend: [x] implemented and supported by source or recorded manual verification; [~] implemented in part or needs browser/integration verification; [ ] not implemented. Do not mark a requirement complete solely because it is listed here.
 
 ## Project snapshot
 
+- Canonical original assignment: REQUIREMENTS.md.
 - App: **orders-hub**
-- Local directory: `~/orders-hub`
-- Framework: Next.js 16.4.2 (App Router), React, TypeScript
+- Local directory: ~/orders-hub
+- Framework: Next.js 16.4.2 (App Router), React 19, TypeScript
 - Package manager: npm; Node.js 22.23.2
-- Styling: Bootstrap + SCSS using BEM conventions (implemented; Tailwind not selected)
-- Repository: GitHub remote configured; branches `main`, `develop`, and `feature/app-layout` established
-- Deployment: initial Vercel production deployment is publicly accessible
+- Styling: Bootstrap 5.3.8, Sass, BEM-oriented global styles, and SCSS Modules for layout components
+- Formatting: Prettier configured with four-space indentation and 100-character print width
+- Current UI architecture: root layout provides document metadata and global SCSS; the (dashboard) route group provides OrdersDataProvider, TopMenu, Sidebar, PageTransition, and the shared main-content shell
+- State for Phase B: typed local mock data in src/data/orders.ts; React Context + useReducer in OrdersDataProvider; no persistence or network layer
+- Routes: /orders, /products, /groups, /users, /settings; Groups, Users, and Settings intentionally render an under-construction page
+- Repository workflow: main is stable, develop is integration, and feature/* branches are implementation branches. The current checkout was not verified during this source-only audit.
+- Deployment: an initial Vercel production deployment was previously reported as public; its current availability was not rechecked in this audit.
 
-### Verified 2026-10-19
+## Verification record
 
-- [x] Scaffold generated with `create-next-app`
-- [x] Project renamed from `dzencode-orders-products` to `orders-hub`
-- [x] Local dev server starts; `/` returns HTTP 200
-- [x] `npm audit --omit=dev` reports **0 vulnerabilities**
-- [x] `npm run build` succeeds, including TypeScript checks
-- [x] WORKFLOW.md added to local repository
-- [x] Initial Git commit made after rename
-- [x] GitHub remote configured and pushed
-- [x] Vercel deployment accessible publicly
+### Recorded 2026-10-19
 
-### Verified 2026-10-20
+- [x] Scaffold created with create-next-app and renamed to orders-hub.
+- [x] GitHub remote and initial Vercel production deployment were reported as configured.
+- [x] npm audit --omit=dev reported zero production dependency vulnerabilities.
 
-- [x] `npx tsc --noEmit`, `npm run lint`, and the production build complete successfully.
-- [x] Manual Phase B checks: creating orders/products, recalculating product counts and USD/UAH totals, and preserving local state while navigating between Orders and Products.
-- [x] Manual Phase B checks: cascading order deletion with related products; Type filtering, global search, and their combination.
-- [x] Manual Phase B checks: Escape dismissal, focus restoration, and basic keyboard interaction in dialogs.
-- [~] Responsive review completed only at a surface level; mobile and tablet layouts still require refinement.
-- [~] Route and details-panel animations are implemented and require visual polish.
+### Recorded 2026-10-20
+
+- [x] Manual Phase B checks reported: creating orders/products; recalculating product counts and USD/UAH totals; preserving local state while navigating between Orders and Products.
+- [x] Manual Phase B checks reported: cascading order deletion with related products; Type filtering, global search, and their combination.
+- [x] Manual Phase B checks reported: Escape dismissal, focus restoration, and basic keyboard interaction in dialogs.
+- [x] Production build was reported successful, including TypeScript checks.
+- [~] Responsive review was only surface-level; mobile and tablet layouts require a dedicated browser pass.
+- [~] Route and details-panel animations are implemented but need visual polish against the references.
+
+### Recorded 2026-10-21
+
+- [x] TypeScript check, ESLint, and Prettier checks were reported successful after the current lint fixes. They were not rerun during this audit.
+- [x] App Router layout refactoring completed: the shared dashboard shell moved from AppShell into src/app/(dashboard)/layout.tsx; /orders and /products retained their URLs.
+- [x] ProductsCatalog was renamed to ProductsWorkspace.
+- [x] Sidebar navigation was expanded to five routes; only Orders and Products contain assignment functionality.
+- [x] Layout styles for Sidebar, TopMenu, and CurrentDateTime moved to dedicated SCSS Modules; feature/workspace styles remain global in globals.scss.
+- [x] Date/time logic is isolated in CurrentDateTime with hydration-safe fallbacks, a deferred initial update, and a one-second interval.
+- [x] Header logo and Sidebar avatar use local PNG assets through next/image; unused create-next-app SVG assets were removed.
 
 ### Security note
 
-`npm audit` currently reports five high-severity findings along the development-tooling chain `eslint-config-next -> @next/eslint-plugin-next -> fast-glob -> micromatch -> braces`. `npm audit --omit=dev` reports zero findings. Do **not** run `npm audit fix --force` without reviewing its proposed breaking downgrade to ESLint config for Next.js 14. Reassess when compatible dependency fixes become available.
+npm audit previously reported five high-severity findings through the development-tooling chain eslint-config-next -> @next/eslint-plugin-next -> fast-glob -> micromatch -> braces. npm audit --omit=dev reported zero findings. Do **not** run npm audit fix --force without reviewing its proposed breaking downgrade to the Next.js ESLint configuration. Reassess when compatible dependency fixes become available.
+
+## Original assignment crosswalk — baseline requirements
+
+- [x] React and component-based UI: Next.js/React components are used throughout src/components.
+- [ ] Redux / global-state library: the current Context + useReducer implementation is deliberately temporary; Redux Toolkit is not installed.
+- [x] Routing: Next.js App Router provides separate Orders and Products routes, with a shared dashboard layout.
+- [x] Animation: CSS route-entry and order-details enter/exit animations exist and honor reduced-motion settings.
+- [x] ES6: current TypeScript uses modules, arrow functions, templates, spread syntax, and modern collection APIs.
+- [x] Bootstrap and BEM-oriented SCSS: Bootstrap is imported globally; Bootstrap grid/form/table utilities and BEM-style selectors are used.
+- [ ] REST client/API: no Axios, Fetch client, endpoint, or server implementation exists.
+- [x] Forms and validation for the current local UI: Add Order and Add Product dialogs validate required fields, prices, and warranty dates before dispatching local changes.
+- [~] Git workflow: repository/remote/branch workflow was previously reported, but branch history and current checkout were not rechecked in this audit.
+- [ ] Docker: no Dockerfile or Compose configuration exists.
+- [ ] WebSocket active-tab counter: TopMenu deliberately shows Sessions: unavailable; no Socket.IO or WebSocket server/client exists.
+- [~] Screenshot-based HTML/CSS: desktop UI structure and local assets are implemented; visual parity and all responsive breakpoints still need browser review.
+
+### Baseline deliverables still missing
+
+- [ ] Redux Toolkit implementation.
+- [ ] REST API/client integration.
+- [ ] Socket.IO active-session counter.
+- [ ] Docker environment.
+- [ ] MySQL Workbench-compatible database schema.
+- [~] README is still the create-next-app template and does not document Orders Hub installation, architecture, features, or deployment.
+- [~] Public deployment was reported earlier but needs a final private/incognito verification before handoff.
 
 ## Phase A — Foundation, GitHub, Vercel
 
-1. Add this file to the repository root (`~/orders-hub/WORKFLOW.md`).
-2. Inspect `git status` and run `npm run build` again if code changes.
-3. Stage and commit:
-    ```bash
-    git add package.json package-lock.json WORKFLOW.md
-    git commit -m "chore: initialize Orders Hub project"
-    ```
-    Note: create-next-app already created an initial Git commit; this is the next commit.
-4. Create an empty GitHub repository named `orders-hub` (do not initialize README/license if pushing an existing repository).
-5. Connect and push, substituting your real GitHub URL:
-    ```bash
-    git remote add origin https://github.com/YOUR_USERNAME/orders-hub.git
-    git push -u origin main
-    ```
-6. In Vercel: **Add New > Project > Import `orders-hub` > Deploy**. Use the Next.js preset and repository root. No environment variables are needed for the starter page.
-7. Verify the deployed URL loads and save it in README.
+- [x] Project scaffold, TypeScript, ESLint, Sass, Bootstrap, src directory, and @/* alias are present.
+- [x] GitHub remote and initial Vercel deployment were reported as configured.
+- [~] Branch strategy (main, develop, feature/*) is documented; verify the active branch and remote history before the next commit or release.
+- [~] Reconfirm the public deployment URL and its production build before final delivery.
 
-**Done when:** `main` exists on GitHub and a public Vercel URL loads the application.
+**Done when:** the GitHub repository, branch workflow, and public deployment are rechecked from the actual remote and a documented deployment URL is available in the finished README.
 
 ## Phase B — Core Orders & Products interface
 
-- [x] Install Bootstrap and Sass; define shared tokens and BEM naming.
-- [x] Shared layout: navigation, top bar, and current date/time.
-- [ ] Complete responsive QA and refine the mobile/tablet layouts; desktop layout is implemented, but smaller viewports need follow-up.
-- [x] Orders page: order title, number of products, dates in two formats, USD/UAH totals.
-- [x] Order selection shows related product details in adjacent panel; panel can be closed.
-- [x] Delete-order action opens a confirmation modal.
-- [x] Products page: product rows, type filter, warranty dates, both currency prices, parent order name.
-- [x] Subtle route and details-panel animations are implemented.
-- [ ] Polish route/details-panel animation timing and visual transitions after browser review.
-- [x] Empty states are implemented; basic dialog keyboard interaction, Escape dismissal, and focus restoration were manually checked.
-- [ ] Complete keyboard and assistive-technology accessibility review across layouts and controls; loading/error states are deferred until API integration.
-- [x] Shared local client state keeps Orders and Products synchronized; deletion cascades to related products.
-- [x] Accessible delete dialog with focus handling, keyboard trap, Escape, and focus restoration.
-- [x] Search and product type filtering use the current shared client state.
+- [x] Bootstrap and Sass are installed; shared tokens and BEM-oriented styles are defined.
+- [x] Shared dashboard shell: Sidebar, TopMenu, local avatar/logo assets, global search, current date/time, and responsive mobile navigation.
+- [x] App Router organization: (dashboard) owns the provider and shared shell while root layout remains server-oriented and contains global metadata/styles.
+- [x] Navigation: functional /orders and /products links with active state; Groups, Users, and Settings are explicit under-construction routes.
+- [x] Orders list: title, dynamic product count, two date formats, and USD/UAH totals derived from related products.
+- [x] Order selection opens an adjacent details panel; selecting again/close action initiates the details close animation.
+- [x] Order details: associated products, status mark, serial number, status text, local Add Product action, and product deletion action.
+- [x] Add Order and Add Product native-dialog forms perform client-side validation and update the shared local state.
+- [x] Reusable native delete-confirmation dialog supports order deletion and product deletion; order deletion cascades to related products.
+- [x] Products workspace: semantic table, product type and specification filters, global search, warranty dates, USD/UAH prices, and parent-order information.
+- [x] Shared local client state keeps Orders and Products synchronized through route navigation; reducer enforces product creation only for an existing order.
+- [x] Empty states distinguish empty mock data from filtered/search no-result cases.
+- [x] Formatting helpers validate ISO calendar dates, preserve local date semantics, and format currencies consistently.
+- [x] Route entry and details enter/exit animations are implemented with prefers-reduced-motion handling.
+- [x] Dialog source includes native showModal, Escape/backdrop dismissal, initial focus, fallback focus restoration, labels, and descriptive associations.
+- [~] Manual dialog keyboard checks were recorded, but a full keyboard/screen-reader audit of all controls, table navigation, focus order, and dynamic announcements is still needed.
+- [~] Mobile/tablet layouts, wide Products table scrolling, long labels, and visual parity with the supplied desktop references need dedicated browser QA.
+- [~] Route/details transition timing and motion need visual refinement after that browser QA.
+- [ ] Loading, network-error, and retry states are intentionally deferred until an API exists.
 
-**Data correctness:** filter products by their `order` foreign key; do not copy the sample app.js behavior that associates every product with every order. Sample data may need syntax fixes.
+**Data correctness:** Products use orderId as the foreign key. Counts and totals are derived from grouped related products; they are not stored as independent order fields. Do not reproduce the sample app.js behavior that associates every product with every order.
 
-## Phase C — Data, state, API and real-time presence
+## Phase C — Data, state, API, and real-time presence
 
-- [x] Define TypeScript models for orders, products, prices and warranties.
-- [ ] Redux Toolkit store and RTK Query or equivalent REST client.
-- [ ] REST endpoints for orders/products and basic mutations; validate inputs.
-- [ ] Decide backend/database approach and document it.
-- [ ] Real Socket.IO server counts connected browser tabs/sessions and broadcasts updates.
-- [ ] Show the live tab/session count in TopMenu.
-- [ ] Deploy the Socket.IO server separately (Vercel serverless functions do not host persistent Socket.IO connections reliably).
-- [ ] Configure allowed origins, reconnection behavior and environment variables.
+### C.1 State and domain audit
+
+- [x] Typed domain models, mock data, currency totals, grouping, filtering, and cascaded local deletion exist.
+- [ ] Define the Redux state shape, selector contracts, async/error states, and migration boundaries before replacing OrdersDataProvider.
+- [ ] Decide which pure domain functions remain framework-independent and add unit tests before/alongside the state migration.
+
+### C.2 Redux Toolkit migration
+
+- [ ] Add Redux Toolkit and React-Redux only after the state audit is approved.
+- [ ] Replace local Context/reducer actions with a focused orders/products slice while retaining existing UI contracts where practical.
+- [ ] Add memoized selectors for grouped products, totals, filters, and selected entities.
+- [ ] Verify the migration does not regress local CRUD, cascading deletion, filters, dialogs, or focus behavior.
+
+### C.3 Backend and database design
+
+- [ ] Choose backend and database technology; document boundaries, error model, authorization assumptions, and deployment model.
+- [ ] Design orders/products schema, foreign keys, indexes, audit fields, and cascade policy.
+- [ ] Add a MySQL Workbench-compatible schema SQL/model deliverable.
+
+### C.4 REST and RTK Query integration
+
+- [ ] Define REST endpoints for orders/products, list filters, creation, deletion, and validation errors.
+- [ ] Add an RTK Query API layer (or a documented equivalent) after Redux Toolkit is installed.
+- [ ] Replace mock mutations incrementally, adding loading/error/empty states and request tests.
+
+### C.5 Real-time active sessions
+
+- [ ] Build a separate Socket.IO/WebSocket service that counts connected browser tabs/sessions and broadcasts updates.
+- [ ] Replace the honest Sessions: unavailable placeholder with live data, reconnection handling, allowed origins, and environment configuration.
+- [ ] Deploy the real-time service separately; Vercel serverless functions are not a persistent Socket.IO host.
 
 ## Phase D — Junior+ requirements
 
-- [ ] SSR via Next.js where it genuinely applies.
-- [ ] Internationalization: at least two languages, including translated UI labels.
-- [ ] Minimal real JWT authentication demo; do not expose secrets in the browser.
+- [x] TypeScript: strict project configuration and typed domain/UI code are present.
+- [~] SSR via Next.js: App Router/server layouts are in use, but no explicit SSR data-fetching or documented SSR demonstration exists yet.
+- [ ] Unit tests for domain calculations/components.
+- [ ] Internationalization with at least two languages and translated UI labels.
+- [ ] Minimal real JWT authentication demo; never expose secrets in the browser.
 - [ ] Web Storage example with documented persistence behavior.
 - [ ] Lazy-loaded noncritical feature.
-- [ ] Recharts chart based on order/product data.
-- [ ] Interactive map with a meaningful data use case.
-- [ ] Unit tests for domain calculations/components.
+- [ ] Chart based on order/product data.
+- [ ] Interactive map with meaningful data use case.
 
 ## Phase E — Middle requirements
 
-- [ ] Graph data structure and graph algorithm demonstration, with explanation.
-- [ ] Functional GraphQL endpoint/query, alongside REST.
+- [ ] Graph data structure and graph-algorithm demonstration, with explanation.
+- [ ] Functional GraphQL endpoint/query alongside REST.
 - [ ] Web Worker used for a CPU-heavy task, with a main-thread comparison.
-- [ ] PWA manifest, icons, service-worker/offline behavior; test installability.
-- [ ] Event-driven architecture demo: named domain events and consumers.
-- [ ] Document frontend performance optimizations with measurements.
-- [ ] npm scripts for lint/test/build and other repetitive tasks.
+- [ ] PWA manifest, icons, service-worker/offline behavior, and installability test.
+- [ ] Event-driven architecture demonstration with named domain events and consumers.
+- [~] Frontend optimization: code uses Next.js, next/image, cached Intl formatters, and memoized derived data, but no performance measurements or documented optimization results exist.
+- [~] Task-runner scripts: dev, build, start, lint, format, and format:check exist; test and integration scripts do not.
 - [ ] Integration tests and browser-level functional tests.
 
 ## Phase F — Middle+ demonstrations
 
-- [ ] Architecture proposal for **1,000,000 messages and 100,000 users per 24 hours**: assumptions, traffic peaks, capacity math, queue/broker, scaling, observability, failure modes.
-- [ ] Minimal real microservice boundary, with an independently runnable service and a documented contract.
-- [ ] Minimal real microfrontend: independently built/deployed feature integrated via a clear interface (not merely another React component).
-- [ ] Actual WebAssembly module invoked from the frontend; show what it computes and why.
-- [ ] Distinguish implemented code from architectural proposals and partial demos.
+- [ ] Architecture proposal for **1,000,000 messages and 100,000 users per 24 hours**: assumptions, traffic peaks, capacity math, queue/broker, scaling, observability, and failure modes.
+- [ ] Minimal real microservice boundary with an independently runnable service and documented contract.
+- [ ] Minimal real microfrontend: independently built/deployed feature integrated through a clear interface, not merely another React component.
+- [ ] Actual WebAssembly module invoked from the frontend, including what it computes and why.
+- [ ] Distinguish implemented code from architecture proposals and partial demos.
 
 ## Phase G — Delivery artifacts
 
+- [~] Git repository and remote were previously reported; confirm branch history and the final repository URL before handoff.
 - [ ] Dockerfile(s) and Docker Compose for local startup; verify with actual commands.
-- [ ] MySQL Workbench-compatible schema SQL / model deliverable (orders, products, relationships, keys).
-- [ ] README: architecture, prerequisites, environment setup, commands, deployment links, trade-offs.
-- [ ] Record demo video showing working features and candidly explaining unimplemented requirements.
-- [ ] Review deployment from a private/incognito window.
-- [ ] Confirm no secrets, credentials or personal data are committed.
+- [ ] MySQL Workbench-compatible schema SQL/model deliverable for orders, products, relationships, and keys.
+- [ ] Replace the default README with project architecture, prerequisites, setup, commands, verified deployment URL, features, and trade-offs.
+- [ ] Perform the assignment self-check: start the project from a clean clone by following the finished README.
+- [ ] Record a demo video showing working features and candidly explaining incomplete requirements.
+- [ ] Review production deployment from a private/incognito window.
+- [ ] Confirm no secrets, credentials, or personal data are committed.
 
 ## Final verification commands
 
-```bash
-npm run build
-npm audit --omit=dev
-git status
-```
+Run after the relevant deliverables exist:
 
-Add lint, unit, integration and E2E commands after their scripts are implemented. Run Docker checks only after Docker configuration exists.
+    npm run format:check
+    npm run lint
+    npx tsc --noEmit
+    npm run build
+    npm audit --omit=dev
+    git status
+
+Add unit, integration, E2E, API, Socket.IO, and Docker commands only when their respective tooling and deliverables are implemented.
 
 ## Decision log
 
-| Date       | Decision                                     | Reason                                                                     |
-| ---------- | -------------------------------------------- | -------------------------------------------------------------------------- |
-| 2026-10-19 | Rename app to `orders-hub`                   | Clear, concise project name                                                |
-| 2026-10-19 | Use Next.js 16 App Router + TypeScript       | Modern React framework with SSR support                                    |
-| 2026-10-19 | Skip Tailwind, use Bootstrap + BEM           | Assignment requirement                                                     |
-| 2026-10-19 | Avoid `npm audit fix --force`                | Suggested fix would downgrade incompatible lint tooling                    |
-| 2026-10-19 | Publish minimal app before building features | Obtain testable public URL early                                           |
-| 2026-10-19 | Use typed local mock data for Phase B        | Preserve a functional UI without prematurely adding an API or global store |
-| 2026-10-19 | Use Context and reducer for Phase B state    | Keeps current routes consistent and can be replaced by Redux/API later     |
+| Date       | Decision                                                               | Reason                                                                      |
+| ---------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| 2026-10-19 | Rename app to orders-hub                                               | Clear, concise project name                                                 |
+| 2026-10-19 | Use Next.js App Router + TypeScript                                    | Modern React framework with server/client component boundaries              |
+| 2026-10-19 | Skip Tailwind; use Bootstrap + BEM-oriented SCSS                       | Assignment requirement                                                      |
+| 2026-10-19 | Avoid npm audit fix --force                                            | Suggested fix would downgrade incompatible lint tooling                     |
+| 2026-10-19 | Publish minimal app before building features                           | Obtain a testable public URL early                                          |
+| 2026-10-19 | Use typed local mock data for Phase B                                  | Preserve a functional UI before introducing an API                          |
+| 2026-10-19 | Use Context and reducer for Phase B state                              | Keep routes synchronized and allow later replacement by Redux/API           |
+| 2026-10-21 | Move shared dashboard shell into (dashboard) App Router route group   | Preserve URLs/state while clarifying root versus dashboard responsibilities |
+| 2026-10-21 | Keep layout styles in SCSS Modules; retain feature styles globally    | Localize layout styles without rewriting working BEM feature styles         |
+| 2026-10-21 | Use local PNG assets for header logo and Sidebar avatar               | Match supplied references and remove unused starter assets                  |
+| 2026-10-21 | Defer Redux/API/Socket.IO until local UI state has been audited       | Avoid replacing stable UI behavior before contracts and migration plan exist |
+
+## Next actionable task
+
+**Phase C.1 — write a state/domain migration note and add pure-function unit-test coverage for totals, grouping, filters, and cascade rules.**
+
+This is the smallest independently reviewable step before Redux Toolkit: it documents the current OrdersDataProvider contract, protects Phase B behavior with tests, and prevents a Redux/API migration from changing the UI unintentionally. The remaining Phase B responsive and motion polish can proceed in parallel as non-blocking visual work, but should be browser-reviewed before final delivery.
 
 ## Progress update template
 
 After every phase, update:
 
-- **Completed:** concrete files/features/commands verified.
-- **Remaining:** unchecked items.
-- **Blocked:** issue, reproduction steps and owner.
-- **Next command:** one immediate action.
-- **Deployment:** current live URL and last successful build.
+- **Completed:** concrete files/features and commands verified.
+- **Remaining:** unchecked or partially checked requirements.
+- **Blocked:** issue, reproduction steps, and owner.
+- **Next task:** one immediate, reviewable action.
+- **Deployment:** current live URL and last successful production verification.
