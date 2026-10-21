@@ -1,52 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { useOrdersData } from "@/state/OrdersDataProvider";
-
-const getCurrentTime = () => new Date();
-const weekdayFormatter = new Intl.DateTimeFormat("en-GB", { weekday: "long" });
-const dateFormatter = new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-});
-const timeFormatter = new Intl.DateTimeFormat("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-});
+import { CurrentDateTime } from "./CurrentDateTime";
+import styles from "./TopMenu.module.scss";
 
 export function TopMenu() {
     const { searchQuery, setSearchQuery } = useOrdersData();
-    const [now, setNow] = useState<Date | null>(null);
-
-    useEffect(() => {
-        const initialUpdate = window.setTimeout(() => setNow(getCurrentTime()), 0);
-        const timer = window.setInterval(() => setNow(getCurrentTime()), 1000);
-        return () => {
-            window.clearTimeout(initialUpdate);
-            window.clearInterval(timer);
-        };
-    }, []);
-
-    const weekday = now ? weekdayFormatter.format(now) : "Today";
-    const date = now ? dateFormatter.format(now) : "-- --- ----";
-    const time = now ? timeFormatter.format(now) : "--:--:--";
-
     return (
-        <header className="top-menu d-flex align-items-center">
-            <div className="top-menu__brand" aria-label="Orders Hub">
-                <span className="top-menu__badge">◆</span>
+        <header className={`${styles.topMenu} d-flex align-items-center`}>
+            <Link className={styles.topMenu__brand} href="/orders" aria-label="Orders Hub home">
+                <Image
+                    className={styles.topMenu__logo}
+                    src="/images/logo.png"
+                    alt=""
+                    width={38}
+                    height={44}
+                    priority
+                    unoptimized
+                />
                 <span>INVENTORY</span>
-            </div>
-            <div className="top-menu__search flex-grow-1">
-                <label className="visually-hidden" htmlFor="global-search">
-                    Search orders and products
-                </label>
+            </Link>
+            <div className={`${styles.topMenu__search} flex-grow-1`}>
                 <input
-                    id="global-search"
                     type="search"
+                    aria-label="Search orders and products"
                     value={searchQuery}
                     onChange={(event) => setSearchQuery(event.target.value)}
                     placeholder="Search orders and products"
@@ -61,17 +40,12 @@ export function TopMenu() {
                     </button>
                 )}
             </div>
-            <div className="top-menu__time">
-                <span>{weekday}</span>
-                <strong>{date}</strong>
-                <span className="top-menu__clock">◷</span>
-                <time dateTime={now?.toTimeString().slice(0, 8)}>{time}</time>
-            </div>
+            <CurrentDateTime />
             <div
-                className="top-menu__sessions"
+                className={styles.topMenu__sessions}
                 title="Live session tracking will be enabled with Socket.IO"
             >
-                <span className="top-menu__session-dot" /> Sessions: unavailable
+                <span className={styles.topMenu__sessionDot} /> Sessions: unavailable
             </div>
         </header>
     );
