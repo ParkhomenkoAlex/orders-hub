@@ -12,7 +12,7 @@ import { DeleteProductModal } from "./DeleteProductModal";
 const isProductType = (value: string): value is ProductType =>
     PRODUCT_TYPES.includes(value as ProductType);
 
-export function ProductsCatalog() {
+export function ProductsWorkspace() {
     const { products, orders, searchQuery, deleteProduct } = useOrdersData();
     const [activeType, setActiveType] = useState<ProductType | "all">("all");
     const [specification, setSpecification] = useState("all");

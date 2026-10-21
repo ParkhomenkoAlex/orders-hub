@@ -2,11 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const navigation = [
-    { href: "/orders", label: "Orders" },
-    { href: "/products", label: "Products" },
-];
+import { NAVIGATION_ITEMS } from "@/constants/navigation";
 
 export function Sidebar() {
     const pathname = usePathname();
@@ -18,7 +14,7 @@ export function Sidebar() {
                 </div>
             </div>
             <nav className="sidebar__nav d-flex" aria-label="Primary navigation">
-                {navigation.map((item) => (
+                {NAVIGATION_ITEMS.map((item) => (
                     <Link
                         key={item.href}
                         className={`sidebar__link ${pathname === item.href ? "sidebar__link--active" : ""}`}

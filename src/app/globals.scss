@@ -1097,6 +1097,24 @@ select:disabled {
     color: var(--muted);
     margin: 0;
 }
+
+.under-construction__content {
+    background: #fff;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    padding: 64px 24px;
+    text-align: center;
+}
+
+.under-construction h2 {
+    font-size: 21px;
+    margin: 18px 0 7px;
+}
+
+.under-construction p {
+    color: var(--muted);
+    margin: 0;
+}
 @media (max-width: 1150px) {
     .top-menu {
         padding-right: 28px;
