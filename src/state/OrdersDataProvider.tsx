@@ -5,11 +5,11 @@ import { initialOrders, initialProducts } from "@/data/orders";
 import { groupProductsByOrderId } from "@/lib/order-domain";
 import type { Order, Product, ProductDraft } from "@/types/domain";
 
-interface OrdersDataState {
+export interface OrdersDataState {
     orders: Order[];
     products: Product[];
 }
-type OrdersDataAction =
+export type OrdersDataAction =
     | { type: "orderDeleted"; orderId: string }
     | { type: "productDeleted"; productId: string }
     | { type: "orderAdded"; order: Order }
@@ -17,7 +17,10 @@ type OrdersDataAction =
 
 const initialState: OrdersDataState = { orders: initialOrders, products: initialProducts };
 
-const ordersDataReducer = (state: OrdersDataState, action: OrdersDataAction): OrdersDataState => {
+export const ordersDataReducer = (
+    state: OrdersDataState,
+    action: OrdersDataAction,
+): OrdersDataState => {
     switch (action.type) {
         case "orderDeleted":
             return {
