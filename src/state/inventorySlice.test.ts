@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { ordersDataReducer, type OrdersDataState } from "@/state/OrdersDataProvider";
+import inventoryReducer, {
+    orderAdded,
+    orderDeleted,
+    productAdded,
+    productDeleted,
+    searchQuerySet,
+    type InventoryState,
+} from "@/state/inventorySlice";
 import type { Order, Product } from "@/types/domain";
 
 const makeOrder = (overrides: Partial<Order> = {}): Order => ({
@@ -24,7 +31,7 @@ const makeProduct = (overrides: Partial<Product> = {}): Product => ({
     ...overrides,
 });
 
-const createState = (): OrdersDataState => {
+const createState = (): InventoryState => {
     const firstOrder = makeOrder({ id: "order-1" });
     const secondOrder = makeOrder({ id: "order-2", title: "Design team delivery" });
 
@@ -34,22 +41,21 @@ const createState = (): OrdersDataState => {
             makeProduct({ id: "product-1", orderId: firstOrder.id }),
             makeProduct({ id: "product-2", orderId: secondOrder.id }),
         ],
+        searchQuery: "",
     };
 };
 
-describe("ordersDataReducer", () => {
+describe("inventorySlice", () => {
     it("cascades product deletion when an order is deleted without mutating the prior state", () => {
         const state = createState();
         const stateBefore = structuredClone(state);
 
-        const nextState = ordersDataReducer(state, {
-            type: "orderDeleted",
-            orderId: "order-1",
-        });
+        const nextState = inventoryReducer(state, orderDeleted("order-1"));
 
         expect(nextState).toEqual({
             orders: [state.orders[1]],
             products: [state.products[1]],
+            searchQuery: "",
         });
         expect(nextState).not.toBe(state);
         expect(nextState.orders).not.toBe(state.orders);
@@ -60,10 +66,7 @@ describe("ordersDataReducer", () => {
     it("removes only the requested product and leaves its order intact", () => {
         const state = createState();
 
-        const nextState = ordersDataReducer(state, {
-            type: "productDeleted",
-            productId: "product-1",
-        });
+        const nextState = inventoryReducer(state, productDeleted("product-1"));
 
         expect(nextState.orders).toBe(state.orders);
         expect(nextState.products).toEqual([state.products[1]]);
@@ -73,7 +76,7 @@ describe("ordersDataReducer", () => {
         const state = createState();
         const product = makeProduct({ id: "product-3", orderId: "order-1" });
 
-        const nextState = ordersDataReducer(state, { type: "productAdded", product });
+        const nextState = inventoryReducer(state, productAdded(product));
 
         expect(nextState.orders).toBe(state.orders);
         expect(nextState.products).toEqual([...state.products, product]);
@@ -83,20 +86,31 @@ describe("ordersDataReducer", () => {
         const state = createState();
         const product = makeProduct({ id: "orphan-product", orderId: "missing-order" });
 
-        expect(ordersDataReducer(state, { type: "productAdded", product })).toBe(state);
+        expect(inventoryReducer(state, productAdded(product))).toEqual(state);
     });
 
     it("appends an order without changing existing entities", () => {
         const state = createState();
         const order = makeOrder({ id: "order-3", title: "New order" });
 
-        const nextState = ordersDataReducer(state, { type: "orderAdded", order });
+        const nextState = inventoryReducer(state, orderAdded(order));
 
         expect(nextState).toEqual({
             orders: [...state.orders, order],
             products: state.products,
+            searchQuery: "",
         });
         expect(nextState.orders).not.toBe(state.orders);
+        expect(nextState.products).toBe(state.products);
+    });
+
+    it("updates the shared search query without changing inventory data", () => {
+        const state = createState();
+
+        const nextState = inventoryReducer(state, searchQuerySet("ThinkPad"));
+
+        expect(nextState).toEqual({ ...state, searchQuery: "ThinkPad" });
+        expect(nextState.orders).toBe(state.orders);
         expect(nextState.products).toBe(state.products);
     });
 });

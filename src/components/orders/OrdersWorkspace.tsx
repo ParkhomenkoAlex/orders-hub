@@ -1,8 +1,17 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { filterOrders } from "@/lib/order-domain";
-import { useOrdersData } from "@/state/OrdersDataProvider";
+import { createId } from "@/lib/order-domain";
+import {
+    orderAdded,
+    orderDeleted,
+    productAdded,
+    productDeleted,
+    selectOrders,
+    selectProductsByOrderId,
+    selectVisibleOrders,
+} from "@/state/inventorySlice";
+import { useAppDispatch, useAppSelector } from "@/state/hooks";
 import type { Product, ProductDraft } from "@/types/domain";
 import { AddOrderDialog } from "./AddOrderDialog";
 import { AddProductDialog } from "./AddProductDialog";
@@ -12,15 +21,10 @@ import { OrderList } from "./OrderList";
 import { DeleteProductModal } from "../products/DeleteProductModal";
 
 export function OrdersWorkspace() {
-    const {
-        orders,
-        productsByOrderId,
-        deleteOrder,
-        deleteProduct,
-        addOrder,
-        addProduct,
-        searchQuery,
-    } = useOrdersData();
+    const dispatch = useAppDispatch();
+    const orders = useAppSelector(selectOrders);
+    const productsByOrderId = useAppSelector(selectProductsByOrderId);
+    const visibleOrders = useAppSelector(selectVisibleOrders);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
     const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
     const [pendingProduct, setPendingProduct] = useState<Product | null>(null);
@@ -29,10 +33,6 @@ export function OrdersWorkspace() {
     const [isDetailsClosing, setIsDetailsClosing] = useState(false);
     const focusOrderIdRef = useRef<string | null>(null);
     const addOrderButtonRef = useRef<HTMLButtonElement>(null);
-    const visibleOrders = useMemo(
-        () => filterOrders(orders, productsByOrderId, searchQuery),
-        [orders, productsByOrderId, searchQuery],
-    );
     const selectedOrder = useMemo(
         () => visibleOrders.find((order) => order.id === selectedOrderId) ?? null,
         [visibleOrders, selectedOrderId],
@@ -82,7 +82,7 @@ export function OrdersWorkspace() {
     const removeOrder = () => {
         if (!pendingDeleteId) return;
 
-        deleteOrder(pendingDeleteId);
+        dispatch(orderDeleted(pendingDeleteId));
 
         if (selectedOrderId === pendingDeleteId) {
             setSelectedOrderId(null);
@@ -95,19 +95,39 @@ export function OrdersWorkspace() {
     const removeProduct = () => {
         if (!pendingProduct) return;
 
-        deleteProduct(pendingProduct.id);
+        dispatch(productDeleted(pendingProduct.id));
         setPendingProduct(null);
     };
 
     const createOrder = (title: string) => {
-        addOrder(title);
+        dispatch(
+            orderAdded({
+                id: createId("order"),
+                title,
+                createdAt: new Date().toISOString().slice(0, 10),
+            }),
+        );
         setIsAddOrderOpen(false);
     };
 
     const createProduct = (draft: ProductDraft) => {
         if (!selectedOrder) return;
 
-        addProduct(selectedOrder.id, draft);
+        dispatch(
+            productAdded({
+                id: createId("product"),
+                orderId: selectedOrder.id,
+                title: draft.title,
+                serialNumber: draft.serialNumber,
+                type: draft.type,
+                status: draft.status,
+                condition: "New",
+                specification: "Standard",
+                groupName: "New arrivals",
+                warranty: { start: draft.warrantyStart, end: draft.warrantyEnd },
+                price: { usd: Number(draft.priceUsd), uah: Number(draft.priceUah) },
+            }),
+        );
         setIsAddProductOpen(false);
     };
     return (

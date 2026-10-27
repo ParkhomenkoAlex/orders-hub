@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useOrdersData } from "@/state/OrdersDataProvider";
+import { searchQuerySet, selectSearchQuery } from "@/state/inventorySlice";
+import { useAppDispatch, useAppSelector } from "@/state/hooks";
 import { CurrentDateTime } from "./CurrentDateTime";
 import styles from "./TopMenu.module.scss";
 
 export function TopMenu() {
-    const { searchQuery, setSearchQuery } = useOrdersData();
+    const dispatch = useAppDispatch();
+    const searchQuery = useAppSelector(selectSearchQuery);
     return (
         <header className={`${styles.topMenu} d-flex align-items-center`}>
             <Link className={styles.topMenu__brand} href="/orders" aria-label="Orders Hub home">
@@ -27,13 +29,13 @@ export function TopMenu() {
                     type="search"
                     aria-label="Search orders and products"
                     value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
+                    onChange={(event) => dispatch(searchQuerySet(event.target.value))}
                     placeholder="Search orders and products"
                 />
                 {searchQuery && (
                     <button
                         type="button"
-                        onClick={() => setSearchQuery("")}
+                        onClick={() => dispatch(searchQuerySet(""))}
                         aria-label="Clear search"
                     >
                         ×
