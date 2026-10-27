@@ -13,7 +13,7 @@
 - Styling: Bootstrap 5.3.8, Sass, BEM-oriented global styles, and SCSS Modules for layout components
 - Formatting: Prettier configured with four-space indentation and 100-character print width
 - Current UI architecture: root layout provides document metadata and global SCSS; the (dashboard) route group provides StoreProvider, TopMenu, Sidebar, PageTransition, and the shared main-content shell
-- State: typed local mock data in src/data/orders.ts; Redux Toolkit inventorySlice with React Redux; no persistence or network layer
+- State: the current Redux UI uses typed local mock data in src/data/orders.ts; a separate server-side REST API persists Orders and Products through Drizzle/MySQL, but is not yet connected to the UI
 - Routes: /orders, /products, /groups, /users, /settings; Groups, Users, and Settings intentionally render an under-construction page
 - Repository workflow: main is stable, develop is integration, and feature/* branches are implementation branches. The current checkout was not verified during this source-only audit.
 - Deployment: an initial Vercel production deployment was previously reported as public; its current availability was not rechecked in this audit.
@@ -59,6 +59,8 @@
 - [x] 19 Vitest unit tests passed, covering existing domain helpers, inventory reducer behavior, and focused selectors.
 - [x] TypeScript, ESLint, and Prettier checks passed after the Redux Toolkit migration.
 - [x] Manual Orders and Products checks passed: order/product creation, cascading order deletion, global search, and product filters.
+- [x] REST API verification passed: GET/POST/DELETE Orders and GET/POST Products returned the expected status codes and persisted data; MySQL ON DELETE CASCADE removed a related product after its order deletion; repeated order deletion returned `404 ORDER_NOT_FOUND`; and an invalid order title returned `422 VALIDATION_ERROR`.
+- [x] 30 Vitest tests across five files passed; TypeScript, ESLint, and Prettier checks passed; and the MySQL 8.4 Docker container was healthy during API verification.
 
 ### Security note
 
@@ -72,7 +74,7 @@ npm audit previously reported five high-severity findings through the developmen
 - [x] Animation: CSS route-entry and order-details enter/exit animations exist and honor reduced-motion settings.
 - [x] ES6: current TypeScript uses modules, arrow functions, templates, spread syntax, and modern collection APIs.
 - [x] Bootstrap and BEM-oriented SCSS: Bootstrap is imported globally; Bootstrap grid/form/table utilities and BEM-style selectors are used.
-- [ ] REST client/API: no Axios, Fetch client, endpoint, or server implementation exists.
+- [x] REST API: Next.js App Router route handlers provide validated Orders and Products listing, creation, and deletion through Drizzle/MySQL; UI client integration remains pending.
 - [x] Forms and validation for the current local UI: Add Order and Add Product dialogs validate required fields, prices, and warranty dates before dispatching local changes.
 - [~] Git workflow: repository/remote/branch workflow was previously reported, but branch history and current checkout were not rechecked in this audit.
 - [~] Docker: the local MySQL 8 Compose service was manually verified healthy. It runs on 127.0.0.1:3307 with the dedicated application user, InnoDB, and persistent named volume; the application container is still missing.
@@ -81,7 +83,6 @@ npm audit previously reported five high-severity findings through the developmen
 
 ### Baseline deliverables still missing
 
-- [ ] REST API/client integration.
 - [ ] Socket.IO active-session counter.
 - [ ] Docker environment.
 - [ ] MySQL Workbench-compatible database schema.
@@ -148,7 +149,7 @@ npm audit previously reported five high-severity findings through the developmen
 
 ### C.4 REST and RTK Query integration
 
-- [ ] Define REST endpoints for orders/products, list filters, creation, deletion, and validation errors.
+- [x] Implement and verify REST endpoints for Orders and Products listing, creation, deletion, `orderId` product filtering, and validation errors; order deletion relies on the database foreign-key cascade.
 - [ ] Add an RTK Query API layer (or a documented equivalent) after Redux Toolkit is installed.
 - [ ] Replace mock mutations incrementally, adding loading/error/empty states and request tests.
 
@@ -231,7 +232,7 @@ Add unit, integration, E2E, API, Socket.IO, and Docker commands only when their 
 | 2026-10-22 | Verify local MySQL 8 Compose foundation                             | mysql:8.4 is healthy on 127.0.0.1:3307 with InnoDB, application-user access, and persistent storage          |
 | 2026-10-22 | Use Drizzle ORM with mysql2 for the initial local schema            | Keep schema and generated MySQL migrations typed without replacing Phase B mock runtime                      |
 | 2026-10-22 | Apply and verify the initial Drizzle migration                      | Confirm the schema, cascade relationship, indexes, and checks before adding API or frontend data integration |
-| 2026-10-27 | Replace Context state with Redux Toolkit inventorySlice             | Meet the global-state requirement while retaining verified local Orders and Products behavior                 |
+| 2026-10-27 | Replace Context state with Redux Toolkit inventorySlice             | Meet the global-state requirement while retaining verified local Orders and Products behavior                |
 
 ## Next actionable task
 

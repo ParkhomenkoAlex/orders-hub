@@ -24,8 +24,6 @@ const inventorySlice = createSlice({
             state.orders.push(action.payload);
         },
         orderDeleted: (state, action: PayloadAction<string>) => {
-            console.log('state===>', state)
-            console.log('action===>', action)
             state.orders = state.orders.filter((order) => order.id !== action.payload);
             state.products = state.products.filter((product) => product.orderId !== action.payload);
         },
