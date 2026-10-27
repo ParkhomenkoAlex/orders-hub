@@ -12,8 +12,8 @@
 - Package manager: npm; Node.js 22.23.2
 - Styling: Bootstrap 5.3.8, Sass, BEM-oriented global styles, and SCSS Modules for layout components
 - Formatting: Prettier configured with four-space indentation and 100-character print width
-- Current UI architecture: root layout provides document metadata and global SCSS; the (dashboard) route group provides OrdersDataProvider, TopMenu, Sidebar, PageTransition, and the shared main-content shell
-- State for Phase B: typed local mock data in src/data/orders.ts; React Context + useReducer in OrdersDataProvider; no persistence or network layer
+- Current UI architecture: root layout provides document metadata and global SCSS; the (dashboard) route group provides StoreProvider, TopMenu, Sidebar, PageTransition, and the shared main-content shell
+- State: typed local mock data in src/data/orders.ts; Redux Toolkit inventorySlice with React Redux; no persistence or network layer
 - Routes: /orders, /products, /groups, /users, /settings; Groups, Users, and Settings intentionally render an under-construction page
 - Repository workflow: main is stable, develop is integration, and feature/* branches are implementation branches. The current checkout was not verified during this source-only audit.
 - Deployment: an initial Vercel production deployment was previously reported as public; its current availability was not rechecked in this audit.
@@ -45,6 +45,21 @@
 - [x] Date/time logic is isolated in CurrentDateTime with hydration-safe fallbacks, a deferred initial update, and a one-second interval.
 - [x] Header logo and Sidebar avatar use local PNG assets through next/image; unused create-next-app SVG assets were removed.
 
+### Recorded 2026-10-22
+
+- [x] Local MySQL 8.4.13 Compose service and application connection were manually verified.
+- [x] Initial Drizzle migration was manually applied and recorded in `__drizzle_migrations`; `orders` and `products` exist with the planned cascade foreign key, four indexes, and three CHECK constraints.
+- [x] TypeScript, ESLint, and Prettier checks were reported successful after the initial database migration.
+- [x] Vitest 3.2.4 unit-test foundation was manually verified: 15 tests across two files cover grouping, totals, filtering, reducer mutations, cascade deletion, and immutability.
+- [x] TypeScript, ESLint, and Prettier checks were reported successful after adding the Phase C.1 test foundation.
+
+### Recorded 2026-10-27
+
+- [x] Redux Toolkit migration was manually verified: the serializable inventorySlice owns orders, products, and global search; StoreProvider replaces OrdersDataProvider; and local dialog, selection, animation, focus, and route-specific filter state remains in its components.
+- [x] 19 Vitest unit tests passed, covering existing domain helpers, inventory reducer behavior, and focused selectors.
+- [x] TypeScript, ESLint, and Prettier checks passed after the Redux Toolkit migration.
+- [x] Manual Orders and Products checks passed: order/product creation, cascading order deletion, global search, and product filters.
+
 ### Security note
 
 npm audit previously reported five high-severity findings through the development-tooling chain eslint-config-next -> @next/eslint-plugin-next -> fast-glob -> micromatch -> braces. npm audit --omit=dev reported zero findings. Do **not** run npm audit fix --force without reviewing its proposed breaking downgrade to the Next.js ESLint configuration. Reassess when compatible dependency fixes become available.
@@ -52,7 +67,7 @@ npm audit previously reported five high-severity findings through the developmen
 ## Original assignment crosswalk — baseline requirements
 
 - [x] React and component-based UI: Next.js/React components are used throughout src/components.
-- [ ] Redux / global-state library: the current Context + useReducer implementation is deliberately temporary; Redux Toolkit is not installed.
+- [x] Redux / global-state library: Redux Toolkit and React Redux provide the shared serializable inventory state for Orders, Products, and global search.
 - [x] Routing: Next.js App Router provides separate Orders and Products routes, with a shared dashboard layout.
 - [x] Animation: CSS route-entry and order-details enter/exit animations exist and honor reduced-motion settings.
 - [x] ES6: current TypeScript uses modules, arrow functions, templates, spread syntax, and modern collection APIs.
@@ -60,13 +75,12 @@ npm audit previously reported five high-severity findings through the developmen
 - [ ] REST client/API: no Axios, Fetch client, endpoint, or server implementation exists.
 - [x] Forms and validation for the current local UI: Add Order and Add Product dialogs validate required fields, prices, and warranty dates before dispatching local changes.
 - [~] Git workflow: repository/remote/branch workflow was previously reported, but branch history and current checkout were not rechecked in this audit.
-- [ ] Docker: no Dockerfile or Compose configuration exists.
+- [~] Docker: the local MySQL 8 Compose service was manually verified healthy. It runs on 127.0.0.1:3307 with the dedicated application user, InnoDB, and persistent named volume; the application container is still missing.
 - [ ] WebSocket active-tab counter: TopMenu deliberately shows Sessions: unavailable; no Socket.IO or WebSocket server/client exists.
 - [~] Screenshot-based HTML/CSS: desktop UI structure and local assets are implemented; visual parity and all responsive breakpoints still need browser review.
 
 ### Baseline deliverables still missing
 
-- [ ] Redux Toolkit implementation.
 - [ ] REST API/client integration.
 - [ ] Socket.IO active-session counter.
 - [ ] Docker environment.
@@ -87,7 +101,7 @@ npm audit previously reported five high-severity findings through the developmen
 
 - [x] Bootstrap and Sass are installed; shared tokens and BEM-oriented styles are defined.
 - [x] Shared dashboard shell: Sidebar, TopMenu, local avatar/logo assets, global search, current date/time, and responsive mobile navigation.
-- [x] App Router organization: (dashboard) owns the provider and shared shell while root layout remains server-oriented and contains global metadata/styles.
+- [x] App Router organization: (dashboard) owns the Redux provider and shared shell while root layout remains server-oriented and contains global metadata/styles.
 - [x] Navigation: functional /orders and /products links with active state; Groups, Users, and Settings are explicit under-construction routes.
 - [x] Orders list: title, dynamic product count, two date formats, and USD/UAH totals derived from related products.
 - [x] Order selection opens an adjacent details panel; selecting again/close action initiates the details close animation.
@@ -112,21 +126,25 @@ npm audit previously reported five high-severity findings through the developmen
 ### C.1 State and domain audit
 
 - [x] Typed domain models, mock data, currency totals, grouping, filtering, and cascaded local deletion exist.
-- [ ] Define the Redux state shape, selector contracts, async/error states, and migration boundaries before replacing OrdersDataProvider.
-- [ ] Decide which pure domain functions remain framework-independent and add unit tests before/alongside the state migration.
+- [x] Add a minimal Vitest unit-test foundation for the existing pure domain helpers and reducer contract.
+- [x] Cover grouping, totals, product/order filtering, reducer additions/deletions, cascade deletion, orphan-product rejection, and immutable state updates with 15 unit tests across two files.
+- [x] Define the Redux state shape, selector contracts, and migration boundaries before replacing OrdersDataProvider; loading/error states remain deferred until an API exists.
+- [~] Decide which additional pure domain functions remain framework-independent before/alongside the state migration; the current helpers and reducer contract now have baseline unit coverage.
 
 ### C.2 Redux Toolkit migration
 
-- [ ] Add Redux Toolkit and React-Redux only after the state audit is approved.
-- [ ] Replace local Context/reducer actions with a focused orders/products slice while retaining existing UI contracts where practical.
-- [ ] Add memoized selectors for grouped products, totals, filters, and selected entities.
-- [ ] Verify the migration does not regress local CRUD, cascading deletion, filters, dialogs, or focus behavior.
+- [x] Add Redux Toolkit and React-Redux after the state audit approval.
+- [x] Replace OrdersDataProvider with StoreProvider and a focused serializable inventorySlice for orders, products, and global search, while retaining UI-local state and existing visible behavior.
+- [x] Add memoized selectors for grouped products and globally visible orders; retain existing framework-independent domain totals and filtering helpers.
+- [x] Manually verify local CRUD, cascading deletion, global search, product filters, dialogs, and focus behavior; 19 unit tests plus TypeScript, ESLint, and Prettier checks passed.
 
 ### C.3 Backend and database design
 
-- [ ] Choose backend and database technology; document boundaries, error model, authorization assumptions, and deployment model.
-- [ ] Design orders/products schema, foreign keys, indexes, audit fields, and cascade policy.
-- [ ] Add a MySQL Workbench-compatible schema SQL/model deliverable.
+- [x] Database access foundation: Drizzle ORM with mysql2 is configured for and connected to the local MySQL service.
+- [x] Add and manually verify minimal local MySQL 8 Compose foundation: dedicated database/application user, persistent named volume, localhost-only non-default port, and healthcheck. mysql:8.4 is running as healthy; orders_hub_app connected to orders_hub, and InnoDB was confirmed as the default storage engine.
+- [x] Define initial Drizzle orders/products schema: UUID-compatible string IDs, DATE values, DECIMAL(14,2) prices, timestamps, product indexes, warranty/price checks, and ON DELETE CASCADE.
+- [x] Initial MySQL-compatible Drizzle SQL migration was applied successfully and recorded in `__drizzle_migrations`; the `orders` and `products` tables, cascade foreign key, four indexes, and three CHECK constraints were manually verified.
+- [ ] Import/review the schema in MySQL Workbench and provide the final MySQL Workbench-compatible schema-model deliverable.
 
 ### C.4 REST and RTK Query integration
 
@@ -174,8 +192,8 @@ npm audit previously reported five high-severity findings through the developmen
 ## Phase G — Delivery artifacts
 
 - [~] Git repository and remote were previously reported; confirm branch history and the final repository URL before handoff.
-- [ ] Dockerfile(s) and Docker Compose for local startup; verify with actual commands.
-- [ ] MySQL Workbench-compatible schema SQL/model deliverable for orders, products, relationships, and keys.
+- [~] Docker Compose includes a manually verified local MySQL 8 service with persistent storage; Dockerfile(s) and a containerized application are still missing.
+- [~] Initial MySQL-compatible Drizzle migration is applied and manually verified for orders, products, relationships, indexes, and checks; MySQL Workbench import/review and a final model deliverable remain pending.
 - [ ] Replace the default README with project architecture, prerequisites, setup, commands, verified deployment URL, features, and trade-offs.
 - [ ] Perform the assignment self-check: start the project from a clean clone by following the finished README.
 - [ ] Record a demo video showing working features and candidly explaining incomplete requirements.
@@ -197,25 +215,29 @@ Add unit, integration, E2E, API, Socket.IO, and Docker commands only when their 
 
 ## Decision log
 
-| Date       | Decision                                                               | Reason                                                                      |
-| ---------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| 2026-10-19 | Rename app to orders-hub                                               | Clear, concise project name                                                 |
-| 2026-10-19 | Use Next.js App Router + TypeScript                                    | Modern React framework with server/client component boundaries              |
-| 2026-10-19 | Skip Tailwind; use Bootstrap + BEM-oriented SCSS                       | Assignment requirement                                                      |
-| 2026-10-19 | Avoid npm audit fix --force                                            | Suggested fix would downgrade incompatible lint tooling                     |
-| 2026-10-19 | Publish minimal app before building features                           | Obtain a testable public URL early                                          |
-| 2026-10-19 | Use typed local mock data for Phase B                                  | Preserve a functional UI before introducing an API                          |
-| 2026-10-19 | Use Context and reducer for Phase B state                              | Keep routes synchronized and allow later replacement by Redux/API           |
-| 2026-10-21 | Move shared dashboard shell into (dashboard) App Router route group   | Preserve URLs/state while clarifying root versus dashboard responsibilities |
-| 2026-10-21 | Keep layout styles in SCSS Modules; retain feature styles globally    | Localize layout styles without rewriting working BEM feature styles         |
-| 2026-10-21 | Use local PNG assets for header logo and Sidebar avatar               | Match supplied references and remove unused starter assets                  |
-| 2026-10-21 | Defer Redux/API/Socket.IO until local UI state has been audited       | Avoid replacing stable UI behavior before contracts and migration plan exist |
+| Date       | Decision                                                            | Reason                                                                                                       |
+| ---------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| 2026-10-19 | Rename app to orders-hub                                            | Clear, concise project name                                                                                  |
+| 2026-10-19 | Use Next.js App Router + TypeScript                                 | Modern React framework with server/client component boundaries                                               |
+| 2026-10-19 | Skip Tailwind; use Bootstrap + BEM-oriented SCSS                    | Assignment requirement                                                                                       |
+| 2026-10-19 | Avoid npm audit fix --force                                         | Suggested fix would downgrade incompatible lint tooling                                                      |
+| 2026-10-19 | Publish minimal app before building features                        | Obtain a testable public URL early                                                                           |
+| 2026-10-19 | Use typed local mock data for Phase B                               | Preserve a functional UI before introducing an API                                                           |
+| 2026-10-19 | Use Context and reducer for Phase B state                           | Keep routes synchronized and allow later replacement by Redux/API                                            |
+| 2026-10-21 | Move shared dashboard shell into (dashboard) App Router route group | Preserve URLs/state while clarifying root versus dashboard responsibilities                                  |
+| 2026-10-21 | Keep layout styles in SCSS Modules; retain feature styles globally  | Localize layout styles without rewriting working BEM feature styles                                          |
+| 2026-10-21 | Use local PNG assets for header logo and Sidebar avatar             | Match supplied references and remove unused starter assets                                                   |
+| 2026-10-21 | Defer Redux/API/Socket.IO until local UI state has been audited     | Avoid replacing stable UI behavior before contracts and migration plan exist                                 |
+| 2026-10-22 | Verify local MySQL 8 Compose foundation                             | mysql:8.4 is healthy on 127.0.0.1:3307 with InnoDB, application-user access, and persistent storage          |
+| 2026-10-22 | Use Drizzle ORM with mysql2 for the initial local schema            | Keep schema and generated MySQL migrations typed without replacing Phase B mock runtime                      |
+| 2026-10-22 | Apply and verify the initial Drizzle migration                      | Confirm the schema, cascade relationship, indexes, and checks before adding API or frontend data integration |
+| 2026-10-27 | Replace Context state with Redux Toolkit inventorySlice             | Meet the global-state requirement while retaining verified local Orders and Products behavior                 |
 
 ## Next actionable task
 
-**Phase C.1 — write a state/domain migration note and add pure-function unit-test coverage for totals, grouping, filters, and cascade rules.**
+**Phase C.3 — import and review the existing orders/products schema in MySQL Workbench, then provide the final schema-model deliverable.**
 
-This is the smallest independently reviewable step before Redux Toolkit: it documents the current OrdersDataProvider contract, protects Phase B behavior with tests, and prevents a Redux/API migration from changing the UI unintentionally. The remaining Phase B responsive and motion polish can proceed in parallel as non-blocking visual work, but should be browser-reviewed before final delivery.
+The application now uses verified local Redux Toolkit state; this schema-model review completes the remaining database-design deliverable without starting the deferred REST or RTK Query integration.
 
 ## Progress update template
 

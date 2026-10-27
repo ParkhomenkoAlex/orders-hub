@@ -1,0 +1,245 @@
+{
+    "version": "5",
+    "dialect": "mysql",
+    "id": "877c7c2f-3013-49b3-9841-ebe438843597",
+    "prevId": "00000000-0000-0000-0000-000000000000",
+    "tables": {
+        "orders": {
+            "name": "orders",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "char(36)",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "title": {
+                    "name": "title",
+                    "type": "varchar(255)",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "order_date": {
+                    "name": "order_date",
+                    "type": "date",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "created_at": {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": "(now())"
+                },
+                "updated_at": {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "onUpdate": true,
+                    "default": "(now())"
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {
+                "orders_id": {
+                    "name": "orders_id",
+                    "columns": ["id"]
+                }
+            },
+            "uniqueConstraints": {},
+            "checkConstraint": {}
+        },
+        "products": {
+            "name": "products",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "char(36)",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "order_id": {
+                    "name": "order_id",
+                    "type": "char(36)",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "title": {
+                    "name": "title",
+                    "type": "varchar(255)",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "serial_number": {
+                    "name": "serial_number",
+                    "type": "varchar(128)",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "product_type": {
+                    "name": "product_type",
+                    "type": "enum('Monitors','Laptops','Motherboards','Accessories')",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "product_status": {
+                    "name": "product_status",
+                    "type": "enum('Available','In service','Reserved')",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "product_condition": {
+                    "name": "product_condition",
+                    "type": "enum('New','Used')",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "specification": {
+                    "name": "specification",
+                    "type": "varchar(255)",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "group_name": {
+                    "name": "group_name",
+                    "type": "varchar(255)",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "owner_name": {
+                    "name": "owner_name",
+                    "type": "varchar(255)",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "warranty_start": {
+                    "name": "warranty_start",
+                    "type": "date",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "warranty_end": {
+                    "name": "warranty_end",
+                    "type": "date",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "price_usd": {
+                    "name": "price_usd",
+                    "type": "decimal(14,2)",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "price_uah": {
+                    "name": "price_uah",
+                    "type": "decimal(14,2)",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "created_at": {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": "(now())"
+                },
+                "updated_at": {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "onUpdate": true,
+                    "default": "(now())"
+                }
+            },
+            "indexes": {
+                "products_order_id_idx": {
+                    "name": "products_order_id_idx",
+                    "columns": ["order_id"],
+                    "isUnique": false
+                },
+                "products_type_idx": {
+                    "name": "products_type_idx",
+                    "columns": ["product_type"],
+                    "isUnique": false
+                },
+                "products_status_idx": {
+                    "name": "products_status_idx",
+                    "columns": ["product_status"],
+                    "isUnique": false
+                },
+                "products_serial_number_idx": {
+                    "name": "products_serial_number_idx",
+                    "columns": ["serial_number"],
+                    "isUnique": false
+                }
+            },
+            "foreignKeys": {
+                "products_order_id_orders_id_fk": {
+                    "name": "products_order_id_orders_id_fk",
+                    "tableFrom": "products",
+                    "tableTo": "orders",
+                    "columnsFrom": ["order_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {
+                "products_id": {
+                    "name": "products_id",
+                    "columns": ["id"]
+                }
+            },
+            "uniqueConstraints": {},
+            "checkConstraint": {
+                "products_warranty_range_check": {
+                    "name": "products_warranty_range_check",
+                    "value": "`warranty_end` >= `warranty_start`"
+                },
+                "products_price_usd_check": {
+                    "name": "products_price_usd_check",
+                    "value": "`price_usd` >= 0"
+                },
+                "products_price_uah_check": {
+                    "name": "products_price_uah_check",
+                    "value": "`price_uah` >= 0"
+                }
+            }
+        }
+    },
+    "views": {},
+    "_meta": {
+        "schemas": {},
+        "tables": {},
+        "columns": {}
+    },
+    "internal": {
+        "tables": {},
+        "indexes": {}
+    }
+}

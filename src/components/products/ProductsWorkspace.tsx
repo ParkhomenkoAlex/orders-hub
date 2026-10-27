@@ -5,7 +5,13 @@ import { ProductMark } from "@/components/ui/ProductMark";
 import { TrashIcon } from "@/components/ui/Icons";
 import { PRODUCT_TYPES, filterProducts } from "@/lib/order-domain";
 import { formatCurrency, formatLongDate } from "@/lib/formatters";
-import { useOrdersData } from "@/state/OrdersDataProvider";
+import {
+    productDeleted,
+    selectOrders,
+    selectProducts,
+    selectSearchQuery,
+} from "@/state/inventorySlice";
+import { useAppDispatch, useAppSelector } from "@/state/hooks";
 import type { Product, ProductType } from "@/types/domain";
 import { DeleteProductModal } from "./DeleteProductModal";
 
@@ -13,7 +19,10 @@ const isProductType = (value: string): value is ProductType =>
     PRODUCT_TYPES.includes(value as ProductType);
 
 export function ProductsWorkspace() {
-    const { products, orders, searchQuery, deleteProduct } = useOrdersData();
+    const dispatch = useAppDispatch();
+    const products = useAppSelector(selectProducts);
+    const orders = useAppSelector(selectOrders);
+    const searchQuery = useAppSelector(selectSearchQuery);
     const [activeType, setActiveType] = useState<ProductType | "all">("all");
     const [specification, setSpecification] = useState("all");
     const [pendingProduct, setPendingProduct] = useState<Product | null>(null);
@@ -206,7 +215,7 @@ export function ProductsWorkspace() {
                     product={pendingProduct}
                     onCancel={() => setPendingProduct(null)}
                     onConfirm={() => {
-                        deleteProduct(pendingProduct.id);
+                        dispatch(productDeleted(pendingProduct.id));
                         setPendingProduct(null);
                     }}
                     fallbackFocus={() =>
