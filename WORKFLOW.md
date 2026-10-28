@@ -15,7 +15,7 @@
 - Current UI architecture: root layout provides document metadata and global SCSS; the (dashboard) route group provides StoreProvider, TopMenu, Sidebar, PageTransition, and the shared main-content shell
 - State: Redux Toolkit retains global search state; RTK Query loads and mutates persisted Orders and Products through the server-side Drizzle/MySQL REST API
 - Routes: /orders, /products, /groups, /users, /settings; Groups, Users, and Settings intentionally render an under-construction page
-- Repository workflow: main is stable, develop is integration, and feature/* branches are implementation branches. The current checkout was not verified during this source-only audit.
+- Repository workflow: main is stable, develop is integration, and feature/* branches are implementation branches. PR #6 merged `feature/dev-deployment` into develop at `db4b96c`; local develop was fast-forwarded to that commit with a clean working tree.
 - Deployment: an initial Vercel production deployment was previously reported as public; its current availability was not rechecked in this audit.
 
 ## Verification record
@@ -70,6 +70,7 @@
 - [x] Final RTK Query verification passed: TypeScript, ESLint, Prettier, production build, and `git diff --check`; 24 Vitest tests across five files passed.
 - [x] C.4a Stage 1 verification passed: lazy, cached `getDb()` initialization keeps API-route imports build-safe without `DATABASE_URL`; `git diff --check`, Prettier, TypeScript, ESLint, and both production-build scenarios passed, and 25 Vitest tests across six files passed. Local Orders and Products behavior remained functional against Docker MySQL. Existing Bootstrap Sass deprecation warnings are non-blocking.
 - [x] C.4a Preview deployment verification passed: Aiven Free MySQL 8.4 hosts `orders_hub` with the migrated `orders`, `products`, and `__drizzle_migrations` tables; CA-verified TLS and Vercel Preview environment variables were confirmed. The Preview deployment and all ten manual application checks passed, including persisted CRUD, reloads, search/filters, editing, and deletion. Local Prettier, TypeScript, ESLint, Vitest, and production-build checks passed; the working tree was clean.
+- [x] C.4a delivery verification passed: PR #6 (`feature/dev-deployment` → develop) merged at `db4b96c`; local develop fast-forwarded cleanly. The develop Vercel Preview was checked after the merge: existing orders remained visible and newly created orders succeeded.
 
 ### Security note
 
@@ -85,7 +86,7 @@ npm audit previously reported five high-severity findings through the developmen
 - [x] Bootstrap and BEM-oriented SCSS: Bootstrap is imported globally; Bootstrap grid/form/table utilities and BEM-style selectors are used.
 - [x] REST API: Next.js App Router route handlers provide validated Orders and Products listing, creation, and deletion through Drizzle/MySQL; RTK Query connects the UI to those endpoints.
 - [x] Forms and validation: Add Order and Add Product dialogs validate required fields, prices, and warranty dates before sending RTK Query mutations; custom product specifications are supported and blank values normalize to `Standard`.
-- [~] Git workflow: repository/remote/branch workflow was previously reported, but branch history and current checkout were not rechecked in this audit.
+- [x] Git workflow: PR #6 verified the feature-to-develop merge path; local develop was confirmed at `db4b96c` with a clean working tree.
 - [~] Docker: the local MySQL 8 Compose service was manually verified healthy. It runs on 127.0.0.1:3307 with the dedicated application user, InnoDB, and persistent named volume; the application container is still missing.
 - [ ] WebSocket active-tab counter: TopMenu deliberately shows Sessions: unavailable; no Socket.IO or WebSocket server/client exists.
 - [~] Screenshot-based HTML/CSS: desktop UI structure and local assets are implemented; visual parity and all responsive breakpoints still need browser review.
@@ -102,7 +103,7 @@ npm audit previously reported five high-severity findings through the developmen
 
 - [x] Project scaffold, TypeScript, ESLint, Sass, Bootstrap, src directory, and @/* alias are present.
 - [x] GitHub remote and initial Vercel deployment were reported as configured.
-- [~] Branch strategy (main, develop, feature/*) is documented; verify the active branch and remote history before the next commit or release.
+- [x] Branch strategy (main, develop, feature/*) is documented and verified through the merged PR #6 feature-to-develop workflow.
 - [~] Reconfirm the public deployment URL and its production build before final delivery.
 
 **Done when:** the GitHub repository, branch workflow, and public deployment are rechecked from the actual remote and a documented deployment URL is available in the finished README.
@@ -173,7 +174,7 @@ Local Docker MySQL and remote Preview MySQL are separate environments. The deplo
 - [x] Apply the existing Drizzle migrations to the remote development database.
 - [x] Deploy and verify the real application: Orders, Products, CRUD operations, persistence after reload, cascade deletion, search, filters, error states, and custom specifications.
 - [x] Update README with reproducible local and preview setup instructions.
-- [ ] Run final validation, record verified results, commit changes, and prepare a PR into `develop`.
+- [x] Run final validation, record verified results, commit changes, and prepare a PR into `develop`; PR #6 was merged and the develop Preview was verified after the merge.
 
 ### C.5 Real-time active sessions
 
