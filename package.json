@@ -11,7 +11,8 @@
         "format:check": "prettier --check .",
         "test:unit": "vitest run",
         "db:generate": "drizzle-kit generate",
-        "db:migrate": "drizzle-kit migrate"
+        "db:migrate": "drizzle-kit migrate",
+        "db:migrate:aiven": "drizzle-kit migrate --config=drizzle.aiven.config.ts"
     },
     "dependencies": {
         "@reduxjs/toolkit": "^2.13.0",

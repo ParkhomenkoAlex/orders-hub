@@ -68,6 +68,8 @@
 - [x] Global search, product type/specification filters, empty/error/retry states, and UI-local dialogs, selection, focus, and animation behavior were retained. Custom product specifications persist and populate the dynamic Specification filter; blank specifications normalize to `Standard`.
 - [x] Initial Orders and Products requests render accessible skeleton layouts while cached data remains visible during background refetches.
 - [x] Final RTK Query verification passed: TypeScript, ESLint, Prettier, production build, and `git diff --check`; 24 Vitest tests across five files passed.
+- [x] C.4a Stage 1 verification passed: lazy, cached `getDb()` initialization keeps API-route imports build-safe without `DATABASE_URL`; `git diff --check`, Prettier, TypeScript, ESLint, and both production-build scenarios passed, and 25 Vitest tests across six files passed. Local Orders and Products behavior remained functional against Docker MySQL. Existing Bootstrap Sass deprecation warnings are non-blocking.
+- [x] C.4a Preview deployment verification passed: Aiven Free MySQL 8.4 hosts `orders_hub` with the migrated `orders`, `products`, and `__drizzle_migrations` tables; CA-verified TLS and Vercel Preview environment variables were confirmed. The Preview deployment and all ten manual application checks passed, including persisted CRUD, reloads, search/filters, editing, and deletion. Local Prettier, TypeScript, ESLint, Vitest, and production-build checks passed; the working tree was clean.
 
 ### Security note
 
@@ -93,7 +95,7 @@ npm audit previously reported five high-severity findings through the developmen
 - [ ] Socket.IO active-session counter.
 - [ ] Docker environment.
 - [ ] MySQL Workbench-compatible database schema.
-- [~] README is still the create-next-app template and does not document Orders Hub installation, architecture, features, or deployment.
+- [~] README documents local Docker, Aiven TLS, manual migration, and Vercel Preview setup; final handoff documentation and production deployment details remain pending.
 - [~] Public deployment was reported earlier but needs a final private/incognito verification before handoff.
 
 ## Phase A — Foundation, GitHub, Vercel
@@ -160,6 +162,19 @@ npm audit previously reported five high-severity findings through the developmen
 - [x] Add an RTK Query API layer to load persisted Orders and Products and perform create/delete mutations; cache invalidation refreshes both datasets after an order deletion cascade.
 - [x] Replace runtime mock data and mutations with RTK Query requests while retaining global search, local product filters, dialogs, details, confirmations, focus, and animations; add loading/error/retry/empty states, initial skeleton layouts, and focused API/query tests.
 
+### C.4a Preview deployment and remote database
+
+Local Docker MySQL and remote Preview MySQL are separate environments. The deployed application must use real, persistent database storage rather than mock data. Do not add temporary database fallbacks or disable API routes to make deployment succeed, and do not run database migrations automatically during Vercel builds. Production deployment, WebSocket active-tab counting, Docker application packaging, and the MySQL Workbench schema deliverable remain separate pending tasks. Mark an item complete only after manual verification.
+
+- [x] Implement lazy, cached MySQL initialization using `getDb()`.
+- [x] Verify TypeScript, ESLint, formatting, tests, local API behavior, and a Next.js production build without `DATABASE_URL`.
+- [x] Select and provision a persistent, remotely accessible MySQL 8-compatible development database.
+- [x] Configure secure Vercel Preview environment variables, including a server-only `DATABASE_URL`.
+- [x] Apply the existing Drizzle migrations to the remote development database.
+- [x] Deploy and verify the real application: Orders, Products, CRUD operations, persistence after reload, cascade deletion, search, filters, error states, and custom specifications.
+- [x] Update README with reproducible local and preview setup instructions.
+- [ ] Run final validation, record verified results, commit changes, and prepare a PR into `develop`.
+
 ### C.5 Real-time active sessions
 
 - [ ] Build a separate Socket.IO/WebSocket service that counts connected browser tabs/sessions and broadcasts updates.
@@ -202,7 +217,7 @@ npm audit previously reported five high-severity findings through the developmen
 - [~] Git repository and remote were previously reported; confirm branch history and the final repository URL before handoff.
 - [~] Docker Compose includes a manually verified local MySQL 8 service with persistent storage; Dockerfile(s) and a containerized application are still missing.
 - [~] Initial MySQL-compatible Drizzle migration is applied and manually verified for orders, products, relationships, indexes, and checks; MySQL Workbench import/review and a final model deliverable remain pending.
-- [ ] Replace the default README with project architecture, prerequisites, setup, commands, verified deployment URL, features, and trade-offs.
+- [~] Replace the default README with project architecture, prerequisites, setup, commands, verified deployment URL, features, and trade-offs; local and Preview setup is documented, while final production handoff details remain pending.
 - [ ] Perform the assignment self-check: start the project from a clean clone by following the finished README.
 - [ ] Record a demo video showing working features and candidly explaining incomplete requirements.
 - [ ] Review production deployment from a private/incognito window.
