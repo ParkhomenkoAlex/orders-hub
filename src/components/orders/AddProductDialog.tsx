@@ -30,6 +30,7 @@ const initialDraft: ProductDraft = {
     serialNumber: "",
     type: "Accessories",
     status: "Available",
+    specification: "Standard",
     warrantyStart: "",
     warrantyEnd: "",
     priceUsd: "",
@@ -38,11 +39,12 @@ const initialDraft: ProductDraft = {
 
 interface AddProductDialogProps {
     orderTitle: string;
+    error?: string | null;
     onCancel: () => void;
     onCreate: (draft: ProductDraft) => void;
 }
 
-export function AddProductDialog({ orderTitle, onCancel, onCreate }: AddProductDialogProps) {
+export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddProductDialogProps) {
     const [draft, setDraft] = useState<ProductDraft>(initialDraft);
     const [errors, setErrors] = useState<Partial<Record<keyof ProductDraft, string>>>({});
 
@@ -89,6 +91,7 @@ export function AddProductDialog({ orderTitle, onCancel, onCreate }: AddProductD
             ...draft,
             title: draft.title.trim(),
             serialNumber: draft.serialNumber.trim(),
+            specification: draft.specification.trim() || "Standard",
         });
     };
 
@@ -144,6 +147,17 @@ export function AddProductDialog({ orderTitle, onCancel, onCreate }: AddProductD
                                     {errors.serialNumber}
                                 </p>
                             )}
+                        </div>
+                        <div className="form-modal__field">
+                            <label htmlFor="product-specification">Specification</label>
+                            <input
+                                id="product-specification"
+                                className="form-control"
+                                value={draft.specification}
+                                onChange={(event) =>
+                                    updateField("specification", event.target.value)
+                                }
+                            />
                         </div>
                         <div className="form-modal__field">
                             <label htmlFor="product-type">Product type</label>
@@ -274,6 +288,11 @@ export function AddProductDialog({ orderTitle, onCancel, onCreate }: AddProductD
                             )}
                         </div>
                     </div>
+                    {error && (
+                        <p className="form-modal__error" role="alert">
+                            {error}
+                        </p>
+                    )}
                     <footer className="form-modal__actions">
                         <button type="button" className="form-modal__cancel" onClick={onCancel}>
                             Cancel

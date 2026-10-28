@@ -9,6 +9,7 @@ interface ConfirmDeleteDialogProps {
     title: string;
     description: ReactNode;
     preview?: Product;
+    error?: string | null;
     onCancel: () => void;
     onConfirm: () => void;
     fallbackFocus?: () => HTMLElement | null;
@@ -20,6 +21,7 @@ export function ConfirmDeleteDialog({
     title,
     description,
     preview,
+    error,
     onCancel,
     onConfirm,
     fallbackFocus,
@@ -58,6 +60,11 @@ export function ConfirmDeleteDialog({
                             <span>{preview.serialNumber}</span>
                         </div>
                     </div>
+                )}
+                {error && (
+                    <p className="form-modal__error" role="alert">
+                        {error}
+                    </p>
                 )}
             </div>
             <footer className="delete-modal__actions">

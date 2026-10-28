@@ -28,7 +28,7 @@ export function OrderList({
                 <p>
                     {hasOrders
                         ? "Try another search phrase."
-                        : "Refresh the page to restore the local sample data."}
+                        : "No orders yet. Create an order to get started."}
                 </p>
             </div>
         );
