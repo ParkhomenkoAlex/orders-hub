@@ -68,6 +68,7 @@
 - [x] Global search, product type/specification filters, empty/error/retry states, and UI-local dialogs, selection, focus, and animation behavior were retained. Custom product specifications persist and populate the dynamic Specification filter; blank specifications normalize to `Standard`.
 - [x] Initial Orders and Products requests render accessible skeleton layouts while cached data remains visible during background refetches.
 - [x] Final RTK Query verification passed: TypeScript, ESLint, Prettier, production build, and `git diff --check`; 24 Vitest tests across five files passed.
+- [x] C.4a Stage 1 verification passed: lazy, cached `getDb()` initialization keeps API-route imports build-safe without `DATABASE_URL`; `git diff --check`, Prettier, TypeScript, ESLint, and both production-build scenarios passed, and 25 Vitest tests across six files passed. Local Orders and Products behavior remained functional against Docker MySQL. Existing Bootstrap Sass deprecation warnings are non-blocking.
 
 ### Security note
 
@@ -159,6 +160,19 @@ npm audit previously reported five high-severity findings through the developmen
 - [x] Implement and verify REST endpoints for Orders and Products listing, creation, deletion, `orderId` product filtering, and validation errors; order deletion relies on the database foreign-key cascade.
 - [x] Add an RTK Query API layer to load persisted Orders and Products and perform create/delete mutations; cache invalidation refreshes both datasets after an order deletion cascade.
 - [x] Replace runtime mock data and mutations with RTK Query requests while retaining global search, local product filters, dialogs, details, confirmations, focus, and animations; add loading/error/retry/empty states, initial skeleton layouts, and focused API/query tests.
+
+### C.4a Preview deployment and remote database
+
+Local Docker MySQL and remote Preview MySQL are separate environments. The deployed application must use real, persistent database storage rather than mock data. Do not add temporary database fallbacks or disable API routes to make deployment succeed, and do not run database migrations automatically during Vercel builds. Production deployment, WebSocket active-tab counting, Docker application packaging, and the MySQL Workbench schema deliverable remain separate pending tasks. Mark an item complete only after manual verification.
+
+- [x] Implement lazy, cached MySQL initialization using `getDb()`.
+- [x] Verify TypeScript, ESLint, formatting, tests, local API behavior, and a Next.js production build without `DATABASE_URL`.
+- [ ] Select and provision a persistent, remotely accessible MySQL 8-compatible development database.
+- [ ] Configure secure Vercel Preview environment variables, including a server-only `DATABASE_URL`.
+- [ ] Apply the existing Drizzle migrations to the remote development database.
+- [ ] Deploy and verify the real application: Orders, Products, CRUD operations, persistence after reload, cascade deletion, search, filters, error states, and custom specifications.
+- [ ] Update README with reproducible local and preview setup instructions.
+- [ ] Run final validation, record verified results, commit changes, and prepare a PR into `develop`.
 
 ### C.5 Real-time active sessions
 

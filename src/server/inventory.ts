@@ -1,7 +1,7 @@
 import "server-only";
 
 import { and, eq, like, or, type SQL } from "drizzle-orm";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { orders, products } from "@/db/schema";
 import type { CreateOrderInput, CreateProductInput } from "@/lib/api-validation";
 import type { Order, Product } from "@/types/domain";
@@ -27,15 +27,17 @@ const toProduct = (record: typeof products.$inferSelect): Product => ({
     price: { usd: Number(record.priceUsd), uah: Number(record.priceUah) },
 });
 
-export const listOrders = async () => (await db.select().from(orders)).map(toOrder);
+export const listOrders = async () => (await getDb().select().from(orders)).map(toOrder);
 
 export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
+    const db = getDb();
     const id = crypto.randomUUID();
     await db.insert(orders).values({ id, title: input.title, orderDate: input.createdAt });
     return { id, title: input.title, createdAt: input.createdAt };
 };
 
 export const deleteOrder = async (id: string) => {
+    const db = getDb();
     const [order] = await db
         .select({ id: orders.id })
         .from(orders)
@@ -54,6 +56,7 @@ interface ProductFilters {
 }
 
 export const listProducts = async ({ orderId, type, search }: ProductFilters = {}) => {
+    const db = getDb();
     const filters: SQL[] = [];
     if (orderId) filters.push(eq(products.orderId, orderId));
     if (type) filters.push(eq(products.type, type));
@@ -71,6 +74,7 @@ export const listProducts = async ({ orderId, type, search }: ProductFilters = {
 };
 
 export const createProduct = async (input: CreateProductInput): Promise<Product | null> => {
+    const db = getDb();
     const [order] = await db
         .select({ id: orders.id })
         .from(orders)
@@ -100,6 +104,7 @@ export const createProduct = async (input: CreateProductInput): Promise<Product 
 };
 
 export const deleteProduct = async (id: string) => {
+    const db = getDb();
     const [product] = await db
         .select({ id: products.id })
         .from(products)
