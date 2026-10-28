@@ -4,11 +4,12 @@ import { useState, type FormEvent } from "react";
 import { ModalDialog } from "@/components/ui/ModalDialog";
 
 interface AddOrderDialogProps {
+    error?: string | null;
     onCancel: () => void;
     onCreate: (title: string) => void;
 }
 
-export function AddOrderDialog({ onCancel, onCreate }: AddOrderDialogProps) {
+export function AddOrderDialog({ error: apiError, onCancel, onCreate }: AddOrderDialogProps) {
     const [title, setTitle] = useState("");
     const [error, setError] = useState("");
 
@@ -60,6 +61,11 @@ export function AddOrderDialog({ onCancel, onCreate }: AddOrderDialogProps) {
                             </p>
                         )}
                     </div>
+                    {apiError && (
+                        <p className="form-modal__error" role="alert">
+                            {apiError}
+                        </p>
+                    )}
                     <footer className="form-modal__actions">
                         <button type="button" className="form-modal__cancel" onClick={onCancel}>
                             Cancel

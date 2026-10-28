@@ -5,27 +5,37 @@ import { ProductMark } from "@/components/ui/ProductMark";
 import { TrashIcon } from "@/components/ui/Icons";
 import { PRODUCT_TYPES, filterProducts } from "@/lib/order-domain";
 import { formatCurrency, formatLongDate } from "@/lib/formatters";
+import { selectSearchQuery } from "@/state/inventorySlice";
 import {
-    productDeleted,
-    selectOrders,
-    selectProducts,
-    selectSearchQuery,
-} from "@/state/inventorySlice";
-import { useAppDispatch, useAppSelector } from "@/state/hooks";
-import type { Product, ProductType } from "@/types/domain";
+    useDeleteProductMutation,
+    useGetOrdersQuery,
+    useGetProductsQuery,
+} from "@/state/inventoryApi";
+import { useAppSelector } from "@/state/hooks";
+import type { Order, Product, ProductType } from "@/types/domain";
 import { DeleteProductModal } from "./DeleteProductModal";
+import { ProductsTableSkeleton } from "./ProductsTableSkeleton";
 
 const isProductType = (value: string): value is ProductType =>
     PRODUCT_TYPES.includes(value as ProductType);
 
+const EMPTY_ORDERS: Order[] = [];
+const EMPTY_PRODUCTS: Product[] = [];
+
 export function ProductsWorkspace() {
-    const dispatch = useAppDispatch();
-    const products = useAppSelector(selectProducts);
-    const orders = useAppSelector(selectOrders);
+    const productsQuery = useGetProductsQuery();
+    const ordersQuery = useGetOrdersQuery();
+    const products = productsQuery.data ?? EMPTY_PRODUCTS;
+    const orders = ordersQuery.data ?? EMPTY_ORDERS;
+    const isInitialLoading =
+        (productsQuery.isLoading && productsQuery.data === undefined) ||
+        (ordersQuery.isLoading && ordersQuery.data === undefined);
     const searchQuery = useAppSelector(selectSearchQuery);
+    const [deleteProductRequest] = useDeleteProductMutation();
     const [activeType, setActiveType] = useState<ProductType | "all">("all");
     const [specification, setSpecification] = useState("all");
     const [pendingProduct, setPendingProduct] = useState<Product | null>(null);
+    const [deleteProductError, setDeleteProductError] = useState<string | null>(null);
     const catalogRef = useRef<HTMLDivElement>(null);
     const tableRef = useRef<HTMLTableElement>(null);
     const specifications = useMemo(
@@ -42,7 +52,8 @@ export function ProductsWorkspace() {
         <div ref={catalogRef} className="page-workspace products-workspace">
             <header className="page-workspace__header">
                 <h1>
-                    Products <span>/ {visibleProducts.length}</span>
+                    Products{" "}
+                    <span>/ {productsQuery.data === undefined ? "—" : visibleProducts.length}</span>
                 </h1>
                 <div className="products-workspace__filters">
                     <label className="product-filter" htmlFor="product-type">
@@ -84,7 +95,25 @@ export function ProductsWorkspace() {
                     </label>
                 </div>
             </header>
-            {visibleProducts.length ? (
+            {isInitialLoading ? (
+                <ProductsTableSkeleton />
+            ) : productsQuery.isError || ordersQuery.isError ? (
+                <div className="empty-state">
+                    <span>!</span>
+                    <h2>Unable to load products</h2>
+                    <p>Please check the connection and try again.</p>
+                    <button
+                        type="button"
+                        className="form-modal__submit"
+                        onClick={() => {
+                            void productsQuery.refetch();
+                            void ordersQuery.refetch();
+                        }}
+                    >
+                        Retry
+                    </button>
+                </div>
+            ) : visibleProducts.length ? (
                 <div className="products-table table-responsive">
                     <table ref={tableRef} className="mb-0">
                         <colgroup>
@@ -187,7 +216,10 @@ export function ProductsWorkspace() {
                                             <button
                                                 type="button"
                                                 className="icon-button icon-button--delete"
-                                                onClick={() => setPendingProduct(product)}
+                                                onClick={() => {
+                                                    setDeleteProductError(null);
+                                                    setPendingProduct(product);
+                                                }}
                                                 aria-label={`Delete ${product.title}`}
                                             >
                                                 <TrashIcon />
@@ -206,16 +238,28 @@ export function ProductsWorkspace() {
                     <p>
                         {hasFilters
                             ? "Try another type, specification, or search phrase."
-                            : "There are no products in the current data set."}
+                            : "No products yet. Add a product to an order to get started."}
                     </p>
                 </div>
             )}
             {pendingProduct && (
                 <DeleteProductModal
                     product={pendingProduct}
-                    onCancel={() => setPendingProduct(null)}
-                    onConfirm={() => {
-                        dispatch(productDeleted(pendingProduct.id));
+                    error={deleteProductError}
+                    onCancel={() => {
+                        setDeleteProductError(null);
+                        setPendingProduct(null);
+                    }}
+                    onConfirm={async () => {
+                        setDeleteProductError(null);
+                        try {
+                            await deleteProductRequest(pendingProduct.id).unwrap();
+                        } catch {
+                            setDeleteProductError(
+                                "Unable to delete this product. Please try again.",
+                            );
+                            return;
+                        }
                         setPendingProduct(null);
                     }}
                     fallbackFocus={() =>

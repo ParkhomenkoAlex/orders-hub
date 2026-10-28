@@ -13,7 +13,7 @@
 - Styling: Bootstrap 5.3.8, Sass, BEM-oriented global styles, and SCSS Modules for layout components
 - Formatting: Prettier configured with four-space indentation and 100-character print width
 - Current UI architecture: root layout provides document metadata and global SCSS; the (dashboard) route group provides StoreProvider, TopMenu, Sidebar, PageTransition, and the shared main-content shell
-- State: the current Redux UI uses typed local mock data in src/data/orders.ts; a separate server-side REST API persists Orders and Products through Drizzle/MySQL, but is not yet connected to the UI
+- State: Redux Toolkit retains global search state; RTK Query loads and mutates persisted Orders and Products through the server-side Drizzle/MySQL REST API
 - Routes: /orders, /products, /groups, /users, /settings; Groups, Users, and Settings intentionally render an under-construction page
 - Repository workflow: main is stable, develop is integration, and feature/* branches are implementation branches. The current checkout was not verified during this source-only audit.
 - Deployment: an initial Vercel production deployment was previously reported as public; its current availability was not rechecked in this audit.
@@ -62,6 +62,13 @@
 - [x] REST API verification passed: GET/POST/DELETE Orders and GET/POST Products returned the expected status codes and persisted data; MySQL ON DELETE CASCADE removed a related product after its order deletion; repeated order deletion returned `404 ORDER_NOT_FOUND`; and an invalid order title returned `422 VALIDATION_ERROR`.
 - [x] 30 Vitest tests across five files passed; TypeScript, ESLint, and Prettier checks passed; and the MySQL 8.4 Docker container was healthy during API verification.
 
+### Recorded 2026-10-28
+
+- [x] RTK Query integration was manually verified: Orders and Products load from the REST API/MySQL; create and delete mutations persist data and invalidate the relevant caches, including both datasets after an order cascade deletion.
+- [x] Global search, product type/specification filters, empty/error/retry states, and UI-local dialogs, selection, focus, and animation behavior were retained. Custom product specifications persist and populate the dynamic Specification filter; blank specifications normalize to `Standard`.
+- [x] Initial Orders and Products requests render accessible skeleton layouts while cached data remains visible during background refetches.
+- [x] Final RTK Query verification passed: TypeScript, ESLint, Prettier, production build, and `git diff --check`; 24 Vitest tests across five files passed.
+
 ### Security note
 
 npm audit previously reported five high-severity findings through the development-tooling chain eslint-config-next -> @next/eslint-plugin-next -> fast-glob -> micromatch -> braces. npm audit --omit=dev reported zero findings. Do **not** run npm audit fix --force without reviewing its proposed breaking downgrade to the Next.js ESLint configuration. Reassess when compatible dependency fixes become available.
@@ -69,13 +76,13 @@ npm audit previously reported five high-severity findings through the developmen
 ## Original assignment crosswalk — baseline requirements
 
 - [x] React and component-based UI: Next.js/React components are used throughout src/components.
-- [x] Redux / global-state library: Redux Toolkit and React Redux provide the shared serializable inventory state for Orders, Products, and global search.
+- [x] Redux / global-state library: Redux Toolkit and React Redux provide shared global search state and RTK Query API caching for persisted Orders and Products.
 - [x] Routing: Next.js App Router provides separate Orders and Products routes, with a shared dashboard layout.
 - [x] Animation: CSS route-entry and order-details enter/exit animations exist and honor reduced-motion settings.
 - [x] ES6: current TypeScript uses modules, arrow functions, templates, spread syntax, and modern collection APIs.
 - [x] Bootstrap and BEM-oriented SCSS: Bootstrap is imported globally; Bootstrap grid/form/table utilities and BEM-style selectors are used.
-- [x] REST API: Next.js App Router route handlers provide validated Orders and Products listing, creation, and deletion through Drizzle/MySQL; UI client integration remains pending.
-- [x] Forms and validation for the current local UI: Add Order and Add Product dialogs validate required fields, prices, and warranty dates before dispatching local changes.
+- [x] REST API: Next.js App Router route handlers provide validated Orders and Products listing, creation, and deletion through Drizzle/MySQL; RTK Query connects the UI to those endpoints.
+- [x] Forms and validation: Add Order and Add Product dialogs validate required fields, prices, and warranty dates before sending RTK Query mutations; custom product specifications are supported and blank values normalize to `Standard`.
 - [~] Git workflow: repository/remote/branch workflow was previously reported, but branch history and current checkout were not rechecked in this audit.
 - [~] Docker: the local MySQL 8 Compose service was manually verified healthy. It runs on 127.0.0.1:3307 with the dedicated application user, InnoDB, and persistent named volume; the application container is still missing.
 - [ ] WebSocket active-tab counter: TopMenu deliberately shows Sessions: unavailable; no Socket.IO or WebSocket server/client exists.
@@ -118,7 +125,7 @@ npm audit previously reported five high-severity findings through the developmen
 - [~] Manual dialog keyboard checks were recorded, but a full keyboard/screen-reader audit of all controls, table navigation, focus order, and dynamic announcements is still needed.
 - [~] Mobile/tablet layouts, wide Products table scrolling, long labels, and visual parity with the supplied desktop references need dedicated browser QA.
 - [~] Route/details transition timing and motion need visual refinement after that browser QA.
-- [ ] Loading, network-error, and retry states are intentionally deferred until an API exists.
+- [x] Loading, network-error, retry, and empty states are implemented for the REST-backed Orders and Products queries; initial loads use reduced-motion-aware skeleton layouts.
 
 **Data correctness:** Products use orderId as the foreign key. Counts and totals are derived from grouped related products; they are not stored as independent order fields. Do not reproduce the sample app.js behavior that associates every product with every order.
 
@@ -150,8 +157,8 @@ npm audit previously reported five high-severity findings through the developmen
 ### C.4 REST and RTK Query integration
 
 - [x] Implement and verify REST endpoints for Orders and Products listing, creation, deletion, `orderId` product filtering, and validation errors; order deletion relies on the database foreign-key cascade.
-- [ ] Add an RTK Query API layer (or a documented equivalent) after Redux Toolkit is installed.
-- [ ] Replace mock mutations incrementally, adding loading/error/empty states and request tests.
+- [x] Add an RTK Query API layer to load persisted Orders and Products and perform create/delete mutations; cache invalidation refreshes both datasets after an order deletion cascade.
+- [x] Replace runtime mock data and mutations with RTK Query requests while retaining global search, local product filters, dialogs, details, confirmations, focus, and animations; add loading/error/retry/empty states, initial skeleton layouts, and focused API/query tests.
 
 ### C.5 Real-time active sessions
 
@@ -238,7 +245,7 @@ Add unit, integration, E2E, API, Socket.IO, and Docker commands only when their 
 
 **Phase C.3 — import and review the existing orders/products schema in MySQL Workbench, then provide the final schema-model deliverable.**
 
-The application now uses verified local Redux Toolkit state; this schema-model review completes the remaining database-design deliverable without starting the deferred REST or RTK Query integration.
+The application now uses a verified RTK Query connection to the persisted Orders and Products API; this schema-model review completes the remaining database-design deliverable.
 
 ## Progress update template
 

@@ -3,6 +3,7 @@ import type { Product } from "@/types/domain";
 
 interface DeleteProductModalProps {
     product: Product;
+    error?: string | null;
     onCancel: () => void;
     onConfirm: () => void;
     fallbackFocus?: () => HTMLElement | null;
@@ -10,6 +11,7 @@ interface DeleteProductModalProps {
 
 export function DeleteProductModal({
     product,
+    error,
     onCancel,
     onConfirm,
     fallbackFocus,
@@ -26,6 +28,7 @@ export function DeleteProductModal({
                 </>
             }
             preview={product}
+            error={error}
             onCancel={onCancel}
             onConfirm={onConfirm}
             fallbackFocus={fallbackFocus}

@@ -44,6 +44,7 @@ export interface ProductDraft {
     serialNumber: string;
     type: ProductType;
     status: ProductStatus;
+    specification: string;
     warrantyStart: string;
     warrantyEnd: string;
     priceUsd: string;
