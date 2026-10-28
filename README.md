@@ -129,4 +129,4 @@ For Preview verification, confirm Orders and Products load from Aiven, create an
 
 ## Pending deliverables
 
-WebSocket active-tab counting, Docker application packaging, MySQL Workbench schema-model delivery, and production deployment are outside the verified Preview deployment scope.
+WebSocket active-tab counting, Docker application packaging, and production deployment are outside the verified Preview deployment scope. The completed MySQL Workbench-compatible schema artifact is [`database/schema.sql`](database/schema.sql); the repository does not include a native `.mwb` model or EER diagram.

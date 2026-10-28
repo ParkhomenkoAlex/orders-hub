@@ -71,6 +71,7 @@
 - [x] C.4a Stage 1 verification passed: lazy, cached `getDb()` initialization keeps API-route imports build-safe without `DATABASE_URL`; `git diff --check`, Prettier, TypeScript, ESLint, and both production-build scenarios passed, and 25 Vitest tests across six files passed. Local Orders and Products behavior remained functional against Docker MySQL. Existing Bootstrap Sass deprecation warnings are non-blocking.
 - [x] C.4a Preview deployment verification passed: Aiven Free MySQL 8.4 hosts `orders_hub` with the migrated `orders`, `products`, and `__drizzle_migrations` tables; CA-verified TLS and Vercel Preview environment variables were confirmed. The Preview deployment and all ten manual application checks passed, including persisted CRUD, reloads, search/filters, editing, and deletion. Local Prettier, TypeScript, ESLint, Vitest, and production-build checks passed; the working tree was clean.
 - [x] C.4a delivery verification passed: PR #6 (`feature/dev-deployment` → develop) merged at `db4b96c`; local develop fast-forwarded cleanly. The develop Vercel Preview was checked after the merge: existing orders remained visible and newly created orders succeeded.
+- [x] C.3 schema deliverable verification passed: `database/schema.sql`, exported from local MySQL 8.4 with `mysqldump --no-data`, opens in MySQL Workbench 26.10 and executed successfully against a fresh temporary database. It created the verified `orders` and `products` tables with their foreign key, four indexes, and three CHECK constraints; the temporary database was then dropped.
 
 ### Security note
 
@@ -95,7 +96,7 @@ npm audit previously reported five high-severity findings through the developmen
 
 - [ ] Socket.IO active-session counter.
 - [ ] Docker environment.
-- [ ] MySQL Workbench-compatible database schema.
+- [x] MySQL Workbench-compatible SQL schema artifact: `database/schema.sql` and `database/README.md` document the exported Orders/Products structure and Workbench import procedure; no native `.mwb` model or EER diagram is provided.
 - [~] README documents local Docker, Aiven TLS, manual migration, and Vercel Preview setup; final handoff documentation and production deployment details remain pending.
 - [~] Public deployment was reported earlier but needs a final private/incognito verification before handoff.
 
@@ -155,7 +156,7 @@ npm audit previously reported five high-severity findings through the developmen
 - [x] Add and manually verify minimal local MySQL 8 Compose foundation: dedicated database/application user, persistent named volume, localhost-only non-default port, and healthcheck. mysql:8.4 is running as healthy; orders_hub_app connected to orders_hub, and InnoDB was confirmed as the default storage engine.
 - [x] Define initial Drizzle orders/products schema: UUID-compatible string IDs, DATE values, DECIMAL(14,2) prices, timestamps, product indexes, warranty/price checks, and ON DELETE CASCADE.
 - [x] Initial MySQL-compatible Drizzle SQL migration was applied successfully and recorded in `__drizzle_migrations`; the `orders` and `products` tables, cascade foreign key, four indexes, and three CHECK constraints were manually verified.
-- [ ] Import/review the schema in MySQL Workbench and provide the final MySQL Workbench-compatible schema-model deliverable.
+- [x] Export and review `database/schema.sql` in MySQL Workbench 26.10; the no-data MySQL 8.4 DDL artifact was executed against a fresh temporary database and verified to create the Orders/Products relationship, indexes, and CHECK constraints. `database/README.md` documents the artifact, its Drizzle relationship, and regeneration procedure; no native `.mwb` model or EER diagram is provided.
 
 ### C.4 REST and RTK Query integration
 
@@ -165,7 +166,7 @@ npm audit previously reported five high-severity findings through the developmen
 
 ### C.4a Preview deployment and remote database
 
-Local Docker MySQL and remote Preview MySQL are separate environments. The deployed application must use real, persistent database storage rather than mock data. Do not add temporary database fallbacks or disable API routes to make deployment succeed, and do not run database migrations automatically during Vercel builds. Production deployment, WebSocket active-tab counting, Docker application packaging, and the MySQL Workbench schema deliverable remain separate pending tasks. Mark an item complete only after manual verification.
+Local Docker MySQL and remote Preview MySQL are separate environments. The deployed application must use real, persistent database storage rather than mock data. Do not add temporary database fallbacks or disable API routes to make deployment succeed, and do not run database migrations automatically during Vercel builds. Production deployment, WebSocket active-tab counting, and Docker application packaging remain separate pending tasks. Mark an item complete only after manual verification.
 
 - [x] Implement lazy, cached MySQL initialization using `getDb()`.
 - [x] Verify TypeScript, ESLint, formatting, tests, local API behavior, and a Next.js production build without `DATABASE_URL`.
@@ -217,7 +218,7 @@ Local Docker MySQL and remote Preview MySQL are separate environments. The deplo
 
 - [~] Git repository and remote were previously reported; confirm branch history and the final repository URL before handoff.
 - [~] Docker Compose includes a manually verified local MySQL 8 service with persistent storage; Dockerfile(s) and a containerized application are still missing.
-- [~] Initial MySQL-compatible Drizzle migration is applied and manually verified for orders, products, relationships, indexes, and checks; MySQL Workbench import/review and a final model deliverable remain pending.
+- [x] MySQL-compatible Drizzle migration and the exported `database/schema.sql` artifact are manually verified for orders, products, relationships, indexes, and checks; the SQL opens in MySQL Workbench 26.10. No native `.mwb` model or EER diagram is provided.
 - [~] Replace the default README with project architecture, prerequisites, setup, commands, verified deployment URL, features, and trade-offs; local and Preview setup is documented, while final production handoff details remain pending.
 - [ ] Perform the assignment self-check: start the project from a clean clone by following the finished README.
 - [ ] Record a demo video showing working features and candidly explaining incomplete requirements.
@@ -259,9 +260,9 @@ Add unit, integration, E2E, API, Socket.IO, and Docker commands only when their 
 
 ## Next actionable task
 
-**Phase C.3 — import and review the existing orders/products schema in MySQL Workbench, then provide the final schema-model deliverable.**
+**Phase C.5 — build a separate Socket.IO/WebSocket service for the active-tab counter.**
 
-The application now uses a verified RTK Query connection to the persisted Orders and Products API; this schema-model review completes the remaining database-design deliverable.
+The database schema deliverable is complete as a MySQL Workbench-compatible SQL artifact; the active-session counter remains the next unfinished baseline requirement.
 
 ## Progress update template
 
