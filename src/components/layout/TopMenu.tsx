@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { searchQuerySet, selectSearchQuery } from "@/state/inventorySlice";
 import { useAppDispatch, useAppSelector } from "@/state/hooks";
+import { ActiveSessions } from "./ActiveSessions";
 import { CurrentDateTime } from "./CurrentDateTime";
 import styles from "./TopMenu.module.scss";
 
@@ -43,12 +44,11 @@ export function TopMenu() {
                 )}
             </div>
             <CurrentDateTime />
-            <div
+            <ActiveSessions
                 className={styles.topMenu__sessions}
-                title="Live session tracking will be enabled with Socket.IO"
-            >
-                <span className={styles.topMenu__sessionDot} /> Sessions: unavailable
-            </div>
+                dotClassName={styles.topMenu__sessionDot}
+                offlineDotClassName={styles["topMenu__sessionDot--offline"]}
+            />
         </header>
     );
 }
