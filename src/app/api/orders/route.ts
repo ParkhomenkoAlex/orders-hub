@@ -5,7 +5,17 @@ import { createOrder, listOrders } from "@/server/inventory";
 export async function GET() {
     try {
         return success(await listOrders());
-    } catch {
+    } catch (error) {
+        const metadata =
+            error instanceof Error
+                ? (error as Error & { code?: unknown; errno?: unknown; sqlState?: unknown })
+                : undefined;
+        console.error("Orders API GET failed", {
+            name: error instanceof Error ? error.name : "UnknownError",
+            code: metadata?.code,
+            errno: metadata?.errno,
+            sqlState: metadata?.sqlState,
+        });
         return failure(500, "INTERNAL_ERROR", "Unable to load orders.");
     }
 }
