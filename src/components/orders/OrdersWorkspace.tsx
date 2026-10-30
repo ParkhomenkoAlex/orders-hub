@@ -24,15 +24,22 @@ import { DeleteProductModal } from "../products/DeleteProductModal";
 const EMPTY_ORDERS: Order[] = [];
 const EMPTY_PRODUCTS: Product[] = [];
 
-export function OrdersWorkspace() {
+interface OrdersWorkspaceProps {
+    initialOrders?: Order[];
+    initialProducts?: Product[];
+}
+
+export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorkspaceProps) {
     const searchQuery = useAppSelector(selectSearchQuery);
     const ordersQuery = useGetOrdersQuery();
     const productsQuery = useGetProductsQuery();
-    const orders = ordersQuery.data ?? EMPTY_ORDERS;
-    const products = productsQuery.data ?? EMPTY_PRODUCTS;
+    const orders = ordersQuery.data ?? initialOrders ?? EMPTY_ORDERS;
+    const products = productsQuery.data ?? initialProducts ?? EMPTY_PRODUCTS;
+    const hasInitialOrders = ordersQuery.data !== undefined || initialOrders !== undefined;
+    const hasInitialProducts = productsQuery.data !== undefined || initialProducts !== undefined;
     const isInitialLoading =
-        (ordersQuery.isLoading && ordersQuery.data === undefined) ||
-        (productsQuery.isLoading && productsQuery.data === undefined);
+        (ordersQuery.isLoading && !hasInitialOrders) ||
+        (productsQuery.isLoading && !hasInitialProducts);
     const [createOrderRequest] = useCreateOrderMutation();
     const [createProductRequest] = useCreateProductMutation();
     const [deleteOrderRequest] = useDeleteOrderMutation();
@@ -179,7 +186,7 @@ export function OrdersWorkspace() {
                     +
                 </button>
                 <h1>
-                    Orders <span>/ {ordersQuery.data === undefined ? "—" : orders.length}</span>
+                    Orders <span>/ {hasInitialOrders ? orders.length : "—"}</span>
                 </h1>
             </header>
             {isInitialLoading ? (
