@@ -2,6 +2,8 @@
 
 Orders Hub is a Next.js application for managing Orders and their Products. It uses RTK Query to call Next.js REST route handlers, which persist data through Drizzle ORM and MySQL.
 
+The `/orders` route renders its initial Orders and related Products data from MySQL at request time. After hydration, the existing RTK Query hooks continue to manage browser-side queries, mutations, invalidation, and updates.
+
 ## Stack
 
 - Next.js App Router, React, and TypeScript
@@ -49,6 +51,10 @@ npm run realtime:dev
 Open [http://localhost:3000/orders](http://localhost:3000/orders). The Orders and Products pages use the local MySQL database; initial data is empty until created through the UI or API. The active-tab counter connects to `NEXT_PUBLIC_REALTIME_URL`, which defaults to the local Socket.IO service on port 3001.
 
 Open a second browser tab to confirm that both TopMenus show `Sessions: 2`; closing one returns the remaining tab to `Sessions: 1`. If the Socket.IO service is unavailable, the counter honestly displays `connecting`, `reconnecting`, or `unavailable` rather than a stale count.
+
+### Request-time Orders rendering
+
+`/orders` is a dynamic App Router Server Component: it waits for a request with `connection()`, reads initial Orders and Products through the existing server-only Drizzle helpers, and renders the existing workspace content into the initial HTML. Those values are an initial visual fallback, not RTK Query cache hydration; after hydration, RTK Query still owns its client queries, mutations, invalidation, and refetching. If the server read fails, the existing client loading and error flow remains available.
 
 ### Local database lifecycle
 

@@ -82,6 +82,7 @@ The written requirements in `REQUIREMENTS.md` are cumulative and mandatory acros
 
 - [x] C.5 public verification passed: the Vercel Preview frontend connected to the independently hosted Render Socket.IO service. Opening and closing tabs updated the active-session count; Orders/Products navigation did not create duplicate sessions. The service and preview recovered from reconnect scenarios, and Orders/Products API requests worked after Aiven MySQL service restoration.
 - [~] C.5 operational caveat: Render Free can suspend an inactive single-instance service. During wake-up the client reports reconnecting/unavailable rather than a stale count; a globally accurate counter across multiple instances would require shared presence infrastructure.
+- [x] Phase D SSR verification passed: `/orders` uses Next.js `connection()` for request-time rendering, loads Orders and related Products through server-only Drizzle helpers, and renders the existing order content in the initial HTML. `OrdersWorkspace` receives that initial data while RTK Query continues to manage client-side queries, mutations, invalidation, and refetching. TypeScript, ESLint, formatting, unit tests, and the production build passed; the build classified `/orders` as dynamic. Actual order titles were confirmed in local production HTML and Vercel Preview View Source, with no observed hydration or visual regressions.
 
 ### Security note
 
@@ -198,7 +199,7 @@ Local Docker MySQL and remote Preview MySQL are separate environments. The deplo
 ## Phase D — Junior+ requirements
 
 - [x] TypeScript: strict project configuration and typed domain/UI code are present.
-- [~] SSR via Next.js: App Router server layouts/routes exist, but add and document one request-time server-rendered demonstration without disrupting the RTK Query UI.
+- [x] SSR via Next.js: `/orders` uses `connection()` for request-time rendering, loads initial Orders and Products through server-only helpers, and renders the existing workspace content into the initial HTML. The initial data is not hydrated into the RTK Query cache; after hydration, existing RTK Query queries, mutations, invalidation, and refetching remain authoritative.
 - [x] Unit-test foundation: recorded verification covers domain, state, validation, API-route, RTK Query, and database-connection contracts; component tests are optional future coverage.
 - [ ] i18n demonstration: provide two real locales and translated visible UI/demo labels.
 - [ ] Minimal real JWT authentication demonstration: signed server-only token, login/logout, and one protected route; do not expose secrets in the browser.
@@ -272,9 +273,9 @@ Add unit, integration, E2E, API, Socket.IO, and Docker commands only when their 
 
 ## Next actionable task
 
-**Phase D — add and document a request-time SSR demonstration without disrupting the RTK Query Orders/Products UI.**
+**Phase D — add a minimal two-locale i18n demonstration with translated visible UI labels.**
 
-The database schema deliverable and C.5 active-session counter are complete; the next incomplete roadmap phase is the Junior+ demonstrations in Phase D.
+The database schema deliverable, C.5 active-session counter, and request-time SSR deliverable are complete; the next incomplete roadmap work is the remaining Junior+ demonstrations in Phase D.
 
 ## Progress update template
 
