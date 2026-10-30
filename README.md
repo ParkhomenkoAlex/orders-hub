@@ -34,13 +34,21 @@ docker compose up -d mysql
 npm run db:migrate
 ```
 
-Start the application:
+Start the application and the local Socket.IO active-tab service in separate terminals:
 
 ```bash
+# Terminal 1
 npm run dev
 ```
 
-Open [http://localhost:3000/orders](http://localhost:3000/orders). The Orders and Products pages use the local MySQL database; initial data is empty until created through the UI or API.
+```bash
+# Terminal 2
+npm run realtime:dev
+```
+
+Open [http://localhost:3000/orders](http://localhost:3000/orders). The Orders and Products pages use the local MySQL database; initial data is empty until created through the UI or API. The active-tab counter connects to `NEXT_PUBLIC_REALTIME_URL`, which defaults to the local Socket.IO service on port 3001.
+
+Open a second browser tab to confirm that both TopMenus show `Sessions: 2`; closing one returns the remaining tab to `Sessions: 1`. If the Socket.IO service is unavailable, the counter honestly displays `connecting`, `reconnecting`, or `unavailable` rather than a stale count.
 
 ### Local database lifecycle
 
@@ -58,6 +66,51 @@ Open [http://localhost:3000/orders](http://localhost:3000/orders). The Orders an
 | `AIVEN_DATABASE_SSL_CA` | `db:migrate:aiven` only        | Aiven project CA PEM for verified TLS migrations.                                                            |
 
 Local Docker does not use `DATABASE_SSL_CA`, `AIVEN_DATABASE_URL`, or `AIVEN_DATABASE_SSL_CA`.
+
+### Local real-time environment
+
+| Variable                   | Used by           | Purpose                                                                |
+| -------------------------- | ----------------- | ---------------------------------------------------------------------- |
+| `NEXT_PUBLIC_REALTIME_URL` | Browser TopMenu   | Socket.IO URL, normally `http://localhost:3001` locally.               |
+| `REALTIME_PORT`            | Local service     | Local listening-port fallback; defaults to `3001`.                     |
+| `PORT`                     | Render service    | Render-provided listening port; takes precedence over `REALTIME_PORT`. |
+| `REALTIME_ALLOWED_ORIGINS` | Socket.IO service | Comma-separated exact browser origins; defaults to localhost:3000.     |
+
+The active-tab service is deliberately separate from Next.js so that it has one long-lived, in-memory connection set. It counts anonymous browser tabs, not users or devices. It is single-instance only: if it is scaled later, shared presence infrastructure is required for a globally accurate count. Render Free may suspend an inactive service; during wake-up the client displays its reconnecting/unavailable state rather than a stale count.
+
+The server broadcasts `sessions:update` events with a `{ count: number }` payload whenever a tab connects or disconnects. The browser does not send application events; Socket.IO heartbeats detect unexpected disconnects.
+
+## Render real-time service deployment
+
+Deploy the Socket.IO service as a separate **Render Web Service** from this repository. This is intentionally independent of the Vercel Next.js frontend and does not need MySQL, Aiven variables, or application TLS certificates: Render terminates HTTPS and proxies secure WebSocket connections to the HTTP service.
+
+Create the service in the Render dashboard with these settings:
+
+| Setting           | Value                                                          |
+| ----------------- | -------------------------------------------------------------- |
+| Runtime           | Node                                                           |
+| Branch            | The branch being verified (currently `feature/realtime-local`) |
+| Build command     | `npm ci`                                                       |
+| Start command     | `npm run realtime:start`                                       |
+| Health check path | `/health`                                                      |
+| Instance type     | Free                                                           |
+
+Set the following Render environment variables:
+
+```text
+NODE_ENV=production
+REALTIME_ALLOWED_ORIGINS=https://<vercel-preview-host>
+```
+
+Render supplies `PORT`; the service binds to `0.0.0.0` and uses that value before the local `REALTIME_PORT` fallback. `REALTIME_ALLOWED_ORIGINS` must contain exact origins without trailing slashes. To test the deployed service from local Next.js as well, add `http://localhost:3000` as a second comma-separated origin. Never use `*` in a public deployment.
+
+After Render assigns a public HTTPS URL, configure this Vercel **Preview** environment variable and redeploy the Preview frontend:
+
+```text
+NEXT_PUBLIC_REALTIME_URL=https://<render-service-host>
+```
+
+The browser negotiates secure WebSockets through the Render HTTPS endpoint, avoiding mixed-content requests. C.5 Preview verification confirmed `/health`, cross-tab count updates, navigation without duplicate sessions, reconnect behavior, and the Vercel Preview connection.
 
 ## Aiven Preview database
 
@@ -109,6 +162,8 @@ Each pushed Git branch or pull request receives its own Vercel Preview URL. Open
 | `npm run lint`                            | Run ESLint.                                                            |
 | `npm run format` / `npm run format:check` | Format files / verify formatting.                                      |
 | `npm run test:unit`                       | Run Vitest.                                                            |
+| `npm run realtime:dev`                    | Run the standalone Socket.IO service with watch mode.                  |
+| `npm run realtime:start`                  | Run the standalone Socket.IO service once.                             |
 | `npm run db:generate`                     | Generate a Drizzle migration from schema changes.                      |
 | `npm run db:migrate`                      | Apply committed migrations to local `DATABASE_URL`.                    |
 | `npm run db:migrate:aiven`                | Apply committed migrations to explicit Aiven-only migration variables. |
@@ -129,4 +184,4 @@ For Preview verification, confirm Orders and Products load from Aiven, create an
 
 ## Pending deliverables
 
-WebSocket active-tab counting, Docker application packaging, and production deployment are outside the verified Preview deployment scope. The completed MySQL Workbench-compatible schema artifact is [`database/schema.sql`](database/schema.sql); the repository does not include a native `.mwb` model or EER diagram.
+Docker application packaging and production deployment remain pending. The Render-hosted Socket.IO active-tab service is verified with Vercel Preview; its Render Free inactivity behavior remains an operational caveat. The completed MySQL Workbench-compatible schema artifact is [`database/schema.sql`](database/schema.sql); the repository does not include a native `.mwb` model or EER diagram.

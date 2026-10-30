@@ -3,6 +3,10 @@
 > Working roadmap for the dZENcode React / Next.js Middle+ test assignment.
 > Status legend: [x] implemented and supported by source or recorded manual verification; [~] implemented in part or needs browser/integration verification; [ ] not implemented. Do not mark a requirement complete solely because it is listed here.
 
+## Approved scope policy
+
+The written requirements in `REQUIREMENTS.md` are cumulative and mandatory across all levels. The reviewer confirmed that each required technology may be demonstrated through a focused, meaningful working example rather than being deeply coupled to Orders and Products. Architectural demonstrations may use small independently runnable boundaries; production-scale infrastructure is optional unless the written requirement demands it. Public deployment is primarily for tester access. Deliberately omitted or partial details must be documented and explained in the final video walkthrough.
+
 ## Project snapshot
 
 - Canonical original assignment: REQUIREMENTS.md.
@@ -72,6 +76,12 @@
 - [x] C.4a Preview deployment verification passed: Aiven Free MySQL 8.4 hosts `orders_hub` with the migrated `orders`, `products`, and `__drizzle_migrations` tables; CA-verified TLS and Vercel Preview environment variables were confirmed. The Preview deployment and all ten manual application checks passed, including persisted CRUD, reloads, search/filters, editing, and deletion. Local Prettier, TypeScript, ESLint, Vitest, and production-build checks passed; the working tree was clean.
 - [x] C.4a delivery verification passed: PR #6 (`feature/dev-deployment` → develop) merged at `db4b96c`; local develop fast-forwarded cleanly. The develop Vercel Preview was checked after the merge: existing orders remained visible and newly created orders succeeded.
 - [x] C.3 schema deliverable verification passed: `database/schema.sql`, exported from local MySQL 8.4 with `mysqldump --no-data`, opens in MySQL Workbench 26.10 and executed successfully against a fresh temporary database. It created the verified `orders` and `products` tables with their foreign key, four indexes, and three CHECK constraints; the temporary database was then dropped.
+- [x] C.5 local verification passed: the independently runnable Socket.IO service correctly counted tabs across normal navigation, refreshes, incognito sessions, server stops, and automatic reconnects. Focused real-client integration tests passed. The production build now uses Next.js Webpack because Turbopack stalled locally; the prior external Google Fonts build dependency was removed, and the Webpack production build completed successfully. Existing Bootstrap Sass deprecation warnings remain non-blocking.
+
+### Recorded 2026-10-30
+
+- [x] C.5 public verification passed: the Vercel Preview frontend connected to the independently hosted Render Socket.IO service. Opening and closing tabs updated the active-session count; Orders/Products navigation did not create duplicate sessions. The service and preview recovered from reconnect scenarios, and Orders/Products API requests worked after Aiven MySQL service restoration.
+- [~] C.5 operational caveat: Render Free can suspend an inactive single-instance service. During wake-up the client reports reconnecting/unavailable rather than a stale count; a globally accurate counter across multiple instances would require shared presence infrastructure.
 
 ### Security note
 
@@ -89,12 +99,12 @@ npm audit previously reported five high-severity findings through the developmen
 - [x] Forms and validation: Add Order and Add Product dialogs validate required fields, prices, and warranty dates before sending RTK Query mutations; custom product specifications are supported and blank values normalize to `Standard`.
 - [x] Git workflow: PR #6 verified the feature-to-develop merge path; local develop was confirmed at `db4b96c` with a clean working tree.
 - [~] Docker: the local MySQL 8 Compose service was manually verified healthy. It runs on 127.0.0.1:3307 with the dedicated application user, InnoDB, and persistent named volume; the application container is still missing.
-- [ ] WebSocket active-tab counter: TopMenu deliberately shows Sessions: unavailable; no Socket.IO or WebSocket server/client exists.
+- [x] WebSocket active-tab counter: the standalone Render Socket.IO service and Vercel Preview TopMenu client are manually verified; see the recorded Free-tier single-instance caveat.
 - [~] Screenshot-based HTML/CSS: desktop UI structure and local assets are implemented; visual parity and all responsive breakpoints still need browser review.
 
 ### Baseline deliverables still missing
 
-- [ ] Socket.IO active-session counter.
+- [x] Socket.IO active-session counter: Render/Vercel Preview verification passed; Free-tier inactivity and single-instance limitations remain documented.
 - [ ] Docker environment.
 - [x] MySQL Workbench-compatible SQL schema artifact: `database/schema.sql` and `database/README.md` document the exported Orders/Products structure and Workbench import procedure; no native `.mwb` model or EER diagram is provided.
 - [~] README documents local Docker, Aiven TLS, manual migration, and Vercel Preview setup; final handoff documentation and production deployment details remain pending.
@@ -179,37 +189,39 @@ Local Docker MySQL and remote Preview MySQL are separate environments. The deplo
 
 ### C.5 Real-time active sessions
 
-- [ ] Build a separate Socket.IO/WebSocket service that counts connected browser tabs/sessions and broadcasts updates.
-- [ ] Replace the honest Sessions: unavailable placeholder with live data, reconnection handling, allowed origins, and environment configuration.
-- [ ] Deploy the real-time service separately; Vercel serverless functions are not a persistent Socket.IO host.
+- [x] Build and locally verify a small, independently runnable single-instance Socket.IO service that counts connected browser tabs and broadcasts the count on connection changes.
+- [x] Replace the Sessions: unavailable placeholder with a client-only TopMenu connection, explicit connecting/reconnecting/unavailable states, cleanup, and a configured local origin allowlist.
+- [x] Add focused Socket.IO integration tests for initial count, multi-tab broadcasts, disconnect/reconnect, origin rejection, and clean shutdown.
+- [x] Deploy the real-time service to Render Free and connect it to the public/Preview application through `NEXT_PUBLIC_REALTIME_URL` and exact configured allowed origins. A dedicated single-instance service is simpler here than relying on per-instance Vercel Function memory; Vercel WebSocket support does not remove the need for shared state when scaling.
+- [x] Document the Socket.IO event contract and independently runnable service boundary. It can demonstrate the required microservice approach after separate deployment verification.
 
 ## Phase D — Junior+ requirements
 
 - [x] TypeScript: strict project configuration and typed domain/UI code are present.
-- [~] SSR via Next.js: App Router/server layouts are in use, but no explicit SSR data-fetching or documented SSR demonstration exists yet.
-- [ ] Unit tests for domain calculations/components.
-- [ ] Internationalization with at least two languages and translated UI labels.
-- [ ] Minimal real JWT authentication demo; never expose secrets in the browser.
-- [ ] Web Storage example with documented persistence behavior.
-- [ ] Lazy-loaded noncritical feature.
-- [ ] Chart based on order/product data.
-- [ ] Interactive map with meaningful data use case.
+- [~] SSR via Next.js: App Router server layouts/routes exist, but add and document one request-time server-rendered demonstration without disrupting the RTK Query UI.
+- [x] Unit-test foundation: recorded verification covers domain, state, validation, API-route, RTK Query, and database-connection contracts; component tests are optional future coverage.
+- [ ] i18n demonstration: provide two real locales and translated visible UI/demo labels.
+- [ ] Minimal real JWT authentication demonstration: signed server-only token, login/logout, and one protected route; do not expose secrets in the browser.
+- [ ] Web Storage demonstration with documented persistence, preferably shared with the locale or user-preference example.
+- [ ] Lazy-loaded noncritical demonstration feature, preferably shared with analytics.
+- [ ] Chart based on live Orders/Products data.
+- [ ] Interactive map demonstration with a documented inventory/service-location use case.
 
 ## Phase E — Middle requirements
 
-- [ ] Graph data structure and graph-algorithm demonstration, with explanation.
-- [ ] Functional GraphQL endpoint/query alongside REST.
-- [ ] Web Worker used for a CPU-heavy task, with a main-thread comparison.
-- [ ] PWA manifest, icons, service-worker/offline behavior, and installability test.
-- [ ] Event-driven architecture demonstration with named domain events and consumers.
-- [~] Frontend optimization: code uses Next.js, next/image, cached Intl formatters, and memoized derived data, but no performance measurements or documented optimization results exist.
-- [~] Task-runner scripts: dev, build, start, lint, format, and format:check exist; test and integration scripts do not.
-- [ ] Integration tests and browser-level functional tests.
+- [ ] Graph demonstration: build an Orders-to-Products adjacency graph and a visible traversal/relationship result with tests.
+- [ ] Functional GraphQL endpoint and real query alongside REST.
+- [ ] Web Worker demonstration for a non-trivial inventory analytics calculation that keeps the UI responsive.
+- [ ] PWA: manifest, icons, service worker, usable offline shell/fallback, and installability verification.
+- [ ] Event-driven architecture demonstration with named events and at least two meaningful consumers; durable distributed delivery is optional.
+- [~] Frontend optimization: code uses Next.js, next/image, cached Intl formatters, and memoized derived data. Document the demonstrated optimizations and lazy-loading result; formal benchmark targets are optional.
+- [x] Task-runner foundation: development, build, lint, formatting, unit-test, and database scripts exist. Add feature-specific scripts only with their corresponding deliverables.
+- [ ] Add one real integration test and one browser-level functional workflow; exhaustive test suites are optional.
 
 ## Phase F — Middle+ demonstrations
 
-- [ ] Architecture proposal for **1,000,000 messages and 100,000 users per 24 hours**: assumptions, traffic peaks, capacity math, queue/broker, scaling, observability, and failure modes.
-- [ ] Minimal real microservice boundary with an independently runnable service and documented contract.
+- [ ] Document an architecture proposal for **1,000,000 messages and 100,000 users per 24 hours**, including assumptions, independently scalable boundaries, observability, and failure handling. Capacity math, brokers, and production deployment are optional depth.
+- [x] Minimal real microservice boundary: the separately deployed C.5 Socket.IO service has an independently runnable process, typed `sessions:update` contract, health endpoint, and Vercel Preview integration.
 - [ ] Minimal real microfrontend: independently built/deployed feature integrated through a clear interface, not merely another React component.
 - [ ] Actual WebAssembly module invoked from the frontend, including what it computes and why.
 - [ ] Distinguish implemented code from architecture proposals and partial demos.
@@ -221,7 +233,7 @@ Local Docker MySQL and remote Preview MySQL are separate environments. The deplo
 - [x] MySQL-compatible Drizzle migration and the exported `database/schema.sql` artifact are manually verified for orders, products, relationships, indexes, and checks; the SQL opens in MySQL Workbench 26.10. No native `.mwb` model or EER diagram is provided.
 - [~] Replace the default README with project architecture, prerequisites, setup, commands, verified deployment URL, features, and trade-offs; local and Preview setup is documented, while final production handoff details remain pending.
 - [ ] Perform the assignment self-check: start the project from a clean clone by following the finished README.
-- [ ] Record a demo video showing working features and candidly explaining incomplete requirements.
+- [ ] Record a final reviewer walkthrough video showing working features and candidly explaining deliberately omitted or partial details.
 - [ ] Review production deployment from a private/incognito window.
 - [ ] Confirm no secrets, credentials, or personal data are committed.
 
@@ -260,9 +272,9 @@ Add unit, integration, E2E, API, Socket.IO, and Docker commands only when their 
 
 ## Next actionable task
 
-**Phase C.5 — build a separate Socket.IO/WebSocket service for the active-tab counter.**
+**Phase D — add and document a request-time SSR demonstration without disrupting the RTK Query Orders/Products UI.**
 
-The database schema deliverable is complete as a MySQL Workbench-compatible SQL artifact; the active-session counter remains the next unfinished baseline requirement.
+The database schema deliverable and C.5 active-session counter are complete; the next incomplete roadmap phase is the Junior+ demonstrations in Phase D.
 
 ## Progress update template
 

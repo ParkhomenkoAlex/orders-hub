@@ -4,12 +4,14 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "build": "next build",
+        "build": "next build --webpack",
         "start": "next start",
         "lint": "eslint",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "test:unit": "vitest run",
+        "realtime:dev": "node --watch --import tsx src/realtime/server.ts",
+        "realtime:start": "tsx src/realtime/server.ts",
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",
         "db:migrate:aiven": "drizzle-kit migrate --config=drizzle.aiven.config.ts"
@@ -23,7 +25,10 @@
         "next": "16.4.2",
         "react": "19.3.0",
         "react-dom": "19.3.0",
-        "react-redux": "^9.3.0"
+        "react-redux": "^9.3.0",
+        "socket.io": "^4.8.4",
+        "socket.io-client": "^4.8.4",
+        "tsx": "^4.23.15"
     },
     "devDependencies": {
         "@types/node": "^20",

@@ -10,7 +10,17 @@ export async function GET(request: Request) {
 
     try {
         return success(await listProducts(validation.data));
-    } catch {
+    } catch (error) {
+        const metadata =
+            error instanceof Error
+                ? (error as Error & { code?: unknown; errno?: unknown; sqlState?: unknown })
+                : undefined;
+        console.error("Products API GET failed", {
+            name: error instanceof Error ? error.name : "UnknownError",
+            code: metadata?.code,
+            errno: metadata?.errno,
+            sqlState: metadata?.sqlState,
+        });
         return failure(500, "INTERNAL_ERROR", "Unable to load products.");
     }
 }

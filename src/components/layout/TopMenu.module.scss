@@ -73,6 +73,10 @@
         height: 7px;
         margin-right: 5px;
         width: 7px;
+
+        &--offline {
+            background: var(--muted);
+        }
     }
 }
 
