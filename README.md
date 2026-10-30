@@ -76,7 +76,7 @@ Local Docker does not use `DATABASE_SSL_CA`, `AIVEN_DATABASE_URL`, or `AIVEN_DAT
 | `PORT`                     | Render service    | Render-provided listening port; takes precedence over `REALTIME_PORT`. |
 | `REALTIME_ALLOWED_ORIGINS` | Socket.IO service | Comma-separated exact browser origins; defaults to localhost:3000.     |
 
-The active-tab service is deliberately separate from Next.js so that it has one long-lived, in-memory connection set. It counts anonymous browser tabs, not users or devices. It is single-instance only: if it is scaled later, shared presence infrastructure is required for a globally accurate count.
+The active-tab service is deliberately separate from Next.js so that it has one long-lived, in-memory connection set. It counts anonymous browser tabs, not users or devices. It is single-instance only: if it is scaled later, shared presence infrastructure is required for a globally accurate count. Render Free may suspend an inactive service; during wake-up the client displays its reconnecting/unavailable state rather than a stale count.
 
 The server broadcasts `sessions:update` events with a `{ count: number }` payload whenever a tab connects or disconnects. The browser does not send application events; Socket.IO heartbeats detect unexpected disconnects.
 
@@ -110,7 +110,7 @@ After Render assigns a public HTTPS URL, configure this Vercel **Preview** envir
 NEXT_PUBLIC_REALTIME_URL=https://<render-service-host>
 ```
 
-The browser will then negotiate secure WebSockets through the Render HTTPS endpoint, avoiding mixed-content requests. Verify `/health` returns `{"status":"ok"}` and verify the counter from two browser tabs before recording public C.5 verification.
+The browser negotiates secure WebSockets through the Render HTTPS endpoint, avoiding mixed-content requests. C.5 Preview verification confirmed `/health`, cross-tab count updates, navigation without duplicate sessions, reconnect behavior, and the Vercel Preview connection.
 
 ## Aiven Preview database
 
@@ -184,4 +184,4 @@ For Preview verification, confirm Orders and Products load from Aiven, create an
 
 ## Pending deliverables
 
-Public deployment and Preview verification of the implemented Socket.IO active-tab service, Docker application packaging, and production deployment remain pending. The completed MySQL Workbench-compatible schema artifact is [`database/schema.sql`](database/schema.sql); the repository does not include a native `.mwb` model or EER diagram.
+Docker application packaging and production deployment remain pending. The Render-hosted Socket.IO active-tab service is verified with Vercel Preview; its Render Free inactivity behavior remains an operational caveat. The completed MySQL Workbench-compatible schema artifact is [`database/schema.sql`](database/schema.sql); the repository does not include a native `.mwb` model or EER diagram.
