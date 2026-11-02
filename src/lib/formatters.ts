@@ -1,24 +1,22 @@
-const locale = "en-GB";
-const longDateFormatter = new Intl.DateTimeFormat(locale, {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-});
-const shortDateFormatter = new Intl.DateTimeFormat(locale, { day: "2-digit", month: "2-digit" });
-const currencyFormatters = {
-    USD: new Intl.NumberFormat(locale, {
+import { DEFAULT_LOCALE, getIntlLocale, type Locale } from "@/i18n/config";
+
+const getLongDateFormatter = (locale: Locale) =>
+    new Intl.DateTimeFormat(getIntlLocale(locale), {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+    });
+
+const getShortDateFormatter = (locale: Locale) =>
+    new Intl.DateTimeFormat(getIntlLocale(locale), { day: "2-digit", month: "2-digit" });
+
+const getCurrencyFormatter = (locale: Locale, currency: "USD" | "UAH") =>
+    new Intl.NumberFormat(getIntlLocale(locale), {
         style: "currency",
-        currency: "USD",
+        currency,
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-    }),
-    UAH: new Intl.NumberFormat(locale, {
-        style: "currency",
-        currency: "UAH",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    }),
-};
+    });
 
 const toLocalDate = (value: string) => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
@@ -32,15 +30,18 @@ const toLocalDate = (value: string) => {
         : date;
 };
 
-export const formatLongDate = (value: string) => {
+export const formatLongDate = (value: string, locale: Locale = DEFAULT_LOCALE) => {
     const date = toLocalDate(value);
-    return date ? longDateFormatter.format(date) : "—";
+    return date ? getLongDateFormatter(locale).format(date) : "—";
 };
 
-export const formatShortDate = (value: string) => {
+export const formatShortDate = (value: string, locale: Locale = DEFAULT_LOCALE) => {
     const date = toLocalDate(value);
-    return date ? shortDateFormatter.format(date) : "—";
+    return date ? getShortDateFormatter(locale).format(date) : "—";
 };
 
-export const formatCurrency = (value: number, currency: "USD" | "UAH") =>
-    currencyFormatters[currency].format(value);
+export const formatCurrency = (
+    value: number,
+    currency: "USD" | "UAH",
+    locale: Locale = DEFAULT_LOCALE,
+) => getCurrencyFormatter(locale, currency).format(value);

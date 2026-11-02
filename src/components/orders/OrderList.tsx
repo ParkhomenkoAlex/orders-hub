@@ -1,5 +1,11 @@
+"use client";
+
 import { formatCurrency, formatLongDate, formatShortDate } from "@/lib/formatters";
 import { getOrderTotal } from "@/lib/order-domain";
+import { useTranslation } from "@/i18n/I18nProvider";
+import { getCountForm } from "@/i18n/plural";
+import type { Locale } from "@/i18n/config";
+import type { Messages } from "@/i18n/messages";
 import type { Order, Product } from "@/types/domain";
 import { InventoryIcon, TrashIcon } from "@/components/ui/Icons";
 
@@ -12,6 +18,12 @@ interface OrderListProps {
     onDelete: (orderId: string) => void;
 }
 
+export const formatOrderProductCount = (
+    count: number,
+    locale: Locale,
+    messages: Messages["orders"],
+) => messages.productCount[getCountForm(count, locale)];
+
 export function OrderList({
     orders,
     productsByOrderId,
@@ -20,16 +32,14 @@ export function OrderList({
     onSelect,
     onDelete,
 }: OrderListProps) {
+    const { locale, t } = useTranslation();
+
     if (!orders.length)
         return (
             <div className="empty-state">
                 <span>✓</span>
-                <h2>{hasOrders ? "No matching orders" : "No orders left"}</h2>
-                <p>
-                    {hasOrders
-                        ? "Try another search phrase."
-                        : "No orders yet. Create an order to get started."}
-                </p>
+                <h2>{hasOrders ? t.orders.noMatches : t.orders.noOrders}</h2>
+                <p>{hasOrders ? t.orders.noMatchesHint : t.orders.noOrdersHint}</p>
             </div>
         );
     return (
@@ -48,7 +58,10 @@ export function OrderList({
                             className="order-card__select"
                             onClick={() => onSelect(order.id)}
                             aria-expanded={isSelected}
-                            aria-label={`${isSelected ? "Close details for" : "View details for"} ${order.title}`}
+                            aria-label={(isSelected
+                                ? t.orders.closeDetails
+                                : t.orders.openDetails
+                            ).replace("{title}", order.title)}
                             aria-controls={isSelected ? "order-details" : undefined}
                             data-order-id={order.id}
                         >
@@ -59,23 +72,29 @@ export function OrderList({
                                 </span>
                                 <span>
                                     <strong>{orderProducts.length}</strong>
-                                    <small>Products</small>
+                                    <small>
+                                        {formatOrderProductCount(
+                                            orderProducts.length,
+                                            locale,
+                                            t.orders,
+                                        )}
+                                    </small>
                                 </span>
                             </span>
                             <span className="order-card__date">
-                                <small>{formatShortDate(order.createdAt)}</small>
-                                {formatLongDate(order.createdAt)}
+                                <small>{formatShortDate(order.createdAt, locale)}</small>
+                                {formatLongDate(order.createdAt, locale)}
                             </span>
                             <span className="order-card__total">
-                                <small>{formatCurrency(total.usd, "USD")}</small>
-                                {formatCurrency(total.uah, "UAH")}
+                                <small>{formatCurrency(total.usd, "USD", locale)}</small>
+                                {formatCurrency(total.uah, "UAH", locale)}
                             </span>
                         </button>
                         <button
                             className="order-card__delete"
                             type="button"
                             onClick={() => onDelete(order.id)}
-                            aria-label={`Delete ${order.title}`}
+                            aria-label={t.orders.deleteLabel.replace("{title}", order.title)}
                         >
                             <TrashIcon />
                         </button>

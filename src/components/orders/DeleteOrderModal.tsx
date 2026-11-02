@@ -1,6 +1,8 @@
 "use client";
 
 import { ConfirmDeleteDialog } from "@/components/ui/ConfirmDeleteDialog";
+import { useTranslation } from "@/i18n/I18nProvider";
+import { getCountForm } from "@/i18n/plural";
 import type { Order, Product } from "@/types/domain";
 
 interface DeleteOrderModalProps {
@@ -20,15 +22,20 @@ export function DeleteOrderModal({
     onConfirm,
     fallbackFocus,
 }: DeleteOrderModalProps) {
+    const { locale, t } = useTranslation();
+    const description = t.dialogs.deleteOrderDescription[getCountForm(products.length, locale)];
+    const [beforeTitle = "", afterTitle = ""] = description.split("{title}");
+
     return (
         <ConfirmDeleteDialog
             titleId="delete-order-title"
             descriptionId="delete-order-description"
-            title="Delete this order?"
+            title={t.dialogs.deleteOrderTitle}
             description={
                 <>
-                    The order <strong>{order.title}</strong> and its {products.length} related
-                    product{products.length === 1 ? "" : "s"} will be removed from this session.
+                    {beforeTitle}
+                    <strong>{order.title}</strong>
+                    {afterTitle.replace("{count}", String(products.length))}
                 </>
             }
             preview={products[0]}

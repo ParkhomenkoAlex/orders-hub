@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { ModalDialog } from "@/components/ui/ModalDialog";
+import { useTranslation } from "@/i18n/I18nProvider";
 import { PRODUCT_TYPES } from "@/lib/order-domain";
 import type { ProductDraft, ProductStatus, ProductType } from "@/types/domain";
 
@@ -37,6 +38,43 @@ const initialDraft: ProductDraft = {
     priceUah: "",
 };
 
+type ProductValidationErrorKey =
+    | "productTitleRequired"
+    | "serialNumberRequired"
+    | "warrantyStartInvalid"
+    | "warrantyEndInvalid"
+    | "warrantyEndBeforeStart"
+    | "priceUsdInvalid"
+    | "priceUahInvalid";
+
+type ProductValidationErrors = Partial<Record<keyof ProductDraft, ProductValidationErrorKey>>;
+
+export const validateProductDraft = (draft: ProductDraft): ProductValidationErrors => {
+    const errors: ProductValidationErrors = {};
+    const priceUsd = Number(draft.priceUsd);
+    const priceUah = Number(draft.priceUah);
+
+    if (!draft.title.trim()) errors.title = "productTitleRequired";
+    if (!draft.serialNumber.trim()) errors.serialNumber = "serialNumberRequired";
+    if (!isCalendarDate(draft.warrantyStart)) errors.warrantyStart = "warrantyStartInvalid";
+    if (!isCalendarDate(draft.warrantyEnd)) errors.warrantyEnd = "warrantyEndInvalid";
+    if (
+        isCalendarDate(draft.warrantyStart) &&
+        isCalendarDate(draft.warrantyEnd) &&
+        draft.warrantyEnd < draft.warrantyStart
+    ) {
+        errors.warrantyEnd = "warrantyEndBeforeStart";
+    }
+    if (!draft.priceUsd.trim() || !Number.isFinite(priceUsd) || priceUsd < 0) {
+        errors.priceUsd = "priceUsdInvalid";
+    }
+    if (!draft.priceUah.trim() || !Number.isFinite(priceUah) || priceUah < 0) {
+        errors.priceUah = "priceUahInvalid";
+    }
+
+    return errors;
+};
+
 interface AddProductDialogProps {
     orderTitle: string;
     error?: string | null;
@@ -45,8 +83,9 @@ interface AddProductDialogProps {
 }
 
 export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddProductDialogProps) {
+    const { t } = useTranslation();
     const [draft, setDraft] = useState<ProductDraft>(initialDraft);
-    const [errors, setErrors] = useState<Partial<Record<keyof ProductDraft, string>>>({});
+    const [errors, setErrors] = useState<ProductValidationErrors>({});
 
     const updateField = <Field extends keyof ProductDraft>(
         field: Field,
@@ -59,28 +98,7 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        const nextErrors: Partial<Record<keyof ProductDraft, string>> = {};
-        const priceUsd = Number(draft.priceUsd);
-        const priceUah = Number(draft.priceUah);
-
-        if (!draft.title.trim()) nextErrors.title = "Enter a product title.";
-        if (!draft.serialNumber.trim()) nextErrors.serialNumber = "Enter a serial number.";
-        if (!isCalendarDate(draft.warrantyStart))
-            nextErrors.warrantyStart = "Enter a valid start date.";
-        if (!isCalendarDate(draft.warrantyEnd)) nextErrors.warrantyEnd = "Enter a valid end date.";
-        if (
-            isCalendarDate(draft.warrantyStart) &&
-            isCalendarDate(draft.warrantyEnd) &&
-            draft.warrantyEnd < draft.warrantyStart
-        ) {
-            nextErrors.warrantyEnd = "The end date cannot be earlier than the start date.";
-        }
-        if (!draft.priceUsd.trim() || !Number.isFinite(priceUsd) || priceUsd < 0) {
-            nextErrors.priceUsd = "Enter a non-negative USD price.";
-        }
-        if (!draft.priceUah.trim() || !Number.isFinite(priceUah) || priceUah < 0) {
-            nextErrors.priceUah = "Enter a non-negative UAH price.";
-        }
+        const nextErrors = validateProductDraft(draft);
 
         if (Object.keys(nextErrors).length) {
             setErrors(nextErrors);
@@ -104,13 +122,15 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
         >
             <div className="form-modal__content">
                 <header className="form-modal__header">
-                    <h2 id="add-product-title">Add product</h2>
-                    <p id="add-product-description">Add a product to {orderTitle}.</p>
+                    <h2 id="add-product-title">{t.dialogs.addProductTitle}</h2>
+                    <p id="add-product-description">
+                        {t.dialogs.addProductDescription.replace("{orderTitle}", orderTitle)}
+                    </p>
                 </header>
                 <form onSubmit={handleSubmit} noValidate>
                     <div className="form-modal__grid">
                         <div className="form-modal__field form-modal__field--wide">
-                            <label htmlFor="product-title">Product title</label>
+                            <label htmlFor="product-title">{t.dialogs.productTitle}</label>
                             <input
                                 id="product-title"
                                 className="form-control"
@@ -123,12 +143,12 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                             />
                             {errors.title && (
                                 <p id="product-title-error" className="form-modal__error">
-                                    {errors.title}
+                                    {t.validation[errors.title]}
                                 </p>
                             )}
                         </div>
                         <div className="form-modal__field">
-                            <label htmlFor="product-serial">Serial number</label>
+                            <label htmlFor="product-serial">{t.dialogs.serialNumber}</label>
                             <input
                                 id="product-serial"
                                 className="form-control"
@@ -144,12 +164,14 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                             />
                             {errors.serialNumber && (
                                 <p id="product-serial-error" className="form-modal__error">
-                                    {errors.serialNumber}
+                                    {t.validation[errors.serialNumber]}
                                 </p>
                             )}
                         </div>
                         <div className="form-modal__field">
-                            <label htmlFor="product-specification">Specification</label>
+                            <label htmlFor="product-specification">
+                                {t.products.specification}
+                            </label>
                             <input
                                 id="product-specification"
                                 className="form-control"
@@ -160,7 +182,7 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                             />
                         </div>
                         <div className="form-modal__field">
-                            <label htmlFor="product-type">Product type</label>
+                            <label htmlFor="product-type">{t.dialogs.productType}</label>
                             <select
                                 id="product-type"
                                 className="form-select"
@@ -173,13 +195,13 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                             >
                                 {PRODUCT_TYPES.map((type) => (
                                     <option key={type} value={type}>
-                                        {type}
+                                        {t.productTypes[type]}
                                     </option>
                                 ))}
                             </select>
                         </div>
                         <div className="form-modal__field">
-                            <label htmlFor="product-status">Status</label>
+                            <label htmlFor="product-status">{t.dialogs.productStatus}</label>
                             <select
                                 id="product-status"
                                 className="form-select"
@@ -192,13 +214,13 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                             >
                                 {PRODUCT_STATUSES.map((status) => (
                                     <option key={status} value={status}>
-                                        {status}
+                                        {t.productStatuses[status]}
                                     </option>
                                 ))}
                             </select>
                         </div>
                         <div className="form-modal__field">
-                            <label htmlFor="warranty-start">Warranty start</label>
+                            <label htmlFor="warranty-start">{t.dialogs.warrantyStart}</label>
                             <input
                                 id="warranty-start"
                                 className="form-control"
@@ -219,12 +241,12 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                                     className="form-modal__error"
                                     role="alert"
                                 >
-                                    {errors.warrantyStart}
+                                    {t.validation[errors.warrantyStart]}
                                 </p>
                             )}
                         </div>
                         <div className="form-modal__field">
-                            <label htmlFor="warranty-end">Warranty end</label>
+                            <label htmlFor="warranty-end">{t.dialogs.warrantyEnd}</label>
                             <input
                                 id="warranty-end"
                                 className="form-control"
@@ -243,12 +265,12 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                                     className="form-modal__error"
                                     role="alert"
                                 >
-                                    {errors.warrantyEnd}
+                                    {t.validation[errors.warrantyEnd]}
                                 </p>
                             )}
                         </div>
                         <div className="form-modal__field">
-                            <label htmlFor="price-usd">Price, USD</label>
+                            <label htmlFor="price-usd">{t.dialogs.priceUsd}</label>
                             <input
                                 id="price-usd"
                                 className="form-control"
@@ -263,12 +285,12 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                             />
                             {errors.priceUsd && (
                                 <p id="price-usd-error" className="form-modal__error" role="alert">
-                                    {errors.priceUsd}
+                                    {t.validation[errors.priceUsd]}
                                 </p>
                             )}
                         </div>
                         <div className="form-modal__field">
-                            <label htmlFor="price-uah">Price, UAH</label>
+                            <label htmlFor="price-uah">{t.dialogs.priceUah}</label>
                             <input
                                 id="price-uah"
                                 className="form-control"
@@ -283,7 +305,7 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                             />
                             {errors.priceUah && (
                                 <p id="price-uah-error" className="form-modal__error" role="alert">
-                                    {errors.priceUah}
+                                    {t.validation[errors.priceUah]}
                                 </p>
                             )}
                         </div>
@@ -295,10 +317,10 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                     )}
                     <footer className="form-modal__actions">
                         <button type="button" className="form-modal__cancel" onClick={onCancel}>
-                            Cancel
+                            {t.actions.cancel}
                         </button>
                         <button type="submit" className="form-modal__submit">
-                            Add product
+                            {t.dialogs.createProduct}
                         </button>
                     </footer>
                 </form>

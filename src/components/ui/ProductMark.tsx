@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslation } from "@/i18n/I18nProvider";
 import type { ProductStatus } from "@/types/domain";
 
 interface ProductMarkProps {
@@ -5,8 +8,13 @@ interface ProductMarkProps {
 }
 
 export function ProductMark({ status }: ProductMarkProps) {
+    const { t } = useTranslation();
+
     return (
-        <span className="product-mark" aria-label={`${status} product`}>
+        <span
+            className="product-mark"
+            aria-label={`${t.productStatuses[status]}: ${t.products.product}`}
+        >
             <span
                 className={`product-mark__dot product-mark__dot--${status.toLowerCase().replace(" ", "-")}`}
             />
