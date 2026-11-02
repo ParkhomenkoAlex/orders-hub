@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "@/i18n/I18nProvider";
 import { filterOrders, groupProductsByOrderId } from "@/lib/order-domain";
 import { selectSearchQuery } from "@/state/inventorySlice";
 import {
@@ -30,6 +31,7 @@ interface OrdersWorkspaceProps {
 }
 
 export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorkspaceProps) {
+    const { t } = useTranslation();
     const searchQuery = useAppSelector(selectSearchQuery);
     const ordersQuery = useGetOrdersQuery();
     const productsQuery = useGetProductsQuery();
@@ -50,10 +52,10 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
     const [isAddOrderOpen, setIsAddOrderOpen] = useState(false);
     const [isAddProductOpen, setIsAddProductOpen] = useState(false);
     const [isDetailsClosing, setIsDetailsClosing] = useState(false);
-    const [addOrderError, setAddOrderError] = useState<string | null>(null);
-    const [addProductError, setAddProductError] = useState<string | null>(null);
-    const [deleteOrderError, setDeleteOrderError] = useState<string | null>(null);
-    const [deleteProductError, setDeleteProductError] = useState<string | null>(null);
+    const [addOrderError, setAddOrderError] = useState(false);
+    const [addProductError, setAddProductError] = useState(false);
+    const [deleteOrderError, setDeleteOrderError] = useState(false);
+    const [deleteProductError, setDeleteProductError] = useState(false);
     const focusOrderIdRef = useRef<string | null>(null);
     const addOrderButtonRef = useRef<HTMLButtonElement>(null);
     const productsByOrderId = useMemo(() => groupProductsByOrderId(products), [products]);
@@ -110,11 +112,11 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
     const removeOrder = async () => {
         if (!pendingDeleteId) return;
 
-        setDeleteOrderError(null);
+        setDeleteOrderError(false);
         try {
             await deleteOrderRequest(pendingDeleteId).unwrap();
         } catch {
-            setDeleteOrderError("Unable to delete this order. Please try again.");
+            setDeleteOrderError(true);
             return;
         }
 
@@ -129,22 +131,22 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
     const removeProduct = async () => {
         if (!pendingProduct) return;
 
-        setDeleteProductError(null);
+        setDeleteProductError(false);
         try {
             await deleteProductRequest(pendingProduct.id).unwrap();
         } catch {
-            setDeleteProductError("Unable to delete this product. Please try again.");
+            setDeleteProductError(true);
             return;
         }
         setPendingProduct(null);
     };
 
     const createOrder = async (title: string) => {
-        setAddOrderError(null);
+        setAddOrderError(false);
         try {
             await createOrderRequest({ title }).unwrap();
         } catch {
-            setAddOrderError("Unable to create this order. Please try again.");
+            setAddOrderError(true);
             return;
         }
         setIsAddOrderOpen(false);
@@ -153,7 +155,7 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
     const createProduct = async (draft: ProductDraft) => {
         if (!selectedOrder) return;
 
-        setAddProductError(null);
+        setAddProductError(false);
         try {
             await createProductRequest({
                 orderId: selectedOrder.id,
@@ -166,7 +168,7 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
                 price: { usd: Number(draft.priceUsd), uah: Number(draft.priceUah) },
             }).unwrap();
         } catch {
-            setAddProductError("Unable to create this product. Please try again.");
+            setAddProductError(true);
             return;
         }
         setIsAddProductOpen(false);
@@ -181,12 +183,12 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
                     type="button"
                     className="page-workspace__add"
                     onClick={() => setIsAddOrderOpen(true)}
-                    aria-label="Add order"
+                    aria-label={t.orders.addLabel}
                 >
                     +
                 </button>
                 <h1>
-                    Orders <span>/ {hasInitialOrders ? orders.length : "—"}</span>
+                    {t.orders.title} <span>/ {hasInitialOrders ? orders.length : "—"}</span>
                 </h1>
             </header>
             {isInitialLoading ? (
@@ -198,8 +200,8 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
             ) : ordersQuery.isError || productsQuery.isError ? (
                 <div className="empty-state">
                     <span>!</span>
-                    <h2>Unable to load orders</h2>
-                    <p>Please check the connection and try again.</p>
+                    <h2>{t.errors.loadOrders}</h2>
+                    <p>{t.errors.connection}</p>
                     <button
                         type="button"
                         className="form-modal__submit"
@@ -208,7 +210,7 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
                             void productsQuery.refetch();
                         }}
                     >
-                        Retry
+                        {t.actions.retry}
                     </button>
                 </div>
             ) : (
@@ -221,7 +223,7 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
                             selectedOrderId={selectedOrderId}
                             onSelect={selectOrder}
                             onDelete={(orderId) => {
-                                setDeleteOrderError(null);
+                                setDeleteOrderError(false);
                                 setPendingDeleteId(orderId);
                             }}
                         />
@@ -236,11 +238,11 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
                                 onClose={closeDetails}
                                 onCloseAnimationEnd={finishClosingDetails}
                                 onDeleteProduct={(product) => {
-                                    setDeleteProductError(null);
+                                    setDeleteProductError(false);
                                     setPendingProduct(product);
                                 }}
                                 onAddProduct={() => {
-                                    setAddProductError(null);
+                                    setAddProductError(false);
                                     setIsAddProductOpen(true);
                                 }}
                             />
@@ -252,9 +254,9 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
                 <DeleteOrderModal
                     order={pendingOrder}
                     products={productsByOrderId.get(pendingOrder.id) ?? []}
-                    error={deleteOrderError}
+                    error={deleteOrderError ? t.errors.deleteOrder : null}
                     onCancel={() => {
-                        setDeleteOrderError(null);
+                        setDeleteOrderError(false);
                         setPendingDeleteId(null);
                     }}
                     onConfirm={removeOrder}
@@ -264,9 +266,9 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
             {pendingProduct && (
                 <DeleteProductModal
                     product={pendingProduct}
-                    error={deleteProductError}
+                    error={deleteProductError ? t.errors.deleteProduct : null}
                     onCancel={() => {
-                        setDeleteProductError(null);
+                        setDeleteProductError(false);
                         setPendingProduct(null);
                     }}
                     onConfirm={removeProduct}
@@ -278,9 +280,9 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
             )}
             {isAddOrderOpen && (
                 <AddOrderDialog
-                    error={addOrderError}
+                    error={addOrderError ? t.errors.createOrder : null}
                     onCancel={() => {
-                        setAddOrderError(null);
+                        setAddOrderError(false);
                         setIsAddOrderOpen(false);
                     }}
                     onCreate={createOrder}
@@ -289,9 +291,9 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
             {isAddProductOpen && selectedOrder && (
                 <AddProductDialog
                     orderTitle={selectedOrder.title}
-                    error={addProductError}
+                    error={addProductError ? t.errors.createProduct : null}
                     onCancel={() => {
-                        setAddProductError(null);
+                        setAddProductError(false);
                         setIsAddProductOpen(false);
                     }}
                     onCreate={createProduct}

@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ProductMark } from "@/components/ui/ProductMark";
 import { TrashIcon } from "@/components/ui/Icons";
+import { useTranslation } from "@/i18n/I18nProvider";
 import { PRODUCT_TYPES, filterProducts } from "@/lib/order-domain";
 import { formatCurrency, formatLongDate } from "@/lib/formatters";
 import { selectSearchQuery } from "@/state/inventorySlice";
@@ -15,14 +16,17 @@ import { useAppSelector } from "@/state/hooks";
 import type { Order, Product, ProductType } from "@/types/domain";
 import { DeleteProductModal } from "./DeleteProductModal";
 import { ProductsTableSkeleton } from "./ProductsTableSkeleton";
-
-const isProductType = (value: string): value is ProductType =>
-    PRODUCT_TYPES.includes(value as ProductType);
+import {
+    isProductType,
+    persistProductTypeFilter,
+    restoreProductTypeFilter,
+} from "./typeFilterStorage";
 
 const EMPTY_ORDERS: Order[] = [];
 const EMPTY_PRODUCTS: Product[] = [];
 
 export function ProductsWorkspace() {
+    const { locale, t } = useTranslation();
     const productsQuery = useGetProductsQuery();
     const ordersQuery = useGetOrdersQuery();
     const products = productsQuery.data ?? EMPTY_PRODUCTS;
@@ -33,9 +37,10 @@ export function ProductsWorkspace() {
     const searchQuery = useAppSelector(selectSearchQuery);
     const [deleteProductRequest] = useDeleteProductMutation();
     const [activeType, setActiveType] = useState<ProductType | "all">("all");
+    const [isTypeFilterRestored, setIsTypeFilterRestored] = useState(false);
     const [specification, setSpecification] = useState("all");
     const [pendingProduct, setPendingProduct] = useState<Product | null>(null);
-    const [deleteProductError, setDeleteProductError] = useState<string | null>(null);
+    const [deleteProductError, setDeleteProductError] = useState(false);
     const catalogRef = useRef<HTMLDivElement>(null);
     const tableRef = useRef<HTMLTableElement>(null);
     const specifications = useMemo(
@@ -48,16 +53,42 @@ export function ProductsWorkspace() {
     const orderById = useMemo(() => new Map(orders.map((order) => [order.id, order])), [orders]);
     const hasFilters =
         activeType !== "all" || specification !== "all" || Boolean(searchQuery.trim());
+
+    useEffect(() => {
+        let isMounted = true;
+
+        queueMicrotask(() => {
+            if (!isMounted) {
+                return;
+            }
+
+            setActiveType(restoreProductTypeFilter(() => window.localStorage));
+            setIsTypeFilterRestored(true);
+        });
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!isTypeFilterRestored) {
+            return;
+        }
+
+        persistProductTypeFilter(activeType, () => window.localStorage);
+    }, [activeType, isTypeFilterRestored]);
+
     return (
         <div ref={catalogRef} className="page-workspace products-workspace">
             <header className="page-workspace__header">
                 <h1>
-                    Products{" "}
+                    {t.products.title}{" "}
                     <span>/ {productsQuery.data === undefined ? "—" : visibleProducts.length}</span>
                 </h1>
                 <div className="products-workspace__filters">
                     <label className="product-filter" htmlFor="product-type">
-                        Type
+                        {t.products.type}
                         <select
                             id="product-type"
                             className="form-select"
@@ -69,23 +100,23 @@ export function ProductsWorkspace() {
                                 );
                             }}
                         >
-                            <option value="all">All types</option>
+                            <option value="all">{t.products.allTypes}</option>
                             {PRODUCT_TYPES.map((type) => (
                                 <option key={type} value={type}>
-                                    {type}
+                                    {t.productTypes[type]}
                                 </option>
                             ))}
                         </select>
                     </label>
                     <label className="product-filter" htmlFor="product-specification">
-                        Specification
+                        {t.products.specification}
                         <select
                             id="product-specification"
                             className="form-select"
                             value={specification}
                             onChange={(event) => setSpecification(event.target.value)}
                         >
-                            <option value="all">All specifications</option>
+                            <option value="all">{t.products.allSpecifications}</option>
                             {specifications.map((item) => (
                                 <option key={item} value={item}>
                                     {item}
@@ -100,8 +131,8 @@ export function ProductsWorkspace() {
             ) : productsQuery.isError || ordersQuery.isError ? (
                 <div className="empty-state">
                     <span>!</span>
-                    <h2>Unable to load products</h2>
-                    <p>Please check the connection and try again.</p>
+                    <h2>{t.errors.loadProducts}</h2>
+                    <p>{t.errors.connection}</p>
                     <button
                         type="button"
                         className="form-modal__submit"
@@ -110,7 +141,7 @@ export function ProductsWorkspace() {
                             void ordersQuery.refetch();
                         }}
                     >
-                        Retry
+                        {t.actions.retry}
                     </button>
                 </div>
             ) : visibleProducts.length ? (
@@ -130,17 +161,17 @@ export function ProductsWorkspace() {
                         </colgroup>
                         <thead>
                             <tr>
-                                <th scope="col">Product</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Warranty</th>
-                                <th scope="col">Condition</th>
-                                <th scope="col">Price</th>
-                                <th scope="col">Group</th>
-                                <th scope="col">Owner</th>
-                                <th scope="col">Order</th>
-                                <th scope="col">Order date</th>
+                                <th scope="col">{t.products.product}</th>
+                                <th scope="col">{t.products.status}</th>
+                                <th scope="col">{t.products.warranty}</th>
+                                <th scope="col">{t.products.condition}</th>
+                                <th scope="col">{t.products.price}</th>
+                                <th scope="col">{t.products.group}</th>
+                                <th scope="col">{t.products.owner}</th>
+                                <th scope="col">{t.products.order}</th>
+                                <th scope="col">{t.products.orderDate}</th>
                                 <th scope="col">
-                                    <span className="visually-hidden">Actions</span>
+                                    <span className="visually-hidden">{t.products.actions}</span>
                                 </th>
                             </tr>
                         </thead>
@@ -162,27 +193,37 @@ export function ProductsWorkspace() {
                                             <span
                                                 className={`status status--${product.status.toLowerCase().replace(" ", "-")}`}
                                             >
-                                                {product.status}
+                                                {t.productStatuses[product.status]}
                                             </span>
                                         </td>
                                         <td>
                                             <div className="product-row__warranty">
-                                                <small>from</small>
+                                                <small>{t.products.from}</small>
                                                 <span>
-                                                    {formatLongDate(product.warranty.start)}
+                                                    {formatLongDate(product.warranty.start, locale)}
                                                 </span>
-                                                <small>to</small>
-                                                <span>{formatLongDate(product.warranty.end)}</span>
+                                                <small>{t.products.to}</small>
+                                                <span>
+                                                    {formatLongDate(product.warranty.end, locale)}
+                                                </span>
                                             </div>
                                         </td>
-                                        <td>{product.condition}</td>
+                                        <td>{t.productConditions[product.condition]}</td>
                                         <td>
                                             <div className="product-row__price">
                                                 <small>
-                                                    {formatCurrency(product.price.usd, "USD")}
+                                                    {formatCurrency(
+                                                        product.price.usd,
+                                                        "USD",
+                                                        locale,
+                                                    )}
                                                 </small>
                                                 <span>
-                                                    {formatCurrency(product.price.uah, "UAH")}
+                                                    {formatCurrency(
+                                                        product.price.uah,
+                                                        "UAH",
+                                                        locale,
+                                                    )}
                                                 </span>
                                             </div>
                                         </td>
@@ -199,7 +240,7 @@ export function ProductsWorkspace() {
                                             <span className="product-row__order-title">
                                                 {order?.title ?? (
                                                     <span className="data-warning">
-                                                        Missing order
+                                                        {t.products.missingOrder}
                                                     </span>
                                                 )}
                                             </span>
@@ -209,7 +250,9 @@ export function ProductsWorkspace() {
                                                 className="product-row__date"
                                                 dateTime={order?.createdAt}
                                             >
-                                                {order ? formatLongDate(order.createdAt) : "—"}
+                                                {order
+                                                    ? formatLongDate(order.createdAt, locale)
+                                                    : "—"}
                                             </time>
                                         </td>
                                         <td className="product-row__action">
@@ -217,10 +260,13 @@ export function ProductsWorkspace() {
                                                 type="button"
                                                 className="icon-button icon-button--delete"
                                                 onClick={() => {
-                                                    setDeleteProductError(null);
+                                                    setDeleteProductError(false);
                                                     setPendingProduct(product);
                                                 }}
-                                                aria-label={`Delete ${product.title}`}
+                                                aria-label={t.products.deleteLabel.replace(
+                                                    "{title}",
+                                                    product.title,
+                                                )}
                                             >
                                                 <TrashIcon />
                                             </button>
@@ -234,30 +280,24 @@ export function ProductsWorkspace() {
             ) : (
                 <div className="empty-state">
                     <span>⌕</span>
-                    <h2>{hasFilters ? "No matching products" : "No products left"}</h2>
-                    <p>
-                        {hasFilters
-                            ? "Try another type, specification, or search phrase."
-                            : "No products yet. Add a product to an order to get started."}
-                    </p>
+                    <h2>{hasFilters ? t.products.noMatches : t.products.noProducts}</h2>
+                    <p>{hasFilters ? t.products.noMatchesHint : t.products.noProductsHint}</p>
                 </div>
             )}
             {pendingProduct && (
                 <DeleteProductModal
                     product={pendingProduct}
-                    error={deleteProductError}
+                    error={deleteProductError ? t.errors.deleteProduct : null}
                     onCancel={() => {
-                        setDeleteProductError(null);
+                        setDeleteProductError(false);
                         setPendingProduct(null);
                     }}
                     onConfirm={async () => {
-                        setDeleteProductError(null);
+                        setDeleteProductError(false);
                         try {
                             await deleteProductRequest(pendingProduct.id).unwrap();
                         } catch {
-                            setDeleteProductError(
-                                "Unable to delete this product. Please try again.",
-                            );
+                            setDeleteProductError(true);
                             return;
                         }
                         setPendingProduct(null);

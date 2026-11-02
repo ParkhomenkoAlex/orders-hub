@@ -1,16 +1,21 @@
+"use client";
+
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useTranslation } from "@/i18n/I18nProvider";
 
 const SKELETON_ROWS = 5;
 
 export function ProductsTableSkeleton() {
+    const { t } = useTranslation();
+
     return (
         <div
             className="products-table table-responsive"
             aria-busy="true"
-            aria-label="Loading products"
+            aria-label={t.loading.products}
         >
             <p className="visually-hidden" role="status">
-                Loading products
+                {t.loading.products}
             </p>
             <table className="mb-0" aria-hidden="true">
                 <colgroup>
@@ -27,17 +32,17 @@ export function ProductsTableSkeleton() {
                 </colgroup>
                 <thead>
                     <tr>
-                        <th scope="col">Product</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Warranty</th>
-                        <th scope="col">Condition</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">Group</th>
-                        <th scope="col">Owner</th>
-                        <th scope="col">Order</th>
-                        <th scope="col">Order date</th>
+                        <th scope="col">{t.products.product}</th>
+                        <th scope="col">{t.products.status}</th>
+                        <th scope="col">{t.products.warranty}</th>
+                        <th scope="col">{t.products.condition}</th>
+                        <th scope="col">{t.products.price}</th>
+                        <th scope="col">{t.products.group}</th>
+                        <th scope="col">{t.products.owner}</th>
+                        <th scope="col">{t.products.order}</th>
+                        <th scope="col">{t.products.orderDate}</th>
                         <th scope="col">
-                            <span className="visually-hidden">Actions</span>
+                            <span className="visually-hidden">{t.products.actions}</span>
                         </th>
                     </tr>
                 </thead>

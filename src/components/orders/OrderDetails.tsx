@@ -1,5 +1,8 @@
+"use client";
+
 import { ProductMark } from "@/components/ui/ProductMark";
 import { TrashIcon } from "@/components/ui/Icons";
+import { useTranslation } from "@/i18n/I18nProvider";
 import type { Order, Product } from "@/types/domain";
 
 interface OrderDetailsProps {
@@ -21,6 +24,8 @@ export function OrderDetails({
     onDeleteProduct,
     onAddProduct,
 }: OrderDetailsProps) {
+    const { t } = useTranslation();
+
     return (
         <section
             id="order-details"
@@ -41,14 +46,14 @@ export function OrderDetails({
                 type="button"
                 className="order-details__close"
                 onClick={onClose}
-                aria-label="Close order details"
+                aria-label={t.orders.closeDetails.replace("{title}", order.title)}
             >
                 ×
             </button>
             <div className="order-details__heading">
                 <h2 id="order-details-title">{order.title}</h2>
                 <button type="button" className="order-details__add" onClick={onAddProduct}>
-                    <span aria-hidden="true">+</span> Add product
+                    <span aria-hidden="true">+</span> {t.orders.addProduct}
                 </button>
             </div>
             {products.length ? (
@@ -63,13 +68,16 @@ export function OrderDetails({
                             <span
                                 className={`status status--${product.status.toLowerCase().replace(" ", "-")}`}
                             >
-                                {product.status}
+                                {t.productStatuses[product.status]}
                             </span>
                             <button
                                 type="button"
                                 className="icon-button icon-button--delete"
                                 onClick={() => onDeleteProduct(product)}
-                                aria-label={`Delete ${product.title}`}
+                                aria-label={t.products.deleteLabel.replace(
+                                    "{title}",
+                                    product.title,
+                                )}
                             >
                                 <TrashIcon />
                             </button>
@@ -77,7 +85,7 @@ export function OrderDetails({
                     ))}
                 </ul>
             ) : (
-                <p className="order-details__empty">This order has no products yet.</p>
+                <p className="order-details__empty">{t.orders.noProducts}</p>
             )}
         </section>
     );

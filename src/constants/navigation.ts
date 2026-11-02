@@ -1,7 +1,7 @@
 export const NAVIGATION_ITEMS = [
-    { href: "/orders", label: "Orders" },
-    { href: "/groups", label: "Groups" },
-    { href: "/products", label: "Products" },
-    { href: "/users", label: "Users" },
-    { href: "/settings", label: "Settings" },
-];
+    { href: "/orders", labelKey: "orders" },
+    { href: "/groups", labelKey: "groups" },
+    { href: "/products", labelKey: "products" },
+    { href: "/users", labelKey: "users" },
+    { href: "/settings", labelKey: "settings" },
+] as const;

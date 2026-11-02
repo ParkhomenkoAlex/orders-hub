@@ -1,6 +1,9 @@
+"use client";
+
 import type { ReactNode } from "react";
 import { ModalDialog } from "@/components/ui/ModalDialog";
 import { ProductMark } from "@/components/ui/ProductMark";
+import { useTranslation } from "@/i18n/I18nProvider";
 import type { Product } from "@/types/domain";
 
 interface ConfirmDeleteDialogProps {
@@ -26,6 +29,8 @@ export function ConfirmDeleteDialog({
     onConfirm,
     fallbackFocus,
 }: ConfirmDeleteDialogProps) {
+    const { t } = useTranslation();
+
     return (
         <ModalDialog
             className="delete-modal"
@@ -38,7 +43,7 @@ export function ConfirmDeleteDialog({
                 className="delete-modal__close"
                 type="button"
                 onClick={onCancel}
-                aria-label="Close confirmation"
+                aria-label={t.dialogs.closeConfirmation}
             >
                 <svg viewBox="0 0 16 16" aria-hidden="true">
                     <path
@@ -74,10 +79,10 @@ export function ConfirmDeleteDialog({
                     onClick={onCancel}
                     data-autofocus
                 >
-                    Cancel
+                    {t.actions.cancel}
                 </button>
                 <button type="button" className="delete-modal__confirm" onClick={onConfirm}>
-                    Delete
+                    {t.actions.delete}
                 </button>
             </footer>
         </ModalDialog>

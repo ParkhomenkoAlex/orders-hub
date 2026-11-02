@@ -1,12 +1,17 @@
+"use client";
+
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useTranslation } from "@/i18n/I18nProvider";
 
 const SKELETON_ROWS = 5;
 
 export function OrdersListSkeleton() {
+    const { t } = useTranslation();
+
     return (
-        <section className="orders-list" aria-busy="true" aria-label="Loading orders">
+        <section className="orders-list" aria-busy="true" aria-label={t.loading.orders}>
             <p className="visually-hidden" role="status">
-                Loading orders
+                {t.loading.orders}
             </p>
             {Array.from({ length: SKELETON_ROWS }, (_, index) => (
                 <article key={index} className="order-card order-card--skeleton" aria-hidden="true">

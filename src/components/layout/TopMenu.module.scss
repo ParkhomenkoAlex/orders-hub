@@ -66,6 +66,22 @@
         white-space: nowrap;
     }
 
+    &__locale {
+        margin-left: 18px;
+
+        select {
+            background: #edf2f4;
+            border: 1px solid #d9e2e6;
+            border-radius: 4px;
+            color: var(--ink);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            height: 29px;
+            padding: 0 5px;
+        }
+    }
+
     &__sessionDot {
         background: var(--green);
         border-radius: 50%;
@@ -122,6 +138,16 @@
 
             input {
                 width: 100%;
+            }
+        }
+
+        &__locale {
+            margin-left: 8px;
+
+            select {
+                font-size: 10px;
+                height: 26px;
+                padding: 0 3px;
             }
         }
     }

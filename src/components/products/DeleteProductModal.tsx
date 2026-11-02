@@ -1,4 +1,7 @@
+"use client";
+
 import { ConfirmDeleteDialog } from "@/components/ui/ConfirmDeleteDialog";
+import { useTranslation } from "@/i18n/I18nProvider";
 import type { Product } from "@/types/domain";
 
 interface DeleteProductModalProps {
@@ -16,15 +19,19 @@ export function DeleteProductModal({
     onConfirm,
     fallbackFocus,
 }: DeleteProductModalProps) {
+    const { t } = useTranslation();
+    const [beforeTitle = "", afterTitle = ""] = t.dialogs.deleteProductDescription.split("{title}");
+
     return (
         <ConfirmDeleteDialog
             titleId="delete-product-title"
             descriptionId="delete-product-description"
-            title="Delete this product?"
+            title={t.dialogs.deleteProductTitle}
             description={
                 <>
-                    <strong>{product.title}</strong> will be removed from this order. The order
-                    itself will remain available.
+                    {beforeTitle}
+                    <strong>{product.title}</strong>
+                    {afterTitle}
                 </>
             }
             preview={product}

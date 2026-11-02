@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { io, type Socket } from "socket.io-client";
+import { useTranslation } from "@/i18n/I18nProvider";
 import type { ClientToServerEvents, ServerToClientEvents, SessionCount } from "@/realtime/protocol";
 
 type ConnectionStatus = "connecting" | "reconnecting" | "unavailable" | "connected";
@@ -15,16 +16,19 @@ interface ActiveSessionsProps {
     offlineDotClassName: string;
 }
 
-const getStatusLabel = (status: ConnectionStatus) => {
+const getStatusLabel = (
+    status: ConnectionStatus,
+    sessions: ReturnType<typeof useTranslation>["t"]["sessions"],
+) => {
     switch (status) {
         case "connecting":
-            return "connecting";
+            return sessions.connecting;
         case "reconnecting":
-            return "reconnecting";
+            return sessions.reconnecting;
         case "connected":
-            return "unavailable";
+            return sessions.unavailable;
         case "unavailable":
-            return "unavailable";
+            return sessions.unavailable;
     }
 };
 
@@ -33,6 +37,7 @@ export function ActiveSessions({
     dotClassName,
     offlineDotClassName,
 }: ActiveSessionsProps) {
+    const { t } = useTranslation();
     const [count, setCount] = useState<number | null>(null);
     const [status, setStatus] = useState<ConnectionStatus>(
         realtimeUrl ? "connecting" : "unavailable",
@@ -79,21 +84,17 @@ export function ActiveSessions({
         };
     }, []);
 
-    const label = count === null ? getStatusLabel(status) : String(count);
+    const label = count === null ? getStatusLabel(status, t.sessions) : String(count);
     const isConnected = count !== null && status === "connected";
+    const accessibleLabel = t.sessions.active.replace("{count}", label);
 
     return (
-        <div
-            className={className}
-            role="status"
-            aria-live="polite"
-            aria-label={`Active sessions: ${label}`}
-        >
+        <div className={className} role="status" aria-live="polite" aria-label={accessibleLabel}>
             <span
                 className={`${dotClassName} ${isConnected ? "" : offlineDotClassName}`}
                 aria-hidden="true"
             />
-            Sessions: {label}
+            {t.sessions.label}: {label}
         </div>
     );
 }
