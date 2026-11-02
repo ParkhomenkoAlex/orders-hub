@@ -18,6 +18,7 @@ The written requirements in `REQUIREMENTS.md` are cumulative and mandatory acros
 - Formatting: Prettier configured with four-space indentation and 100-character print width
 - Current UI architecture: root layout provides document metadata and global SCSS; the (dashboard) route group provides StoreProvider, TopMenu, Sidebar, PageTransition, and the shared main-content shell
 - State: Redux Toolkit retains global search state; RTK Query loads and mutates persisted Orders and Products through the server-side Drizzle/MySQL REST API
+- Localization: cookie-initialized React Context provides English and Russian UI catalogs without locale-prefixed routes; the Products Type filter is the documented native Web Storage example.
 - Routes: /orders, /products, /groups, /users, /settings; Groups, Users, and Settings intentionally render an under-construction page
 - Repository workflow: main is stable, develop is integration, and feature/* branches are implementation branches. PR #6 merged `feature/dev-deployment` into develop at `db4b96c`; local develop was fast-forwarded to that commit with a clean working tree.
 - Deployment: an initial Vercel production deployment was previously reported as public; its current availability was not rechecked in this audit.
@@ -83,6 +84,12 @@ The written requirements in `REQUIREMENTS.md` are cumulative and mandatory acros
 - [x] C.5 public verification passed: the Vercel Preview frontend connected to the independently hosted Render Socket.IO service. Opening and closing tabs updated the active-session count; Orders/Products navigation did not create duplicate sessions. The service and preview recovered from reconnect scenarios, and Orders/Products API requests worked after Aiven MySQL service restoration.
 - [~] C.5 operational caveat: Render Free can suspend an inactive single-instance service. During wake-up the client reports reconnecting/unavailable rather than a stale count; a globally accurate counter across multiple instances would require shared presence infrastructure.
 - [x] Phase D SSR verification passed: `/orders` uses Next.js `connection()` for request-time rendering, loads Orders and related Products through server-only Drizzle helpers, and renders the existing order content in the initial HTML. `OrdersWorkspace` receives that initial data while RTK Query continues to manage client-side queries, mutations, invalidation, and refetching. TypeScript, ESLint, formatting, unit tests, and the production build passed; the build classified `/orders` as dynamic. Actual order titles were confirmed in local production HTML and Vercel Preview View Source, with no observed hydration or visual regressions.
+
+### Recorded 2026-11-02
+
+- [x] Phase D i18n verification passed: typed English (`en`) and Russian (`ru`) catalogs, a React Context provider, and a cookie-backed locale preference initialize the root document and client with the same locale. Layout, Orders, and Products update immediately on language changes; dates, currencies, validation, plural forms, and accessible labels are localized. `Inventory` and `Orders Hub` remain brand names.
+- [x] Phase D Web Storage verification passed: the Products Type filter persists only canonical ProductType values through native `localStorage`, restores after refresh and navigation, clears storage for `all`, and safely rejects invalid values or unavailable storage. The Specification filter remains session-local.
+- [x] Phase D i18n and Web Storage validation passed: 64 unit tests, TypeScript, ESLint, Prettier, and the production build completed successfully; manual browser checks confirmed language switching, cookie persistence, localized Layout/Orders/Products behavior, and Type-filter restoration without regressions.
 
 ### Security note
 
@@ -200,10 +207,10 @@ Local Docker MySQL and remote Preview MySQL are separate environments. The deplo
 
 - [x] TypeScript: strict project configuration and typed domain/UI code are present.
 - [x] SSR via Next.js: `/orders` uses `connection()` for request-time rendering, loads initial Orders and Products through server-only helpers, and renders the existing workspace content into the initial HTML. The initial data is not hydrated into the RTK Query cache; after hydration, existing RTK Query queries, mutations, invalidation, and refetching remain authoritative.
-- [x] Unit-test foundation: recorded verification covers domain, state, validation, API-route, RTK Query, and database-connection contracts; component tests are optional future coverage.
-- [ ] i18n demonstration: provide two real locales and translated visible UI/demo labels.
+- [x] Unit-test foundation: recorded verification covers domain, state, validation, API-route, RTK Query, database-connection, SSR, i18n, Web Storage, and focused component contracts; 64 unit tests passed.
+- [x] i18n demonstration: English and Russian catalogs use typed React Context, a cookie-backed SSR-safe initial locale, and immediate switching across Layout, Orders, and Products. `Inventory` and `Orders Hub` remain untranslated brand names.
 - [ ] Minimal real JWT authentication demonstration: signed server-only token, login/logout, and one protected route; do not expose secrets in the browser.
-- [ ] Web Storage demonstration with documented persistence, preferably shared with the locale or user-preference example.
+- [x] Web Storage demonstration: native `localStorage` persists the canonical Products Type filter value, restores it after refresh/navigation, removes it for `all`, and safely falls back for invalid or unavailable storage. The Specification filter is intentionally not persisted.
 - [ ] Lazy-loaded noncritical demonstration feature, preferably shared with analytics.
 - [ ] Chart based on live Orders/Products data.
 - [ ] Interactive map demonstration with a documented inventory/service-location use case.
@@ -215,7 +222,7 @@ Local Docker MySQL and remote Preview MySQL are separate environments. The deplo
 - [ ] Web Worker demonstration for a non-trivial inventory analytics calculation that keeps the UI responsive.
 - [ ] PWA: manifest, icons, service worker, usable offline shell/fallback, and installability verification.
 - [ ] Event-driven architecture demonstration with named events and at least two meaningful consumers; durable distributed delivery is optional.
-- [~] Frontend optimization: code uses Next.js, next/image, cached Intl formatters, and memoized derived data. Document the demonstrated optimizations and lazy-loading result; formal benchmark targets are optional.
+- [~] Frontend optimization: code uses Next.js, next/image, locale-aware Intl formatting, and memoized derived data. Document the demonstrated optimizations and lazy-loading result; formal benchmark targets are optional.
 - [x] Task-runner foundation: development, build, lint, formatting, unit-test, and database scripts exist. Add feature-specific scripts only with their corresponding deliverables.
 - [ ] Add one real integration test and one browser-level functional workflow; exhaustive test suites are optional.
 
@@ -273,9 +280,9 @@ Add unit, integration, E2E, API, Socket.IO, and Docker commands only when their 
 
 ## Next actionable task
 
-**Phase D — add a minimal two-locale i18n demonstration with translated visible UI labels.**
+**Phase D — add a minimal real JWT authentication demonstration with a signed server-only token, login/logout, and one protected route.**
 
-The database schema deliverable, C.5 active-session counter, and request-time SSR deliverable are complete; the next incomplete roadmap work is the remaining Junior+ demonstrations in Phase D.
+The database schema deliverable, C.5 active-session counter, SSR, i18n, and Web Storage deliverables are complete; the next incomplete roadmap work is the remaining Junior+ demonstrations in Phase D.
 
 ## Progress update template
 
