@@ -214,7 +214,7 @@ Local Docker MySQL and remote Preview MySQL are separate environments. The deplo
 - [x] Minimal real JWT authentication demonstration: server-only `jose` HS256 signing and verification require configured credentials and a 32-byte-or-longer secret; login/logout use a secure HTTP-only cookie, and `/settings` is protected by server-side signature, issuer, audience, and expiration checks. Orders and Products remain intentionally public. Local and Vercel Preview browser verification passed after configuring the required server-only authentication variables.
 - [x] Web Storage demonstration: native `localStorage` persists the canonical Products Type filter value, restores it after refresh/navigation, removes it for `all`, and safely falls back for invalid or unavailable storage. The Specification filter is intentionally not persisted.
 - [x] Lazy Loading demonstration: the existing Orders detail panel uses client-only `next/dynamic` loading with an accessible, layout-preserving skeleton fallback. The production build emits a separate async `OrderDetails` chunk and the initial `/orders` HTML does not reference it; TypeScript, ESLint, formatting, 83 unit tests, and the production build passed. Chrome verification with cache disabled confirmed the deferred request after first selection, and Slow 3G confirmed the skeleton fallback; closing/switching details and product actions remained functional.
-- [ ] Chart based on live Orders/Products data.
+- [x] Chart demonstration: Products renders a responsive, interactive product-count-by-type bar chart from the live RTK Query Products cache. A pure typed aggregation helper supports later reuse; chart bars apply the existing canonical Type filter, zero-count categories render without green fill, and chart-specific styles are scoped in `ProductTypeChart.module.scss`. English/Russian localization, responsive layouts, loading, empty, and error states are covered. TypeScript, ESLint, formatting, 88 unit tests, and the production build passed; browser verification confirmed real data/counts, proportional positive bars, zero-fill behavior, and filter toggle/reset interaction.
 - [ ] Interactive map demonstration with a documented inventory/service-location use case.
 
 ## Phase E — Middle requirements
@@ -282,9 +282,9 @@ Add unit, integration, E2E, API, Socket.IO, and Docker commands only when their 
 
 ## Next actionable task
 
-**Phase D — add a chart based on live Orders/Products data.**
+**Phase D — implement the interactive map demonstration with a documented inventory/service-location use case.**
 
-The database schema deliverable, C.5 active-session counter, SSR, i18n, Web Storage, JWT, and Lazy Loading implementation deliverables are complete; the next incomplete roadmap work is the remaining Junior+ demonstrations in Phase D.
+The database schema deliverable, C.5 active-session counter, SSR, i18n, Web Storage, JWT, Lazy Loading, and Charts implementation deliverables are complete. The remaining Junior+ demonstrations follow.
 
 ## Progress update template
 

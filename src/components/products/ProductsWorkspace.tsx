@@ -15,6 +15,7 @@ import {
 import { useAppSelector } from "@/state/hooks";
 import type { Order, Product, ProductType } from "@/types/domain";
 import { DeleteProductModal } from "./DeleteProductModal";
+import { ProductTypeChart } from "./ProductTypeChart";
 import { ProductsTableSkeleton } from "./ProductsTableSkeleton";
 import {
     isProductType,
@@ -284,6 +285,13 @@ export function ProductsWorkspace() {
                     <p>{hasFilters ? t.products.noMatchesHint : t.products.noProductsHint}</p>
                 </div>
             )}
+            <ProductTypeChart
+                products={products}
+                activeType={activeType}
+                isLoading={productsQuery.isLoading && productsQuery.data === undefined}
+                isError={productsQuery.isError}
+                onTypeSelect={setActiveType}
+            />
             {pendingProduct && (
                 <DeleteProductModal
                     product={pendingProduct}

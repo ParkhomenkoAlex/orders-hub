@@ -105,6 +105,15 @@ export const en = {
         noProductsHint: "No products yet. Add a product to an order to get started.",
         deleteLabel: "Delete {title}",
     },
+    charts: {
+        productTypeTitle: "Products by type",
+        productTypeDescription: "Select a bar to filter the product table.",
+        loading: "Loading product chart",
+        unavailable: "Product chart is unavailable.",
+        empty: "No product data to chart yet.",
+        selected: "Selected filter: {type}",
+        barLabel: "{type}: {count}",
+    },
     dialogs: {
         addOrderTitle: "Add order",
         addOrderDescription: "Create an empty order and add products to it later.",
@@ -270,6 +279,15 @@ const ru = {
         noMatchesHint: "Попробуйте выбрать другой тип, спецификацию или изменить поиск.",
         noProductsHint: "Добавьте продукт к приходу, чтобы начать работу.",
         deleteLabel: "Удалить {title}",
+    },
+    charts: {
+        productTypeTitle: "Продукты по типу",
+        productTypeDescription: "Выберите столбец, чтобы отфильтровать таблицу продуктов.",
+        loading: "Загрузка диаграммы продуктов",
+        unavailable: "Диаграмма продуктов недоступна.",
+        empty: "Пока нет данных о продуктах для диаграммы.",
+        selected: "Выбран фильтр: {type}",
+        barLabel: "{type}: {count}",
     },
     dialogs: {
         addOrderTitle: "Добавить приход",
