@@ -52,6 +52,10 @@ Open [http://localhost:3000/orders](http://localhost:3000/orders). The Orders an
 
 Open a second browser tab to confirm that both TopMenus show `Sessions: 2`; closing one returns the remaining tab to `Sessions: 1`. If the Socket.IO service is unavailable, the counter honestly displays `connecting`, `reconnecting`, or `unavailable` rather than a stale count.
 
+### JWT authentication demonstration
+
+`/settings` is the protected JWT demonstration route. Configure the three server-only authentication variables in the ignored local `.env` file, then open `/login` and sign in with the configured demonstration account. A successful login stores a signed, HTTP-only authentication cookie and redirects to `/settings`; logout clears that cookie and redirects to `/login`. Orders, Products, and their APIs intentionally remain public.
+
 ### Request-time Orders rendering
 
 `/orders` is a dynamic App Router Server Component: it waits for a request with `connection()`, reads initial Orders and Products through the existing server-only Drizzle helpers, and renders the existing workspace content into the initial HTML. Those values are an initial visual fallback, not RTK Query cache hydration; after hydration, RTK Query still owns its client queries, mutations, invalidation, and refetching. If the server read fails, the existing client loading and error flow remains available.
@@ -70,6 +74,9 @@ Open a second browser tab to confirm that both TopMenus show `Sessions: 2`; clos
 | `DATABASE_SSL_CA`       | Vercel Preview app             | Aiven project CA PEM for verified TLS. Use escaped `\n` characters when storing it as one environment value. |
 | `AIVEN_DATABASE_URL`    | `db:migrate:aiven` only        | Aiven URI targeting `/orders_hub` with `ssl-mode=REQUIRED`.                                                  |
 | `AIVEN_DATABASE_SSL_CA` | `db:migrate:aiven` only        | Aiven project CA PEM for verified TLS migrations.                                                            |
+| `AUTH_DEMO_USERNAME`    | Local app / Vercel Preview app | Server-only username for the single JWT demonstration account.                                               |
+| `AUTH_DEMO_PASSWORD`    | Local app / Vercel Preview app | Server-only password for the single JWT demonstration account.                                               |
+| `AUTH_JWT_SECRET`       | Local app / Vercel Preview app | Server-only HS256 signing secret; use at least 32 random bytes.                                              |
 
 Local Docker does not use `DATABASE_SSL_CA`, `AIVEN_DATABASE_URL`, or `AIVEN_DATABASE_SSL_CA`.
 
@@ -157,6 +164,8 @@ DATABASE_SSL_CA=-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----
 Do not configure `AIVEN_DATABASE_URL` or `AIVEN_DATABASE_SSL_CA` in Vercel: those variables exist only for manual migrations. Do not add a migration command to Vercel's build or deploy settings.
 
 Each pushed Git branch or pull request receives its own Vercel Preview URL. Open the deployment URL shown by Vercel for that branch; it serves the same Next.js application and connects to the configured persistent Preview database. Production deployment remains a separate pending task.
+
+Configure `AUTH_DEMO_USERNAME`, `AUTH_DEMO_PASSWORD`, and `AUTH_JWT_SECRET` as separate server-only variables in Vercel's **Preview** environment scope to test `/login` and the protected `/settings` route. Do not use `NEXT_PUBLIC_` prefixes or commit real authentication values. The Preview JWT flow has been verified; Orders, Products, and their APIs remain intentionally public.
 
 ## Scripts
 
