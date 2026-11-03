@@ -1,0 +1,289 @@
+.productsWorkspace {
+    max-width: none;
+    min-width: 0;
+    width: 100%;
+}
+
+.productsWorkspace__header {
+    gap: 52px;
+}
+
+.productsWorkspace__filters {
+    display: flex;
+    gap: 26px;
+}
+
+.productFilter {
+    align-items: center;
+    color: var(--muted);
+    display: flex;
+    font-size: 12px;
+    gap: 12px;
+}
+
+.productFilter :global(.form-select) {
+    background: #fff;
+    border: 1px solid #d5e0e4;
+    border-radius: 4px;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 700;
+    height: 30px;
+    padding: 0 28px 0 10px;
+    width: 190px;
+}
+
+.productsTable {
+    contain: layout;
+    display: block;
+    inline-size: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+}
+
+.productsTable table {
+    border-collapse: separate;
+    border-spacing: 0 7px;
+    min-width: 1680px;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.productsTable__col--product {
+    width: 300px;
+}
+
+.productsTable__col--status {
+    width: 110px;
+}
+
+.productsTable__col--warranty {
+    width: 160px;
+}
+
+.productsTable__col--condition {
+    width: 90px;
+}
+
+.productsTable__col--price {
+    width: 130px;
+}
+
+.productsTable__col--group {
+    width: 145px;
+}
+
+.productsTable__col--owner {
+    width: 180px;
+}
+
+.productsTable__col--order {
+    width: 300px;
+}
+
+.productsTable__col--orderDate {
+    width: 160px;
+}
+
+.productsTable__col--actions {
+    width: 92px;
+}
+
+.productsTable th {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 400;
+    padding: 0 24px 3px;
+    text-align: left;
+}
+
+.productsTable td {
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    border-top: 1px solid var(--line);
+    padding: 9px 24px;
+}
+
+.productsTable td:first-child {
+    border-bottom-left-radius: 4px;
+    border-left: 1px solid var(--line);
+    border-top-left-radius: 4px;
+}
+
+.productsTable td:last-child {
+    border-bottom-right-radius: 4px;
+    border-right: 1px solid var(--line);
+    border-top-right-radius: 4px;
+}
+
+.productRow__identity {
+    align-items: center;
+    display: flex;
+    gap: 20px;
+    min-width: 0;
+}
+
+.productRow__identity > div {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.productRow__identity strong {
+    font-size: 14px;
+    font-weight: 400;
+    overflow: hidden;
+    text-decoration: underline;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.productRow__identity span {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.productRow__warranty {
+    align-items: center;
+    display: grid;
+    font-size: 12px;
+    grid-template-columns: 30px max-content;
+    white-space: nowrap;
+}
+
+.productRow__price {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.productRow__price small,
+.productRow__warranty small {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.productRow__price span {
+    color: #526e7e;
+    font-size: 13px;
+}
+
+.productRow__order {
+    color: #597485;
+    font-size: 14px;
+    text-decoration: underline;
+}
+
+.productRow__orderTitle,
+.productRow__ownerText {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    overflow: hidden;
+}
+
+.productRow__owner {
+    min-width: 0;
+}
+
+.productRow__ownerText {
+    overflow-wrap: anywhere;
+}
+
+.productRow__date {
+    display: block;
+    white-space: nowrap;
+}
+
+.productRow__action {
+    padding-inline: 20px !important;
+    text-align: center;
+}
+
+.productsTable__skeletonRow td {
+    height: 70px;
+}
+
+.productRow__skeletonMark {
+    border-radius: 50%;
+    height: 38px;
+    width: 38px;
+}
+
+.productRow__skeletonTitle {
+    height: 16px;
+    width: 210px;
+}
+
+.productRow__skeletonSerial {
+    height: 12px;
+    margin-top: 7px;
+    width: 90px;
+}
+
+.productRow__skeletonStatus {
+    border-radius: 12px;
+    height: 22px;
+    width: 76px;
+}
+
+.productRow__skeletonWarranty {
+    height: 40px;
+    width: 120px;
+}
+
+.productRow__skeletonCondition {
+    height: 16px;
+    width: 48px;
+}
+
+.productRow__skeletonPrice {
+    height: 34px;
+    width: 82px;
+}
+
+.productRow__skeletonGroup,
+.productRow__skeletonOwner {
+    height: 16px;
+    width: 110px;
+}
+
+.productRow__skeletonOrder {
+    height: 30px;
+    width: 190px;
+}
+
+.productRow__skeletonDate {
+    height: 16px;
+    width: 110px;
+}
+
+.productRow__skeletonDelete {
+    margin: auto;
+}
+
+.productRow__warning {
+    color: #9c3a3a;
+    font-size: 13px;
+}
+
+@media (max-width: 760px) {
+    .productsWorkspace__header {
+        gap: 10px;
+    }
+
+    .productsWorkspace__filters {
+        gap: 10px;
+    }
+
+    .productFilter {
+        margin-left: auto;
+    }
+
+    .productFilter :global(.form-select) {
+        width: 125px;
+    }
+}

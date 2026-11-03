@@ -5,6 +5,8 @@ import { ModalDialog } from "@/components/ui/ModalDialog";
 import { ProductMark } from "@/components/ui/ProductMark";
 import { useTranslation } from "@/i18n/I18nProvider";
 import type { Product } from "@/types/domain";
+import formStyles from "./FormDialog.module.scss";
+import styles from "./ConfirmDeleteDialog.module.scss";
 
 interface ConfirmDeleteDialogProps {
     titleId: string;
@@ -33,14 +35,14 @@ export function ConfirmDeleteDialog({
 
     return (
         <ModalDialog
-            className="delete-modal"
+            className={styles.deleteModal}
             titleId={titleId}
             descriptionId={descriptionId}
             onClose={onCancel}
             fallbackFocus={fallbackFocus}
         >
             <button
-                className="delete-modal__close"
+                className={styles.deleteModal__close}
                 type="button"
                 onClick={onCancel}
                 aria-label={t.dialogs.closeConfirmation}
@@ -54,11 +56,11 @@ export function ConfirmDeleteDialog({
                     />
                 </svg>
             </button>
-            <div className="delete-modal__content">
+            <div className={styles.deleteModal__content}>
                 <h2 id={titleId}>{title}</h2>
                 <p id={descriptionId}>{description}</p>
                 {preview && (
-                    <div className="delete-modal__preview">
+                    <div className={styles.deleteModal__preview}>
                         <ProductMark status={preview.status} />
                         <div>
                             <strong>{preview.title}</strong>
@@ -67,21 +69,21 @@ export function ConfirmDeleteDialog({
                     </div>
                 )}
                 {error && (
-                    <p className="form-modal__error" role="alert">
+                    <p className={formStyles.formModal__error} role="alert">
                         {error}
                     </p>
                 )}
             </div>
-            <footer className="delete-modal__actions">
+            <footer className={styles.deleteModal__actions}>
                 <button
                     type="button"
-                    className="delete-modal__cancel"
+                    className={styles.deleteModal__cancel}
                     onClick={onCancel}
                     data-autofocus
                 >
                     {t.actions.cancel}
                 </button>
-                <button type="button" className="delete-modal__confirm" onClick={onConfirm}>
+                <button type="button" className={styles.deleteModal__confirm} onClick={onConfirm}>
                     {t.actions.delete}
                 </button>
             </footer>

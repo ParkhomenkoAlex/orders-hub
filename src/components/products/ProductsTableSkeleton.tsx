@@ -2,6 +2,7 @@
 
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useTranslation } from "@/i18n/I18nProvider";
+import styles from "./Products.module.scss";
 
 const SKELETON_ROWS = 5;
 
@@ -10,7 +11,7 @@ export function ProductsTableSkeleton() {
 
     return (
         <div
-            className="products-table table-responsive"
+            className={`${styles.productsTable} table-responsive`}
             aria-busy="true"
             aria-label={t.loading.products}
         >
@@ -19,16 +20,16 @@ export function ProductsTableSkeleton() {
             </p>
             <table className="mb-0" aria-hidden="true">
                 <colgroup>
-                    <col className="products-table__col--product" />
-                    <col className="products-table__col--status" />
-                    <col className="products-table__col--warranty" />
-                    <col className="products-table__col--condition" />
-                    <col className="products-table__col--price" />
-                    <col className="products-table__col--group" />
-                    <col className="products-table__col--owner" />
-                    <col className="products-table__col--order" />
-                    <col className="products-table__col--order-date" />
-                    <col className="products-table__col--actions" />
+                    <col className={styles["productsTable__col--product"]} />
+                    <col className={styles["productsTable__col--status"]} />
+                    <col className={styles["productsTable__col--warranty"]} />
+                    <col className={styles["productsTable__col--condition"]} />
+                    <col className={styles["productsTable__col--price"]} />
+                    <col className={styles["productsTable__col--group"]} />
+                    <col className={styles["productsTable__col--owner"]} />
+                    <col className={styles["productsTable__col--order"]} />
+                    <col className={styles["productsTable__col--orderDate"]} />
+                    <col className={styles["productsTable__col--actions"]} />
                 </colgroup>
                 <thead>
                     <tr>
@@ -48,42 +49,42 @@ export function ProductsTableSkeleton() {
                 </thead>
                 <tbody>
                     {Array.from({ length: SKELETON_ROWS }, (_, index) => (
-                        <tr key={index} className="products-table__skeleton-row">
+                        <tr key={index} className={styles.productsTable__skeletonRow}>
                             <td>
-                                <div className="product-row__identity">
-                                    <Skeleton className="skeleton--product-mark" />
+                                <div className={styles.productRow__identity}>
+                                    <Skeleton className={styles.productRow__skeletonMark} />
                                     <div>
-                                        <Skeleton className="skeleton--product-title" />
-                                        <Skeleton className="skeleton--product-serial" />
+                                        <Skeleton className={styles.productRow__skeletonTitle} />
+                                        <Skeleton className={styles.productRow__skeletonSerial} />
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <Skeleton className="skeleton--product-status" />
+                                <Skeleton className={styles.productRow__skeletonStatus} />
                             </td>
                             <td>
-                                <Skeleton className="skeleton--product-warranty" />
+                                <Skeleton className={styles.productRow__skeletonWarranty} />
                             </td>
                             <td>
-                                <Skeleton className="skeleton--product-condition" />
+                                <Skeleton className={styles.productRow__skeletonCondition} />
                             </td>
                             <td>
-                                <Skeleton className="skeleton--product-price" />
+                                <Skeleton className={styles.productRow__skeletonPrice} />
                             </td>
                             <td>
-                                <Skeleton className="skeleton--product-group" />
+                                <Skeleton className={styles.productRow__skeletonGroup} />
                             </td>
                             <td>
-                                <Skeleton className="skeleton--product-owner" />
+                                <Skeleton className={styles.productRow__skeletonOwner} />
                             </td>
                             <td>
-                                <Skeleton className="skeleton--product-order" />
+                                <Skeleton className={styles.productRow__skeletonOrder} />
                             </td>
                             <td>
-                                <Skeleton className="skeleton--product-date" />
+                                <Skeleton className={styles.productRow__skeletonDate} />
                             </td>
-                            <td className="product-row__action">
-                                <Skeleton className="skeleton--product-delete" />
+                            <td className={styles.productRow__action}>
+                                <Skeleton className={styles.productRow__skeletonDelete} />
                             </td>
                         </tr>
                     ))}

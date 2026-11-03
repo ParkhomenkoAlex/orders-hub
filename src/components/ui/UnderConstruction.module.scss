@@ -1,0 +1,17 @@
+.underConstruction__content {
+    background: #fff;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    padding: 64px 24px;
+    text-align: center;
+}
+
+.underConstruction__content h2 {
+    font-size: 21px;
+    margin: 18px 0 7px;
+}
+
+.underConstruction__content p {
+    color: var(--muted);
+    margin: 0;
+}

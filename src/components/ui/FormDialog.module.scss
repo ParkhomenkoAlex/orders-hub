@@ -1,0 +1,155 @@
+.formModal {
+    background: #fff;
+    border: 0;
+    border-radius: 5px;
+    box-shadow: 0 18px 45px rgba(34, 50, 59, 0.28);
+    max-width: 520px;
+    overflow: visible;
+    padding: 0;
+    position: relative;
+    width: calc(100% - 32px);
+}
+
+.formModal--product {
+    max-width: 650px;
+}
+
+.formModal::backdrop {
+    background: rgba(55, 79, 91, 0.54);
+}
+
+.formModal__content {
+    padding: 30px 36px;
+}
+
+.formModal__header {
+    border-bottom: 1px solid #e6ecee;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+}
+
+.formModal__header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 7px;
+}
+
+.formModal__header p {
+    color: #607783;
+    font-size: 14px;
+    margin: 0;
+}
+
+.formModal__grid {
+    display: grid;
+    gap: 16px 20px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.formModal__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.formModal__field--wide {
+    grid-column: 1 / -1;
+}
+
+.formModal__field label {
+    color: #526e7e;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.formModal__field :global(.form-control),
+.formModal__field :global(.form-select) {
+    border-color: #d5e0e4;
+    font-size: 14px;
+    min-height: 38px;
+}
+
+.formModal__error {
+    color: #d4404c;
+    font-size: 12px;
+    margin: 0;
+}
+
+.formModal__actions {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+    margin-top: 28px;
+}
+
+.formModal__cancel,
+.formModal__submit {
+    border: 0;
+    border-radius: 22px;
+    font-size: 13px;
+    font-weight: 700;
+    min-height: 40px;
+    padding: 0 20px;
+}
+
+.formModal__cancel {
+    background: #edf2f4;
+    color: #597485;
+    cursor: pointer;
+    transition:
+        background-color 180ms ease,
+        box-shadow 180ms ease,
+        color 180ms ease;
+}
+
+.formModal__cancel:hover,
+.formModal__cancel:focus-visible {
+    background: #dfe9ec;
+    box-shadow: inset 0 0 0 1px #c4d2d8;
+    color: #405b6a;
+}
+
+.formModal__submit {
+    background: var(--green);
+    color: #fff;
+    cursor: pointer;
+    transition:
+        background-color 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
+}
+
+.formModal__submit:hover,
+.formModal__submit:focus-visible {
+    background: var(--green-dark);
+    box-shadow: 0 3px 8px rgba(77, 124, 31, 0.24);
+}
+
+.formModal__submit:active {
+    transform: scale(0.98);
+}
+
+.formModal__cancel:disabled,
+.formModal__submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    transform: none;
+}
+
+@media (max-width: 760px) {
+    .formModal__content {
+        padding: 24px 20px;
+    }
+
+    .formModal__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .formModal__field--wide {
+        grid-column: auto;
+    }
+
+    .formModal__actions {
+        margin-top: 22px;
+    }
+}

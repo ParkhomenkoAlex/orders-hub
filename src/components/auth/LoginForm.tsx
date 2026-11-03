@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslation } from "@/i18n/I18nProvider";
+import styles from "./Auth.module.scss";
 
 interface LoginFormProps {
     hasError: boolean;
@@ -12,12 +13,12 @@ export function LoginForm({ hasError }: LoginFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     return (
-        <main className="auth-page">
-            <section className="auth-card" aria-labelledby="login-title">
+        <main className={styles.authPage}>
+            <section className={styles.authCard} aria-labelledby="login-title">
                 <h1 id="login-title">{t.auth.title}</h1>
                 <p>{t.auth.description}</p>
                 {hasError && (
-                    <p className="data-warning" role="alert">
+                    <p className={styles.authCard__warning} role="alert">
                         {t.auth.invalidCredentials}
                     </p>
                 )}
