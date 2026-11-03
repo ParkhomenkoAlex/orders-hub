@@ -76,6 +76,45 @@
     color: #9c3a3a;
     font-size: 13px;
 }
+.auth-page {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+}
+.auth-card,
+.auth-settings__content {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    box-shadow: 0 7px 19px rgba(42, 61, 70, 0.1);
+    max-width: 440px;
+    padding: 32px;
+    width: 100%;
+}
+.auth-card h1 {
+    font-size: 30px;
+    margin: 0 0 12px;
+}
+.auth-card p {
+    color: #537082;
+    margin-bottom: 24px;
+}
+.auth-card form {
+    display: grid;
+    gap: 8px;
+}
+.auth-card .form-label:not(:first-child) {
+    margin-top: 12px;
+}
+.auth-card button {
+    justify-self: start;
+    margin-top: 16px;
+}
+.auth-settings__content {
+    margin-top: -36px;
+}
 * {
     box-sizing: border-box;
 }

@@ -10,13 +10,33 @@ const getLongDateFormatter = (locale: Locale) =>
 const getShortDateFormatter = (locale: Locale) =>
     new Intl.DateTimeFormat(getIntlLocale(locale), { day: "2-digit", month: "2-digit" });
 
-const getCurrencyFormatter = (locale: Locale, currency: "USD" | "UAH") =>
-    new Intl.NumberFormat(getIntlLocale(locale), {
-        style: "currency",
-        currency,
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    });
+type Currency = "USD" | "UAH";
+
+interface CurrencyFormat {
+    decimalSeparator: string;
+    groupSeparator: string;
+    prefix?: string;
+    suffix?: string;
+}
+
+const currencyFormats: Record<Locale, Record<Currency, CurrencyFormat>> = {
+    en: {
+        USD: { decimalSeparator: ".", groupSeparator: ",", prefix: "US$" },
+        UAH: { decimalSeparator: ".", groupSeparator: ",", prefix: "UAH " },
+    },
+    ru: {
+        USD: { decimalSeparator: ",", groupSeparator: "\u00a0", suffix: " $" },
+        UAH: { decimalSeparator: ",", groupSeparator: "\u00a0", suffix: " грн." },
+    },
+};
+
+const formatCurrencyNumber = (value: number, format: CurrencyFormat) => {
+    const sign = value < 0 ? "-" : "";
+    const [whole, fraction] = Math.abs(value).toFixed(2).split(".");
+    const groupedWhole = whole.replace(/\B(?=(\d{3})+(?!\d))/g, format.groupSeparator);
+
+    return `${sign}${groupedWhole}${format.decimalSeparator}${fraction}`;
+};
 
 const toLocalDate = (value: string) => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
@@ -42,6 +62,11 @@ export const formatShortDate = (value: string, locale: Locale = DEFAULT_LOCALE) 
 
 export const formatCurrency = (
     value: number,
-    currency: "USD" | "UAH",
+    currency: Currency,
     locale: Locale = DEFAULT_LOCALE,
-) => getCurrencyFormatter(locale, currency).format(value);
+) => {
+    const format = currencyFormats[locale][currency];
+    const amount = formatCurrencyNumber(value, format);
+
+    return `${format.prefix ?? ""}${amount}${format.suffix ?? ""}`;
+};

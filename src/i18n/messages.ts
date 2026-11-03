@@ -9,6 +9,19 @@ export const en = {
     language: {
         label: "Language",
     },
+    auth: {
+        title: "Sign in",
+        description: "Use the configured demonstration account to access protected settings.",
+        username: "Username",
+        password: "Password",
+        signIn: "Sign in",
+        signingIn: "Signing in…",
+        invalidCredentials: "Invalid username or password.",
+        settingsTitle: "Protected settings",
+        settingsDescription: "This page is protected by a signed JWT demonstration session.",
+        signedInAs: "Signed in as",
+        logout: "Log out",
+    },
     navigation: {
         orders: "Orders",
         groups: "Groups",
@@ -160,6 +173,20 @@ const ru = {
     },
     language: {
         label: "Язык",
+    },
+    auth: {
+        title: "Вход",
+        description:
+            "Используйте настроенную демонстрационную учётную запись для доступа к защищённым настройкам.",
+        username: "Имя пользователя",
+        password: "Пароль",
+        signIn: "Войти",
+        signingIn: "Выполняется вход…",
+        invalidCredentials: "Неверное имя пользователя или пароль.",
+        settingsTitle: "Защищённые настройки",
+        settingsDescription: "Эта страница защищена демонстрационной сессией с подписанным JWT.",
+        signedInAs: "Вы вошли как",
+        logout: "Выйти",
     },
     navigation: {
         orders: "Приходы",
