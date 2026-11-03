@@ -412,6 +412,44 @@ select:disabled {
     align-self: start;
     position: relative;
 }
+.order-details--skeleton {
+    min-height: 245px;
+    pointer-events: none;
+}
+.skeleton--details-title {
+    height: 24px;
+    width: 58%;
+}
+.skeleton--details-action {
+    height: 18px;
+    margin-top: 22px;
+    width: 128px;
+}
+.skeleton--details-mark {
+    border-radius: 50%;
+    height: 10px;
+    width: 10px;
+}
+.skeleton--details-product {
+    height: 16px;
+    width: min(180px, 100%);
+}
+.skeleton--details-serial {
+    height: 12px;
+    margin-top: 6px;
+    width: 86px;
+}
+.skeleton--details-status {
+    border-radius: 12px;
+    height: 22px;
+    width: 76px;
+}
+.skeleton--details-delete {
+    border-radius: 50%;
+    height: 32px;
+    justify-self: end;
+    width: 32px;
+}
 .order-details__close,
 .delete-modal__close {
     align-items: center;

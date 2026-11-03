@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "@/i18n/I18nProvider";
 import { filterOrders, groupProductsByOrderId } from "@/lib/order-domain";
@@ -17,13 +18,21 @@ import type { Order, Product, ProductDraft } from "@/types/domain";
 import { AddOrderDialog } from "./AddOrderDialog";
 import { AddProductDialog } from "./AddProductDialog";
 import { DeleteOrderModal } from "./DeleteOrderModal";
-import { OrderDetails } from "./OrderDetails";
+import { OrderDetailsSkeleton } from "./OrderDetailsSkeleton";
 import { OrderList } from "./OrderList";
 import { OrdersListSkeleton } from "./OrdersListSkeleton";
 import { DeleteProductModal } from "../products/DeleteProductModal";
 
 const EMPTY_ORDERS: Order[] = [];
 const EMPTY_PRODUCTS: Product[] = [];
+const OrderDetails = dynamic(
+    () =>
+        import("./OrderDetails").then(({ OrderDetails: LoadedOrderDetails }) => LoadedOrderDetails),
+    {
+        loading: OrderDetailsSkeleton,
+        ssr: false,
+    },
+);
 
 interface OrdersWorkspaceProps {
     initialOrders?: Order[];
