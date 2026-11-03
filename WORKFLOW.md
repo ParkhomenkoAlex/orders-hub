@@ -90,6 +90,8 @@ The written requirements in `REQUIREMENTS.md` are cumulative and mandatory acros
 - [x] Phase D i18n verification passed: typed English (`en`) and Russian (`ru`) catalogs, a React Context provider, and a cookie-backed locale preference initialize the root document and client with the same locale. Layout, Orders, and Products update immediately on language changes; dates, currencies, validation, plural forms, and accessible labels are localized. `Inventory` and `Orders Hub` remain brand names.
 - [x] Phase D Web Storage verification passed: the Products Type filter persists only canonical ProductType values through native `localStorage`, restores after refresh and navigation, clears storage for `all`, and safely rejects invalid values or unavailable storage. The Specification filter remains session-local.
 - [x] Phase D i18n and Web Storage validation passed: 64 unit tests, TypeScript, ESLint, Prettier, and the production build completed successfully; manual browser checks confirmed language switching, cookie persistence, localized Layout/Orders/Products behavior, and Type-filter restoration without regressions.
+- [x] Phase D JWT implementation verification passed: a server-only HS256 `jose` token with issuer, audience, issued-at, and eight-hour expiry is issued only after timing-safe verification of one configured demonstration account. Same-origin form login and logout use an HTTP-only, `SameSite=Lax` cookie; `/settings` verifies the JWT server-side and redirects anonymous, invalid, or expired sessions to `/login`. Orders and Products intentionally remain public. TypeScript, ESLint, Prettier, production build, and 80 unit tests passed; browser verification remains pending.
+- [~] JWT limitation: logout clears the browser cookie but cannot revoke a copied stateless JWT before its eight-hour expiration. This focused demonstration has no user database, registration, roles, refresh tokens, or inventory API authorization.
 
 ### Security note
 
@@ -209,7 +211,7 @@ Local Docker MySQL and remote Preview MySQL are separate environments. The deplo
 - [x] SSR via Next.js: `/orders` uses `connection()` for request-time rendering, loads initial Orders and Products through server-only helpers, and renders the existing workspace content into the initial HTML. The initial data is not hydrated into the RTK Query cache; after hydration, existing RTK Query queries, mutations, invalidation, and refetching remain authoritative.
 - [x] Unit-test foundation: recorded verification covers domain, state, validation, API-route, RTK Query, database-connection, SSR, i18n, Web Storage, and focused component contracts; 64 unit tests passed.
 - [x] i18n demonstration: English and Russian catalogs use typed React Context, a cookie-backed SSR-safe initial locale, and immediate switching across Layout, Orders, and Products. `Inventory` and `Orders Hub` remain untranslated brand names.
-- [ ] Minimal real JWT authentication demonstration: signed server-only token, login/logout, and one protected route; do not expose secrets in the browser.
+- [x] Minimal real JWT authentication demonstration: server-only `jose` HS256 signing and verification require configured credentials and a 32-byte-or-longer secret; login/logout use a secure HTTP-only cookie, and `/settings` is protected by server-side signature, issuer, audience, and expiration checks. Orders and Products remain intentionally public; browser verification is pending.
 - [x] Web Storage demonstration: native `localStorage` persists the canonical Products Type filter value, restores it after refresh/navigation, removes it for `all`, and safely falls back for invalid or unavailable storage. The Specification filter is intentionally not persisted.
 - [ ] Lazy-loaded noncritical demonstration feature, preferably shared with analytics.
 - [ ] Chart based on live Orders/Products data.
@@ -280,9 +282,9 @@ Add unit, integration, E2E, API, Socket.IO, and Docker commands only when their 
 
 ## Next actionable task
 
-**Phase D — add a minimal real JWT authentication demonstration with a signed server-only token, login/logout, and one protected route.**
+**Phase D — add a lazy-loaded noncritical demonstration feature, preferably shared with analytics.**
 
-The database schema deliverable, C.5 active-session counter, SSR, i18n, and Web Storage deliverables are complete; the next incomplete roadmap work is the remaining Junior+ demonstrations in Phase D.
+The database schema deliverable, C.5 active-session counter, SSR, i18n, Web Storage, and JWT implementation deliverables are complete; the next incomplete roadmap work is the remaining Junior+ demonstrations in Phase D.
 
 ## Progress update template
 
