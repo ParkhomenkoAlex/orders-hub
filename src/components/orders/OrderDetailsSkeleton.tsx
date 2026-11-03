@@ -2,6 +2,7 @@
 
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useTranslation } from "@/i18n/I18nProvider";
+import styles from "./Orders.module.scss";
 
 const SKELETON_ROWS = 3;
 
@@ -11,27 +12,27 @@ export function OrderDetailsSkeleton() {
     return (
         <section
             id="order-details"
-            className="order-details order-details--skeleton"
+            className={`${styles.orderDetails} ${styles["orderDetails--skeleton"]}`}
             aria-busy="true"
             aria-label={t.loading.orders}
         >
             <p className="visually-hidden" role="status">
                 {t.loading.orders}
             </p>
-            <div className="order-details__heading" aria-hidden="true">
-                <Skeleton className="skeleton--details-title" />
-                <Skeleton className="skeleton--details-action" />
+            <div className={styles.orderDetails__heading} aria-hidden="true">
+                <Skeleton className={styles.orderDetails__skeletonTitle} />
+                <Skeleton className={styles.orderDetails__skeletonAction} />
             </div>
-            <ul className="order-details__products" aria-hidden="true">
+            <ul className={styles.orderDetails__products} aria-hidden="true">
                 {Array.from({ length: SKELETON_ROWS }, (_, index) => (
-                    <li key={index} className="order-details__product">
-                        <Skeleton className="skeleton--details-mark" />
-                        <div className="order-details__identity">
-                            <Skeleton className="skeleton--details-product" />
-                            <Skeleton className="skeleton--details-serial" />
+                    <li key={index} className={styles.orderDetails__product}>
+                        <Skeleton className={styles.orderDetails__skeletonMark} />
+                        <div className={styles.orderDetails__identity}>
+                            <Skeleton className={styles.orderDetails__skeletonProduct} />
+                            <Skeleton className={styles.orderDetails__skeletonSerial} />
                         </div>
-                        <Skeleton className="skeleton--details-status" />
-                        <Skeleton className="skeleton--details-delete" />
+                        <Skeleton className={styles.orderDetails__skeletonStatus} />
+                        <Skeleton className={styles.orderDetails__skeletonDelete} />
                     </li>
                 ))}
             </ul>

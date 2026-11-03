@@ -3,5 +3,6 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ className = "" }: SkeletonProps) {
-    return <span className={`skeleton ${className}`} aria-hidden="true" />;
+    return <span className={`${styles.skeleton} ${className}`} aria-hidden="true" />;
 }
+import styles from "./Skeleton.module.scss";

@@ -8,6 +8,8 @@ import type { Locale } from "@/i18n/config";
 import type { Messages } from "@/i18n/messages";
 import type { Order, Product } from "@/types/domain";
 import { InventoryIcon, TrashIcon } from "@/components/ui/Icons";
+import workspaceStyles from "@/components/ui/Workspace.module.scss";
+import styles from "./Orders.module.scss";
 
 interface OrderListProps {
     orders: Order[];
@@ -36,14 +38,14 @@ export function OrderList({
 
     if (!orders.length)
         return (
-            <div className="empty-state">
+            <div className={workspaceStyles.emptyState}>
                 <span>✓</span>
                 <h2>{hasOrders ? t.orders.noMatches : t.orders.noOrders}</h2>
                 <p>{hasOrders ? t.orders.noMatchesHint : t.orders.noOrdersHint}</p>
             </div>
         );
     return (
-        <div className="orders-list">
+        <div className={styles.ordersList}>
             {orders.map((order) => {
                 const orderProducts = productsByOrderId.get(order.id) ?? [];
                 const total = getOrderTotal(orderProducts);
@@ -51,11 +53,11 @@ export function OrderList({
                 return (
                     <article
                         key={order.id}
-                        className={`order-card ${isSelected ? "order-card--selected" : ""}`}
+                        className={`${styles.orderCard} ${isSelected ? styles["orderCard--selected"] : ""}`}
                     >
                         <button
                             type="button"
-                            className="order-card__select"
+                            className={styles.orderCard__select}
                             onClick={() => onSelect(order.id)}
                             aria-expanded={isSelected}
                             aria-label={(isSelected
@@ -65,9 +67,9 @@ export function OrderList({
                             aria-controls={isSelected ? "order-details" : undefined}
                             data-order-id={order.id}
                         >
-                            <span className="order-card__title">{order.title}</span>
-                            <span className="order-card__products">
-                                <span className="order-card__list-icon">
+                            <span className={styles.orderCard__title}>{order.title}</span>
+                            <span className={styles.orderCard__products}>
+                                <span className={styles.orderCard__listIcon}>
                                     <InventoryIcon />
                                 </span>
                                 <span>
@@ -81,17 +83,17 @@ export function OrderList({
                                     </small>
                                 </span>
                             </span>
-                            <span className="order-card__date">
+                            <span className={styles.orderCard__date}>
                                 <small>{formatShortDate(order.createdAt, locale)}</small>
                                 {formatLongDate(order.createdAt, locale)}
                             </span>
-                            <span className="order-card__total">
+                            <span className={styles.orderCard__total}>
                                 <small>{formatCurrency(total.usd, "USD", locale)}</small>
                                 {formatCurrency(total.uah, "UAH", locale)}
                             </span>
                         </button>
                         <button
-                            className="order-card__delete"
+                            className={styles.orderCard__delete}
                             type="button"
                             onClick={() => onDelete(order.id)}
                             aria-label={t.orders.deleteLabel.replace("{title}", order.title)}

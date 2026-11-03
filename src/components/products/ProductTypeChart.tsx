@@ -28,17 +28,24 @@ export function ProductTypeChart({
 
     if (isLoading) {
         return (
-            <section className={styles.chart} aria-busy="true" aria-label={t.charts.loading}>
+            <section
+                className={styles.productTypeChart}
+                aria-busy="true"
+                aria-label={t.charts.loading}
+            >
                 <p className="visually-hidden" role="status">
                     {t.charts.loading}
                 </p>
                 <h2>{t.charts.productTypeTitle}</h2>
-                <div className={styles.bars} aria-hidden="true">
+                <div className={styles.productTypeChart__bars} aria-hidden="true">
                     {Array.from({ length: 4 }, (_, index) => (
-                        <div key={index} className={`${styles.bar} ${styles.skeletonBar}`}>
-                            <Skeleton className={styles.valueSkeleton} />
-                            <Skeleton className={styles.columnSkeleton} />
-                            <Skeleton className={styles.labelSkeleton} />
+                        <div
+                            key={index}
+                            className={`${styles.productTypeChart__bar} ${styles["productTypeChart__bar--skeleton"]}`}
+                        >
+                            <Skeleton className={styles.productTypeChart__valueSkeleton} />
+                            <Skeleton className={styles.productTypeChart__columnSkeleton} />
+                            <Skeleton className={styles.productTypeChart__labelSkeleton} />
                         </div>
                     ))}
                 </div>
@@ -48,9 +55,9 @@ export function ProductTypeChart({
 
     if (isError) {
         return (
-            <section className={styles.chart} aria-labelledby="product-type-chart-title">
+            <section className={styles.productTypeChart} aria-labelledby="product-type-chart-title">
                 <h2 id="product-type-chart-title">{t.charts.productTypeTitle}</h2>
-                <p className={styles.message} role="status">
+                <p className={styles.productTypeChart__message} role="status">
                     {t.charts.unavailable}
                 </p>
             </section>
@@ -62,27 +69,27 @@ export function ProductTypeChart({
 
     if (maxCount === 0) {
         return (
-            <section className={styles.chart} aria-labelledby="product-type-chart-title">
+            <section className={styles.productTypeChart} aria-labelledby="product-type-chart-title">
                 <h2 id="product-type-chart-title">{t.charts.productTypeTitle}</h2>
-                <p className={styles.message}>{t.charts.empty}</p>
+                <p className={styles.productTypeChart__message}>{t.charts.empty}</p>
             </section>
         );
     }
 
     return (
-        <section className={styles.chart} aria-labelledby="product-type-chart-title">
-            <div className={styles.header}>
+        <section className={styles.productTypeChart} aria-labelledby="product-type-chart-title">
+            <div className={styles.productTypeChart__header}>
                 <div>
                     <h2 id="product-type-chart-title">{t.charts.productTypeTitle}</h2>
                     <p>{t.charts.productTypeDescription}</p>
                 </div>
                 {activeType !== "all" && (
-                    <p className={styles.selection} role="status">
+                    <p className={styles.productTypeChart__selection} role="status">
                         {t.charts.selected.replace("{type}", t.productTypes[activeType])}
                     </p>
                 )}
             </div>
-            <div className={styles.bars} role="list">
+            <div className={styles.productTypeChart__bars} role="list">
                 {typeCounts.map(({ type, count }) => {
                     const height = getProductTypeBarHeight(count, maxCount);
                     const label = t.productTypes[type];
@@ -92,7 +99,9 @@ export function ProductTypeChart({
                         <div key={type} role="listitem">
                             <button
                                 type="button"
-                                className={`${styles.bar} ${isSelected ? styles.selectedBar : ""}`}
+                                className={`${styles.productTypeChart__bar} ${
+                                    isSelected ? styles["productTypeChart__bar--selected"] : ""
+                                }`}
                                 aria-pressed={isSelected}
                                 aria-label={t.charts.barLabel
                                     .replace("{type}", label)
@@ -100,10 +109,13 @@ export function ProductTypeChart({
                                 onClick={() => onTypeSelect(isSelected ? "all" : type)}
                             >
                                 <strong>{count}</strong>
-                                <span className={styles.column} aria-hidden="true">
+                                <span
+                                    className={styles.productTypeChart__column}
+                                    aria-hidden="true"
+                                >
                                     {count > 0 && (
                                         <span
-                                            className={styles.fill}
+                                            className={styles.productTypeChart__fill}
                                             style={
                                                 {
                                                     "--product-chart-height": `${height}%`,

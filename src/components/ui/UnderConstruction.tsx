@@ -1,3 +1,6 @@
+import workspaceStyles from "./Workspace.module.scss";
+import styles from "./UnderConstruction.module.scss";
+
 interface UnderConstructionProps {
     title: string;
 }
@@ -5,13 +8,13 @@ interface UnderConstructionProps {
 export function UnderConstruction({ title }: UnderConstructionProps) {
     return (
         <section
-            className="page-workspace under-construction"
+            className={workspaceStyles.pageWorkspace}
             aria-labelledby="under-construction-title"
         >
-            <header className="page-workspace__header">
+            <header className={workspaceStyles.pageWorkspace__header}>
                 <h1 id="under-construction-title">{title}</h1>
             </header>
-            <div className="under-construction__content">
+            <div className={styles.underConstruction__content}>
                 <h2>Page under construction</h2>
                 <p>This dashboard section will be available in a future development phase.</p>
             </div>

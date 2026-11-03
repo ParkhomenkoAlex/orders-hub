@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { ModalDialog } from "@/components/ui/ModalDialog";
 import { useTranslation } from "@/i18n/I18nProvider";
+import styles from "@/components/ui/FormDialog.module.scss";
 
 interface AddOrderDialogProps {
     error?: string | null;
@@ -29,18 +30,18 @@ export function AddOrderDialog({ error: apiError, onCancel, onCreate }: AddOrder
 
     return (
         <ModalDialog
-            className="form-modal"
+            className={styles.formModal}
             titleId="add-order-title"
             descriptionId="add-order-description"
             onClose={onCancel}
         >
-            <div className="form-modal__content">
-                <header className="form-modal__header">
+            <div className={styles.formModal__content}>
+                <header className={styles.formModal__header}>
                     <h2 id="add-order-title">{t.dialogs.addOrderTitle}</h2>
                     <p id="add-order-description">{t.dialogs.addOrderDescription}</p>
                 </header>
                 <form onSubmit={handleSubmit} noValidate>
-                    <div className="form-modal__field">
+                    <div className={styles.formModal__field}>
                         <label htmlFor="order-title">{t.dialogs.orderTitle}</label>
                         <input
                             id="order-title"
@@ -56,21 +57,29 @@ export function AddOrderDialog({ error: apiError, onCancel, onCreate }: AddOrder
                             data-autofocus
                         />
                         {hasTitleError && (
-                            <p id="order-title-error" className="form-modal__error" role="alert">
+                            <p
+                                id="order-title-error"
+                                className={styles.formModal__error}
+                                role="alert"
+                            >
                                 {t.validation.orderTitleRequired}
                             </p>
                         )}
                     </div>
                     {apiError && (
-                        <p className="form-modal__error" role="alert">
+                        <p className={styles.formModal__error} role="alert">
                             {apiError}
                         </p>
                     )}
-                    <footer className="form-modal__actions">
-                        <button type="button" className="form-modal__cancel" onClick={onCancel}>
+                    <footer className={styles.formModal__actions}>
+                        <button
+                            type="button"
+                            className={styles.formModal__cancel}
+                            onClick={onCancel}
+                        >
                             {t.actions.cancel}
                         </button>
-                        <button type="submit" className="form-modal__submit">
+                        <button type="submit" className={styles.formModal__submit}>
                             {t.dialogs.createOrder}
                         </button>
                     </footer>

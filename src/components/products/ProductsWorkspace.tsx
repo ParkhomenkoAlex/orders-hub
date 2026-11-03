@@ -16,6 +16,11 @@ import { useAppSelector } from "@/state/hooks";
 import type { Order, Product, ProductType } from "@/types/domain";
 import { DeleteProductModal } from "./DeleteProductModal";
 import { ProductTypeChart } from "./ProductTypeChart";
+import formStyles from "@/components/ui/FormDialog.module.scss";
+import iconStyles from "@/components/ui/IconButton.module.scss";
+import statusStyles from "@/components/ui/Status.module.scss";
+import workspaceStyles from "@/components/ui/Workspace.module.scss";
+import styles from "./Products.module.scss";
 import { ProductsTableSkeleton } from "./ProductsTableSkeleton";
 import {
     isProductType,
@@ -81,14 +86,19 @@ export function ProductsWorkspace() {
     }, [activeType, isTypeFilterRestored]);
 
     return (
-        <div ref={catalogRef} className="page-workspace products-workspace">
-            <header className="page-workspace__header">
+        <div
+            ref={catalogRef}
+            className={`${workspaceStyles.pageWorkspace} ${styles.productsWorkspace}`}
+        >
+            <header
+                className={`${workspaceStyles.pageWorkspace__header} ${styles.productsWorkspace__header}`}
+            >
                 <h1>
                     {t.products.title}{" "}
                     <span>/ {productsQuery.data === undefined ? "—" : visibleProducts.length}</span>
                 </h1>
-                <div className="products-workspace__filters">
-                    <label className="product-filter" htmlFor="product-type">
+                <div className={styles.productsWorkspace__filters}>
+                    <label className={styles.productFilter} htmlFor="product-type">
                         {t.products.type}
                         <select
                             id="product-type"
@@ -109,7 +119,7 @@ export function ProductsWorkspace() {
                             ))}
                         </select>
                     </label>
-                    <label className="product-filter" htmlFor="product-specification">
+                    <label className={styles.productFilter} htmlFor="product-specification">
                         {t.products.specification}
                         <select
                             id="product-specification"
@@ -130,13 +140,13 @@ export function ProductsWorkspace() {
             {isInitialLoading ? (
                 <ProductsTableSkeleton />
             ) : productsQuery.isError || ordersQuery.isError ? (
-                <div className="empty-state">
+                <div className={workspaceStyles.emptyState}>
                     <span>!</span>
                     <h2>{t.errors.loadProducts}</h2>
                     <p>{t.errors.connection}</p>
                     <button
                         type="button"
-                        className="form-modal__submit"
+                        className={formStyles.formModal__submit}
                         onClick={() => {
                             void productsQuery.refetch();
                             void ordersQuery.refetch();
@@ -146,19 +156,19 @@ export function ProductsWorkspace() {
                     </button>
                 </div>
             ) : visibleProducts.length ? (
-                <div className="products-table table-responsive">
+                <div className={`${styles.productsTable} table-responsive`}>
                     <table ref={tableRef} className="mb-0">
                         <colgroup>
-                            <col className="products-table__col--product" />
-                            <col className="products-table__col--status" />
-                            <col className="products-table__col--warranty" />
-                            <col className="products-table__col--condition" />
-                            <col className="products-table__col--price" />
-                            <col className="products-table__col--group" />
-                            <col className="products-table__col--owner" />
-                            <col className="products-table__col--order" />
-                            <col className="products-table__col--order-date" />
-                            <col className="products-table__col--actions" />
+                            <col className={styles["productsTable__col--product"]} />
+                            <col className={styles["productsTable__col--status"]} />
+                            <col className={styles["productsTable__col--warranty"]} />
+                            <col className={styles["productsTable__col--condition"]} />
+                            <col className={styles["productsTable__col--price"]} />
+                            <col className={styles["productsTable__col--group"]} />
+                            <col className={styles["productsTable__col--owner"]} />
+                            <col className={styles["productsTable__col--order"]} />
+                            <col className={styles["productsTable__col--orderDate"]} />
+                            <col className={styles["productsTable__col--actions"]} />
                         </colgroup>
                         <thead>
                             <tr>
@@ -182,7 +192,7 @@ export function ProductsWorkspace() {
                                 return (
                                     <tr key={product.id}>
                                         <td>
-                                            <div className="product-row__identity">
+                                            <div className={styles.productRow__identity}>
                                                 <ProductMark status={product.status} />
                                                 <div>
                                                     <strong>{product.title}</strong>
@@ -192,13 +202,19 @@ export function ProductsWorkspace() {
                                         </td>
                                         <td>
                                             <span
-                                                className={`status status--${product.status.toLowerCase().replace(" ", "-")}`}
+                                                className={`${statusStyles.status} ${
+                                                    product.status === "In service"
+                                                        ? statusStyles["status--inService"]
+                                                        : product.status === "Reserved"
+                                                          ? statusStyles["status--reserved"]
+                                                          : statusStyles["status--available"]
+                                                }`}
                                             >
                                                 {t.productStatuses[product.status]}
                                             </span>
                                         </td>
                                         <td>
-                                            <div className="product-row__warranty">
+                                            <div className={styles.productRow__warranty}>
                                                 <small>{t.products.from}</small>
                                                 <span>
                                                     {formatLongDate(product.warranty.start, locale)}
@@ -211,7 +227,7 @@ export function ProductsWorkspace() {
                                         </td>
                                         <td>{t.productConditions[product.condition]}</td>
                                         <td>
-                                            <div className="product-row__price">
+                                            <div className={styles.productRow__price}>
                                                 <small>
                                                     {formatCurrency(
                                                         product.price.usd,
@@ -228,19 +244,21 @@ export function ProductsWorkspace() {
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="product-row__order">{product.groupName}</td>
-                                        <td className="product-row__owner">
+                                        <td className={styles.productRow__order}>
+                                            {product.groupName}
+                                        </td>
+                                        <td className={styles.productRow__owner}>
                                             <span
-                                                className="product-row__owner-text"
+                                                className={styles.productRow__ownerText}
                                                 title={product.ownerName ?? undefined}
                                             >
                                                 {product.ownerName ?? "—"}
                                             </span>
                                         </td>
-                                        <td className="product-row__order">
-                                            <span className="product-row__order-title">
+                                        <td className={styles.productRow__order}>
+                                            <span className={styles.productRow__orderTitle}>
                                                 {order?.title ?? (
-                                                    <span className="data-warning">
+                                                    <span className={styles.productRow__warning}>
                                                         {t.products.missingOrder}
                                                     </span>
                                                 )}
@@ -248,7 +266,7 @@ export function ProductsWorkspace() {
                                         </td>
                                         <td>
                                             <time
-                                                className="product-row__date"
+                                                className={styles.productRow__date}
                                                 dateTime={order?.createdAt}
                                             >
                                                 {order
@@ -256,10 +274,10 @@ export function ProductsWorkspace() {
                                                     : "—"}
                                             </time>
                                         </td>
-                                        <td className="product-row__action">
+                                        <td className={styles.productRow__action}>
                                             <button
                                                 type="button"
-                                                className="icon-button icon-button--delete"
+                                                className={`${iconStyles.iconButton} ${iconStyles["iconButton--delete"]}`}
                                                 onClick={() => {
                                                     setDeleteProductError(false);
                                                     setPendingProduct(product);
@@ -279,7 +297,7 @@ export function ProductsWorkspace() {
                     </table>
                 </div>
             ) : (
-                <div className="empty-state">
+                <div className={workspaceStyles.emptyState}>
                     <span>⌕</span>
                     <h2>{hasFilters ? t.products.noMatches : t.products.noProducts}</h2>
                     <p>{hasFilters ? t.products.noMatchesHint : t.products.noProductsHint}</p>

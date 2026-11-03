@@ -2,6 +2,7 @@
 
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useTranslation } from "@/i18n/I18nProvider";
+import styles from "./Orders.module.scss";
 
 const SKELETON_ROWS = 5;
 
@@ -9,31 +10,39 @@ export function OrdersListSkeleton() {
     const { t } = useTranslation();
 
     return (
-        <section className="orders-list" aria-busy="true" aria-label={t.loading.orders}>
+        <section className={styles.ordersList} aria-busy="true" aria-label={t.loading.orders}>
             <p className="visually-hidden" role="status">
                 {t.loading.orders}
             </p>
             {Array.from({ length: SKELETON_ROWS }, (_, index) => (
-                <article key={index} className="order-card order-card--skeleton" aria-hidden="true">
-                    <div className="order-card__select">
-                        <Skeleton className="skeleton--order-title" />
-                        <span className="order-card__products">
-                            <Skeleton className="skeleton--order-icon" />
+                <article
+                    key={index}
+                    className={`${styles.orderCard} ${styles["orderCard--skeleton"]}`}
+                    aria-hidden="true"
+                >
+                    <div className={styles.orderCard__select}>
+                        <Skeleton className={styles.orderCard__skeletonTitle} />
+                        <span className={styles.orderCard__products}>
+                            <Skeleton className={styles.orderCard__skeletonIcon} />
                             <span>
-                                <Skeleton className="skeleton--order-count" />
-                                <Skeleton className="skeleton--order-label" />
+                                <Skeleton className={styles.orderCard__skeletonCount} />
+                                <Skeleton className={styles.orderCard__skeletonLabel} />
                             </span>
                         </span>
-                        <span className="order-card__date">
-                            <Skeleton className="skeleton--order-date" />
-                            <Skeleton className="skeleton--order-date skeleton--order-date-short" />
+                        <span className={styles.orderCard__date}>
+                            <Skeleton className={styles.orderCard__skeletonDate} />
+                            <Skeleton
+                                className={`${styles.orderCard__skeletonDate} ${styles["orderCard__skeletonDate--short"]}`}
+                            />
                         </span>
-                        <span className="order-card__total">
-                            <Skeleton className="skeleton--order-total" />
-                            <Skeleton className="skeleton--order-total skeleton--order-total-short" />
+                        <span className={styles.orderCard__total}>
+                            <Skeleton className={styles.orderCard__skeletonTotal} />
+                            <Skeleton
+                                className={`${styles.orderCard__skeletonTotal} ${styles["orderCard__skeletonTotal--short"]}`}
+                            />
                         </span>
                     </div>
-                    <Skeleton className="skeleton--order-delete" />
+                    <Skeleton className={styles.orderCard__skeletonDelete} />
                 </article>
             ))}
         </section>

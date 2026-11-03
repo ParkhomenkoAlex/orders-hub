@@ -5,6 +5,7 @@ import { ModalDialog } from "@/components/ui/ModalDialog";
 import { useTranslation } from "@/i18n/I18nProvider";
 import { PRODUCT_TYPES } from "@/lib/order-domain";
 import type { ProductDraft, ProductStatus, ProductType } from "@/types/domain";
+import styles from "@/components/ui/FormDialog.module.scss";
 
 const PRODUCT_STATUSES: readonly ProductStatus[] = ["Available", "In service", "Reserved"];
 
@@ -115,21 +116,23 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
 
     return (
         <ModalDialog
-            className="form-modal form-modal--product"
+            className={`${styles.formModal} ${styles["formModal--product"]}`}
             titleId="add-product-title"
             descriptionId="add-product-description"
             onClose={onCancel}
         >
-            <div className="form-modal__content">
-                <header className="form-modal__header">
+            <div className={styles.formModal__content}>
+                <header className={styles.formModal__header}>
                     <h2 id="add-product-title">{t.dialogs.addProductTitle}</h2>
                     <p id="add-product-description">
                         {t.dialogs.addProductDescription.replace("{orderTitle}", orderTitle)}
                     </p>
                 </header>
                 <form onSubmit={handleSubmit} noValidate>
-                    <div className="form-modal__grid">
-                        <div className="form-modal__field form-modal__field--wide">
+                    <div className={styles.formModal__grid}>
+                        <div
+                            className={`${styles.formModal__field} ${styles["formModal__field--wide"]}`}
+                        >
                             <label htmlFor="product-title">{t.dialogs.productTitle}</label>
                             <input
                                 id="product-title"
@@ -142,12 +145,12 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                                 data-autofocus
                             />
                             {errors.title && (
-                                <p id="product-title-error" className="form-modal__error">
+                                <p id="product-title-error" className={styles.formModal__error}>
                                     {t.validation[errors.title]}
                                 </p>
                             )}
                         </div>
-                        <div className="form-modal__field">
+                        <div className={styles.formModal__field}>
                             <label htmlFor="product-serial">{t.dialogs.serialNumber}</label>
                             <input
                                 id="product-serial"
@@ -163,12 +166,12 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                                 }
                             />
                             {errors.serialNumber && (
-                                <p id="product-serial-error" className="form-modal__error">
+                                <p id="product-serial-error" className={styles.formModal__error}>
                                     {t.validation[errors.serialNumber]}
                                 </p>
                             )}
                         </div>
-                        <div className="form-modal__field">
+                        <div className={styles.formModal__field}>
                             <label htmlFor="product-specification">
                                 {t.products.specification}
                             </label>
@@ -181,7 +184,7 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                                 }
                             />
                         </div>
-                        <div className="form-modal__field">
+                        <div className={styles.formModal__field}>
                             <label htmlFor="product-type">{t.dialogs.productType}</label>
                             <select
                                 id="product-type"
@@ -200,7 +203,7 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                                 ))}
                             </select>
                         </div>
-                        <div className="form-modal__field">
+                        <div className={styles.formModal__field}>
                             <label htmlFor="product-status">{t.dialogs.productStatus}</label>
                             <select
                                 id="product-status"
@@ -219,7 +222,7 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                                 ))}
                             </select>
                         </div>
-                        <div className="form-modal__field">
+                        <div className={styles.formModal__field}>
                             <label htmlFor="warranty-start">{t.dialogs.warrantyStart}</label>
                             <input
                                 id="warranty-start"
@@ -238,14 +241,14 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                             {errors.warrantyStart && (
                                 <p
                                     id="warranty-start-error"
-                                    className="form-modal__error"
+                                    className={styles.formModal__error}
                                     role="alert"
                                 >
                                     {t.validation[errors.warrantyStart]}
                                 </p>
                             )}
                         </div>
-                        <div className="form-modal__field">
+                        <div className={styles.formModal__field}>
                             <label htmlFor="warranty-end">{t.dialogs.warrantyEnd}</label>
                             <input
                                 id="warranty-end"
@@ -262,14 +265,14 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                             {errors.warrantyEnd && (
                                 <p
                                     id="warranty-end-error"
-                                    className="form-modal__error"
+                                    className={styles.formModal__error}
                                     role="alert"
                                 >
                                     {t.validation[errors.warrantyEnd]}
                                 </p>
                             )}
                         </div>
-                        <div className="form-modal__field">
+                        <div className={styles.formModal__field}>
                             <label htmlFor="price-usd">{t.dialogs.priceUsd}</label>
                             <input
                                 id="price-usd"
@@ -284,12 +287,16 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                                 aria-describedby={errors.priceUsd ? "price-usd-error" : undefined}
                             />
                             {errors.priceUsd && (
-                                <p id="price-usd-error" className="form-modal__error" role="alert">
+                                <p
+                                    id="price-usd-error"
+                                    className={styles.formModal__error}
+                                    role="alert"
+                                >
                                     {t.validation[errors.priceUsd]}
                                 </p>
                             )}
                         </div>
-                        <div className="form-modal__field">
+                        <div className={styles.formModal__field}>
                             <label htmlFor="price-uah">{t.dialogs.priceUah}</label>
                             <input
                                 id="price-uah"
@@ -304,22 +311,30 @@ export function AddProductDialog({ error, orderTitle, onCancel, onCreate }: AddP
                                 aria-describedby={errors.priceUah ? "price-uah-error" : undefined}
                             />
                             {errors.priceUah && (
-                                <p id="price-uah-error" className="form-modal__error" role="alert">
+                                <p
+                                    id="price-uah-error"
+                                    className={styles.formModal__error}
+                                    role="alert"
+                                >
                                     {t.validation[errors.priceUah]}
                                 </p>
                             )}
                         </div>
                     </div>
                     {error && (
-                        <p className="form-modal__error" role="alert">
+                        <p className={styles.formModal__error} role="alert">
                             {error}
                         </p>
                     )}
-                    <footer className="form-modal__actions">
-                        <button type="button" className="form-modal__cancel" onClick={onCancel}>
+                    <footer className={styles.formModal__actions}>
+                        <button
+                            type="button"
+                            className={styles.formModal__cancel}
+                            onClick={onCancel}
+                        >
                             {t.actions.cancel}
                         </button>
-                        <button type="submit" className="form-modal__submit">
+                        <button type="submit" className={styles.formModal__submit}>
                             {t.dialogs.createProduct}
                         </button>
                     </footer>

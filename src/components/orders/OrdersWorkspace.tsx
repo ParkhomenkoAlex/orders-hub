@@ -22,6 +22,9 @@ import { OrderDetailsSkeleton } from "./OrderDetailsSkeleton";
 import { OrderList } from "./OrderList";
 import { OrdersListSkeleton } from "./OrdersListSkeleton";
 import { DeleteProductModal } from "../products/DeleteProductModal";
+import formStyles from "@/components/ui/FormDialog.module.scss";
+import workspaceStyles from "@/components/ui/Workspace.module.scss";
+import styles from "./Orders.module.scss";
 
 const EMPTY_ORDERS: Order[] = [];
 const EMPTY_PRODUCTS: Product[] = [];
@@ -184,13 +187,13 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
     };
     return (
         <div
-            className={`page-workspace orders-workspace ${selectedOrder ? "orders-workspace--selected" : ""}`}
+            className={`${workspaceStyles.pageWorkspace} ${selectedOrder ? styles["ordersWorkspace--selected"] : ""}`}
         >
-            <header className="page-workspace__header">
+            <header className={workspaceStyles.pageWorkspace__header}>
                 <button
                     ref={addOrderButtonRef}
                     type="button"
-                    className="page-workspace__add"
+                    className={workspaceStyles.pageWorkspace__add}
                     onClick={() => setIsAddOrderOpen(true)}
                     aria-label={t.orders.addLabel}
                 >
@@ -201,19 +204,19 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
                 </h1>
             </header>
             {isInitialLoading ? (
-                <div className="orders-workspace__body row g-3">
+                <div className="row g-3">
                     <div className="col-12">
                         <OrdersListSkeleton />
                     </div>
                 </div>
             ) : ordersQuery.isError || productsQuery.isError ? (
-                <div className="empty-state">
+                <div className={workspaceStyles.emptyState}>
                     <span>!</span>
                     <h2>{t.errors.loadOrders}</h2>
                     <p>{t.errors.connection}</p>
                     <button
                         type="button"
-                        className="form-modal__submit"
+                        className={formStyles.formModal__submit}
                         onClick={() => {
                             void ordersQuery.refetch();
                             void productsQuery.refetch();
@@ -223,7 +226,7 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
                     </button>
                 </div>
             ) : (
-                <div className="orders-workspace__body row g-3">
+                <div className="row g-3">
                     <div className={selectedOrder ? "col-12 col-xl-5" : "col-12"}>
                         <OrderList
                             orders={visibleOrders}
@@ -282,7 +285,7 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
                     }}
                     onConfirm={removeProduct}
                     fallbackFocus={() =>
-                        document.querySelector<HTMLElement>(".order-details__add") ??
+                        document.querySelector<HTMLElement>(`.${styles.orderDetails__add}`) ??
                         addOrderButtonRef.current
                     }
                 />

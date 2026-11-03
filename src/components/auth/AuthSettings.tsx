@@ -1,6 +1,8 @@
 "use client";
 
 import { useTranslation } from "@/i18n/I18nProvider";
+import workspaceStyles from "@/components/ui/Workspace.module.scss";
+import styles from "./Auth.module.scss";
 
 interface AuthSettingsProps {
     username: string;
@@ -10,11 +12,11 @@ export function AuthSettings({ username }: AuthSettingsProps) {
     const { t } = useTranslation();
 
     return (
-        <section className="page-workspace auth-settings" aria-labelledby="auth-settings-title">
-            <header className="page-workspace__header">
+        <section className={workspaceStyles.pageWorkspace} aria-labelledby="auth-settings-title">
+            <header className={workspaceStyles.pageWorkspace__header}>
                 <h1 id="auth-settings-title">{t.auth.settingsTitle}</h1>
             </header>
-            <div className="auth-settings__content">
+            <div className={styles.authSettings__content}>
                 <p>{t.auth.settingsDescription}</p>
                 <p>
                     {t.auth.signedInAs}: <strong>{username}</strong>

@@ -1,0 +1,198 @@
+.deleteModal {
+    background: #fff;
+    border: 0;
+    border-radius: 3px;
+    box-shadow: 0 18px 45px rgba(34, 50, 59, 0.28);
+    max-width: 790px;
+    overflow: visible;
+    padding: 0;
+    position: relative;
+    width: calc(100% - 44px);
+}
+
+.deleteModal::backdrop {
+    background: rgba(55, 79, 91, 0.54);
+}
+
+.deleteModal__close {
+    align-items: center;
+    background: #fff;
+    border: 0;
+    border-radius: 50%;
+    box-shadow: 0 3px 10px rgba(36, 57, 68, 0.2);
+    color: #95abb5;
+    cursor: pointer;
+    display: flex;
+    font-size: 26px;
+    height: 44px;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+    position: absolute;
+    right: -22px;
+    top: -22px;
+    transition:
+        background-color 180ms ease,
+        box-shadow 180ms ease,
+        color 180ms ease,
+        transform 180ms ease;
+    width: 44px;
+    z-index: 1;
+}
+
+.deleteModal__close:hover,
+.deleteModal__close:focus-visible {
+    background: #edf2f4;
+    box-shadow: 0 5px 13px rgba(36, 57, 68, 0.25);
+    color: #597485;
+    transform: scale(1.04);
+}
+
+.deleteModal__close svg {
+    height: 16px;
+    width: 16px;
+}
+
+.deleteModal__content {
+    padding: 28px 36px 0;
+}
+
+.deleteModal__content h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 20px;
+}
+
+.deleteModal__content p {
+    color: #607783;
+    font-size: 14px;
+    margin-bottom: 19px;
+}
+
+.deleteModal__preview {
+    align-items: center;
+    border-top: 1px solid #e6ecee;
+    display: flex;
+    gap: 28px;
+    margin: 0 -36px;
+    padding: 10px 40px;
+}
+
+.deleteModal__preview > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.deleteModal__preview strong {
+    font-size: 14px;
+    font-weight: 400;
+    text-decoration: underline;
+}
+
+.deleteModal__preview span {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.deleteModal__actions {
+    align-items: center;
+    background: var(--green);
+    display: flex;
+    gap: 30px;
+    justify-content: flex-end;
+    padding: 26px 36px;
+}
+
+.deleteModal__cancel {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 24px;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 13px;
+    font-weight: 700;
+    justify-content: center;
+    letter-spacing: 0.1em;
+    min-height: 45px;
+    padding: 0 22px;
+    text-transform: uppercase;
+    transition:
+        background-color 180ms ease,
+        color 180ms ease;
+}
+
+.deleteModal__cancel:hover,
+.deleteModal__cancel:focus-visible {
+    background: #dceec9;
+    color: #4c7c1d;
+}
+
+.deleteModal__cancel:active {
+    background: #cde5b4;
+}
+
+.deleteModal__confirm {
+    background: #fff;
+    border: 0;
+    border-radius: 28px;
+    color: #e94957;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 15px 27px;
+    text-transform: uppercase;
+    transition:
+        background-color 180ms ease,
+        box-shadow 180ms ease,
+        color 180ms ease,
+        transform 180ms ease;
+}
+
+.deleteModal__confirm:hover,
+.deleteModal__confirm:focus-visible {
+    background: #fff2f3;
+    box-shadow: 0 3px 8px rgba(88, 43, 48, 0.16);
+    color: #c83a45;
+}
+
+.deleteModal__confirm:active {
+    transform: scale(0.98);
+}
+
+@media (max-width: 760px) {
+    .deleteModal__content {
+        padding: 25px 22px 0;
+    }
+
+    .deleteModal__content h2 {
+        font-size: 20px;
+        padding-right: 25px;
+    }
+
+    .deleteModal__preview {
+        margin: 0 -22px;
+        padding: 10px 22px;
+    }
+
+    .deleteModal__actions {
+        gap: 15px;
+        padding: 20px;
+    }
+
+    .deleteModal__close {
+        right: 10px;
+        top: 10px;
+    }
+
+    .deleteModal__cancel,
+    .deleteModal__confirm {
+        font-size: 11px;
+    }
+
+    .deleteModal__confirm {
+        padding: 13px 16px;
+    }
+}

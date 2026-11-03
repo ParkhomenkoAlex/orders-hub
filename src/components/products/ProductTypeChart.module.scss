@@ -1,4 +1,4 @@
-.chart {
+.productTypeChart {
     background: #fff;
     border: 1px solid var(--line);
     border-radius: 5px;
@@ -6,32 +6,32 @@
     padding: 24px;
 }
 
-.chart h2 {
+.productTypeChart h2 {
     font-size: 18px;
     margin: 0;
 }
 
-.header {
+.productTypeChart__header {
     align-items: start;
     display: flex;
     gap: 20px;
     justify-content: space-between;
 }
 
-.header p,
-.message {
+.productTypeChart__header p,
+.productTypeChart__message {
     color: var(--muted);
     font-size: 14px;
     margin: 6px 0 0;
 }
 
-.selection {
+.productTypeChart__selection {
     color: #568e22 !important;
     font-weight: 600;
     white-space: nowrap;
 }
 
-.bars {
+.productTypeChart__bars {
     align-items: end;
     display: grid;
     gap: 18px;
@@ -40,7 +40,7 @@
     min-height: 220px;
 }
 
-.bar {
+.productTypeChart__bar {
     align-items: stretch;
     background: transparent;
     border: 0;
@@ -57,11 +57,11 @@
     width: 100%;
 }
 
-.bar strong {
+.productTypeChart__bar strong {
     font-size: 16px;
 }
 
-.column {
+.productTypeChart__column {
     align-items: end;
     background: #edf2f4;
     border-radius: 4px 4px 0 0;
@@ -71,7 +71,7 @@
     width: 100%;
 }
 
-.fill {
+.productTypeChart__fill {
     background: #7aa83c;
     border-radius: 4px 4px 0 0;
     height: var(--product-chart-height);
@@ -81,63 +81,63 @@
     width: 100%;
 }
 
-.bar:hover .fill,
-.bar:focus-visible .fill,
-.selectedBar .fill {
+.productTypeChart__bar:hover .productTypeChart__fill,
+.productTypeChart__bar:focus-visible .productTypeChart__fill,
+.productTypeChart__bar--selected .productTypeChart__fill {
     background: #568e22;
 }
 
-.bar:focus-visible {
+.productTypeChart__bar:focus-visible {
     outline: 2px solid #568e22;
     outline-offset: 4px;
 }
 
-.skeletonBar {
+.productTypeChart__bar--skeleton {
     cursor: default;
     pointer-events: none;
 }
 
-.valueSkeleton {
+.productTypeChart__valueSkeleton {
     height: 18px;
     width: 24px;
 }
 
-.columnSkeleton {
+.productTypeChart__columnSkeleton {
     height: 160px;
     width: 100%;
 }
 
-.labelSkeleton {
+.productTypeChart__labelSkeleton {
     height: 14px;
     width: 70%;
 }
 
 @media (max-width: 760px) {
-    .chart {
+    .productTypeChart {
         padding: 20px 15px;
     }
 
-    .header {
+    .productTypeChart__header {
         align-items: start;
         flex-direction: column;
         gap: 0;
     }
 
-    .selection {
+    .productTypeChart__selection {
         white-space: normal;
     }
 
-    .bars {
+    .productTypeChart__bars {
         gap: 10px;
     }
 
-    .bar {
+    .productTypeChart__bar {
         font-size: 11px;
         grid-template-rows: auto 130px auto;
     }
 
-    .column,
-    .columnSkeleton {
+    .productTypeChart__column,
+    .productTypeChart__columnSkeleton {
         height: 130px;
     }
 }

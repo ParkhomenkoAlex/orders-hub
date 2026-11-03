@@ -1,0 +1,29 @@
+.appShell {
+    inline-size: 100%;
+    min-height: 100vh;
+    min-width: 0;
+    width: 100%;
+}
+
+.appShell__content {
+    margin-left: 196px;
+    max-width: 100%;
+    min-height: 100vh;
+    min-width: 0;
+    padding: 120px clamp(30px, 8.5vw, 165px) 70px clamp(30px, 6.5vw, 127px);
+    width: calc(100% - 196px);
+}
+
+@media (max-width: 1150px) {
+    .appShell__content {
+        padding-right: 35px;
+    }
+}
+
+@media (max-width: 760px) {
+    .appShell__content {
+        margin-left: 0;
+        padding: 99px 17px 81px;
+        width: 100%;
+    }
+}
