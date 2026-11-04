@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { LOCALE_COOKIE_NAME, resolveLocale } from "@/i18n/config";
+import "leaflet/dist/leaflet.css";
 import "./globals.scss";
 
 export const metadata: Metadata = {

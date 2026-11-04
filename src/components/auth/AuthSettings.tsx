@@ -2,6 +2,7 @@
 
 import { useTranslation } from "@/i18n/I18nProvider";
 import workspaceStyles from "@/components/ui/Workspace.module.scss";
+import { ServiceLocations } from "./ServiceLocations";
 import styles from "./Auth.module.scss";
 
 interface AuthSettingsProps {
@@ -27,6 +28,7 @@ export function AuthSettings({ username }: AuthSettingsProps) {
                     </button>
                 </form>
             </div>
+            <ServiceLocations />
         </section>
     );
 }

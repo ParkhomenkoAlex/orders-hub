@@ -114,6 +114,32 @@ export const en = {
         selected: "Selected filter: {type}",
         barLabel: "{type}: {count}",
     },
+    serviceLocations: {
+        title: "Service locations",
+        mapLabel: "Map of example equipment service locations in Ukraine",
+        mapLoading: "Loading service locations map",
+        mapUnavailable: "The map is unavailable. Use the location list below.",
+        listTitle: "Example service locations",
+        selectLocation: "Show {name} on the map",
+        selectedLocation: "Selected location: {name}",
+        locations: {
+            kyiv: {
+                name: "Kyiv service centre",
+                city: "Kyiv",
+                description: "Example support location for central Ukraine.",
+            },
+            cherkasy: {
+                name: "Cherkasy service centre",
+                city: "Cherkasy",
+                description: "Example support location for central Ukraine.",
+            },
+            lviv: {
+                name: "Lviv service centre",
+                city: "Lviv",
+                description: "Example support location for western Ukraine.",
+            },
+        },
+    },
     dialogs: {
         addOrderTitle: "Add order",
         addOrderDescription: "Create an empty order and add products to it later.",
@@ -288,6 +314,32 @@ const ru = {
         empty: "Пока нет данных о продуктах для диаграммы.",
         selected: "Выбран фильтр: {type}",
         barLabel: "{type}: {count}",
+    },
+    serviceLocations: {
+        title: "Сервисные точки",
+        mapLabel: "Карта демонстрационных сервисных точек оборудования в Украине",
+        mapLoading: "Загрузка карты сервисных точек",
+        mapUnavailable: "Карта недоступна. Используйте список локаций ниже.",
+        listTitle: "Примеры сервисных точек",
+        selectLocation: "Показать на карте: {name}",
+        selectedLocation: "Выбранная локация: {name}",
+        locations: {
+            kyiv: {
+                name: "Сервисный центр в Киеве",
+                city: "Киев",
+                description: "Пример точки поддержки для центральной Украины.",
+            },
+            cherkasy: {
+                name: "Сервисный центр в Черкассах",
+                city: "Черкассы",
+                description: "Пример точки поддержки для центральной Украины.",
+            },
+            lviv: {
+                name: "Сервисный центр во Львове",
+                city: "Львов",
+                description: "Пример точки поддержки для западной Украины.",
+            },
+        },
     },
     dialogs: {
         addOrderTitle: "Добавить приход",
