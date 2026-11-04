@@ -1,0 +1,153 @@
+.serviceLocations {
+    margin-top: 32px;
+}
+
+.serviceLocations__header {
+    margin-bottom: 20px;
+}
+
+.serviceLocations__header h2,
+.serviceLocations__listContainer h3 {
+    font-size: 20px;
+    margin: 0;
+}
+
+.serviceLocations__content {
+    align-items: start;
+    display: grid;
+    gap: 24px;
+    grid-template-columns: minmax(0, 1.6fr) minmax(250px, 0.8fr);
+}
+
+.serviceLocations__map,
+.serviceLocations__mapFallback {
+    background: #edf2f4;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    height: 420px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    z-index: 0;
+}
+
+.serviceLocations__mapFallback {
+    align-items: center;
+    color: var(--muted);
+    display: flex;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+}
+
+.serviceLocations__listContainer {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.serviceLocations__list {
+    display: grid;
+    gap: 10px;
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+}
+
+.serviceLocations__item {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--ink);
+    display: grid;
+    gap: 3px;
+    padding: 12px;
+    text-align: left;
+    transition:
+        background-color 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease;
+    width: 100%;
+}
+
+.serviceLocations__item:hover {
+    background: #f5f9f1;
+    border-color: #9abc6f;
+}
+
+.serviceLocations__item:focus-visible {
+    outline: 2px solid #568e22;
+    outline-offset: 3px;
+}
+
+.serviceLocations__item--selected {
+    background: #f5f9f1;
+    border-color: #7aa83c;
+    box-shadow: inset 3px 0 #7aa83c;
+}
+
+.serviceLocations__item span,
+.serviceLocations__item small {
+    color: var(--muted);
+}
+
+.serviceLocations__item small {
+    font-size: 12px;
+}
+
+.serviceLocations__marker {
+    background: transparent;
+    border: 0;
+}
+
+.serviceLocations__markerDot {
+    background: var(--green-dark);
+    border: 3px solid #fff;
+    border-radius: 50% 50% 50% 0;
+    box-shadow: 0 2px 7px rgba(35, 59, 70, 0.35);
+    display: block;
+    height: 24px;
+    transform: rotate(-45deg);
+    width: 24px;
+}
+
+.serviceLocations__popup {
+    color: var(--ink);
+    display: grid;
+    gap: 4px;
+    min-width: 180px;
+}
+
+.serviceLocations__popup span,
+.serviceLocations__popup p {
+    color: var(--muted);
+    margin: 0;
+}
+
+.serviceLocations__popup p {
+    font-size: 13px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .serviceLocations__item {
+        transition: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .serviceLocations__content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .serviceLocations__map,
+    .serviceLocations__mapFallback {
+        height: 320px;
+    }
+
+    .serviceLocations__listContainer {
+        padding: 15px;
+    }
+}
