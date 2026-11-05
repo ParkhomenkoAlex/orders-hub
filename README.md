@@ -60,6 +60,37 @@ Open a second browser tab to confirm that both TopMenus show `Sessions: 2`; clos
 
 `/orders` is a dynamic App Router Server Component: it waits for a request with `connection()`, reads initial Orders and Products through the existing server-only Drizzle helpers, and renders the existing workspace content into the initial HTML. Those values are an initial visual fallback, not RTK Query cache hydration; after hydration, RTK Query still owns its client queries, mutations, invalidation, and refetching. If the server read fails, the existing client loading and error flow remains available.
 
+### GraphQL API demonstration
+
+`POST /api/graphql` is a read-only GraphQL API alongside the existing REST API. It exposes `orders`, `order(id: ID!)`, `products`, and `product(id: ID!)`; `Order.products` resolves the existing `Product.orderId` relationship. It uses the same server-only MySQL repository helpers as REST, while a request-scoped cache avoids repeated collection reads for nested order-product queries.
+
+Fetch Orders with their Products:
+
+```bash
+curl http://localhost:3000/api/graphql \
+  -X POST \
+  -H 'Content-Type: application/json' \
+  --data '{"query":"query { orders { id title createdAt products { id title type status price { usd uah } } } }"}'
+```
+
+Fetch one Order with a GraphQL variable:
+
+```bash
+curl http://localhost:3000/api/graphql \
+  -X POST \
+  -H 'Content-Type: application/json' \
+  --data '{"query":"query OrderById($id: ID!) { order(id: $id) { id title products { id title } } }","variables":{"id":"<order-id>"}}'
+```
+
+Fetch Products directly:
+
+```bash
+curl http://localhost:3000/api/graphql \
+  -X POST \
+  -H 'Content-Type: application/json' \
+  --data '{"query":"query { products { id orderId title specification warranty { start end } } }"}'
+```
+
 ### Local database lifecycle
 
 `compose.yaml` binds MySQL only to `127.0.0.1:3307` and stores data in the `mysql_data` named volume. Local Docker data is independent of the Aiven Preview database. Do not use the Aiven connection string in `.env` when working locally.
