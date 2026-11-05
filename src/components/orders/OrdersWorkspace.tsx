@@ -21,6 +21,7 @@ import { DeleteOrderModal } from "./DeleteOrderModal";
 import { OrderDetailsSkeleton } from "./OrderDetailsSkeleton";
 import { OrderList } from "./OrderList";
 import { OrdersListSkeleton } from "./OrdersListSkeleton";
+import { OrdersProductsGraphSkeleton } from "./OrdersProductsGraphSkeleton";
 import { DeleteProductModal } from "../products/DeleteProductModal";
 import formStyles from "@/components/ui/FormDialog.module.scss";
 import workspaceStyles from "@/components/ui/Workspace.module.scss";
@@ -33,6 +34,16 @@ const OrderDetails = dynamic(
         import("./OrderDetails").then(({ OrderDetails: LoadedOrderDetails }) => LoadedOrderDetails),
     {
         loading: OrderDetailsSkeleton,
+        ssr: false,
+    },
+);
+const OrdersProductsGraph = dynamic(
+    () =>
+        import("./OrdersProductsGraph").then(
+            ({ OrdersProductsGraph: LoadedOrdersProductsGraph }) => LoadedOrdersProductsGraph,
+        ),
+    {
+        loading: OrdersProductsGraphSkeleton,
         ssr: false,
     },
 );
@@ -226,41 +237,44 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
                     </button>
                 </div>
             ) : (
-                <div className="row g-3">
-                    <div className={selectedOrder ? "col-12 col-xl-5" : "col-12"}>
-                        <OrderList
-                            orders={visibleOrders}
-                            productsByOrderId={productsByOrderId}
-                            hasOrders={orders.length > 0}
-                            selectedOrderId={selectedOrderId}
-                            onSelect={selectOrder}
-                            onDelete={(orderId) => {
-                                setDeleteOrderError(false);
-                                setPendingDeleteId(orderId);
-                            }}
-                        />
-                    </div>
-                    {selectedOrder && (
-                        <div className="col-12 col-xl-7">
-                            <OrderDetails
-                                key={selectedOrder.id}
-                                order={selectedOrder}
-                                products={productsByOrderId.get(selectedOrder.id) ?? []}
-                                isClosing={isDetailsClosing}
-                                onClose={closeDetails}
-                                onCloseAnimationEnd={finishClosingDetails}
-                                onDeleteProduct={(product) => {
-                                    setDeleteProductError(false);
-                                    setPendingProduct(product);
-                                }}
-                                onAddProduct={() => {
-                                    setAddProductError(false);
-                                    setIsAddProductOpen(true);
+                <>
+                    <div className="row g-3">
+                        <div className={selectedOrder ? "col-12 col-xl-5" : "col-12"}>
+                            <OrderList
+                                orders={visibleOrders}
+                                productsByOrderId={productsByOrderId}
+                                hasOrders={orders.length > 0}
+                                selectedOrderId={selectedOrderId}
+                                onSelect={selectOrder}
+                                onDelete={(orderId) => {
+                                    setDeleteOrderError(false);
+                                    setPendingDeleteId(orderId);
                                 }}
                             />
                         </div>
-                    )}
-                </div>
+                        {selectedOrder && (
+                            <div className="col-12 col-xl-7">
+                                <OrderDetails
+                                    key={selectedOrder.id}
+                                    order={selectedOrder}
+                                    products={productsByOrderId.get(selectedOrder.id) ?? []}
+                                    isClosing={isDetailsClosing}
+                                    onClose={closeDetails}
+                                    onCloseAnimationEnd={finishClosingDetails}
+                                    onDeleteProduct={(product) => {
+                                        setDeleteProductError(false);
+                                        setPendingProduct(product);
+                                    }}
+                                    onAddProduct={() => {
+                                        setAddProductError(false);
+                                        setIsAddProductOpen(true);
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
+                    <OrdersProductsGraph orders={orders} products={products} />
+                </>
             )}
             {pendingOrder && (
                 <DeleteOrderModal

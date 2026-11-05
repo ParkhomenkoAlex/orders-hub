@@ -1,0 +1,169 @@
+.ordersGraph {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    margin-top: 24px;
+    padding: 24px;
+}
+
+.ordersGraph h2,
+.ordersGraph h3 {
+    font-size: 18px;
+    margin: 0;
+}
+
+.ordersGraph__header {
+    align-items: start;
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.ordersGraph__header p,
+.ordersGraph__message,
+.ordersGraph__details p {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 6px 0 0;
+}
+
+.ordersGraph__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ordersGraph__legendItem--order,
+.ordersGraph__legendItem--product {
+    border-radius: 999px;
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 9px;
+    white-space: nowrap;
+}
+
+.ordersGraph__legendItem--order {
+    background: #52717e;
+}
+
+.ordersGraph__legendItem--product {
+    background: #7aa83c;
+}
+
+.ordersGraph__canvas {
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.ordersGraph__svg {
+    display: block;
+    min-width: 620px;
+    width: 100%;
+}
+
+.ordersGraph__edge {
+    stroke: #aab9bd;
+    stroke-width: 2;
+}
+
+.ordersGraph__node {
+    cursor: pointer;
+    outline: none;
+}
+
+.ordersGraph__node rect {
+    stroke-width: 2;
+    transition:
+        filter 180ms ease,
+        stroke-width 180ms ease;
+}
+
+.ordersGraph__node text {
+    fill: #fff;
+    font-size: 15px;
+    pointer-events: none;
+}
+
+.ordersGraph__node--order rect {
+    fill: #52717e;
+    stroke: #405a65;
+}
+
+.ordersGraph__node--product rect {
+    fill: #7aa83c;
+    stroke: #638d32;
+}
+
+.ordersGraph__node--selected rect,
+.ordersGraph__node:focus-visible rect {
+    filter: brightness(1.08);
+    stroke: #293b46;
+    stroke-width: 4;
+}
+
+.ordersGraph__details,
+.ordersGraph__relationships {
+    border-top: 1px solid var(--line);
+    margin-top: 20px;
+    padding-top: 16px;
+}
+
+.ordersGraph__details ul,
+.ordersGraph__relationships ul {
+    margin: 10px 0 0;
+    padding-left: 20px;
+}
+
+.ordersGraph__relationships li + li {
+    margin-top: 5px;
+}
+
+.ordersGraph__relationships button {
+    background: transparent;
+    border: 0;
+    color: #52717e;
+    padding: 0;
+    text-align: left;
+    text-decoration: underline;
+}
+
+.ordersGraph__relationships button:focus-visible {
+    outline: 2px solid #568e22;
+    outline-offset: 3px;
+}
+
+.ordersGraph__titleSkeleton {
+    height: 22px;
+    width: 190px;
+}
+
+.ordersGraph__descriptionSkeleton {
+    height: 14px;
+    margin-top: 10px;
+    width: min(360px, 80%);
+}
+
+.ordersGraph__canvasSkeleton {
+    height: 260px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ordersGraph__node rect {
+        transition: none;
+    }
+}
+
+@media (max-width: 760px) {
+    .ordersGraph {
+        padding: 20px 15px;
+    }
+
+    .ordersGraph__header {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
