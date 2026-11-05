@@ -219,7 +219,7 @@ Local Docker MySQL and remote Preview MySQL are separate environments. The deplo
 
 ## Phase E — Middle requirements
 
-- [ ] Graph demonstration: build an Orders-to-Products adjacency graph and a visible traversal/relationship result with tests.
+- [x] Graph demonstration: a client-only, lazily loaded Orders-to-Products SVG adjacency graph uses existing RTK Query data, shows real relationship edges, selectable nodes, and accessible relationship traversal/list details with EN/RU localization. Typed transformation/component tests passed alongside TypeScript, ESLint, 99 unit tests, Prettier, diff, and production-build verification; browser verification passed.
 - [ ] Functional GraphQL endpoint and real query alongside REST.
 - [ ] Web Worker demonstration for a non-trivial inventory analytics calculation that keeps the UI responsive.
 - [ ] PWA: manifest, icons, service worker, usable offline shell/fallback, and installability verification.
