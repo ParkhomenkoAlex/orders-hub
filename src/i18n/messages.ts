@@ -123,6 +123,10 @@ export const en = {
         totalProducts: "Total products",
         productsByStatus: "Products by status",
     },
+    pwa: {
+        offlineTitle: "You are offline",
+        offlineDescription: "Orders Hub will be available again when your connection is restored.",
+    },
     graph: {
         title: "Orders and products",
         description: "Select an order or product to inspect its relationships.",
@@ -352,6 +356,10 @@ const ru = {
         totalOrders: "Всего приходов",
         totalProducts: "Всего продуктов",
         productsByStatus: "Продукты по статусу",
+    },
+    pwa: {
+        offlineTitle: "Нет подключения к сети",
+        offlineDescription: "Orders Hub снова станет доступен после восстановления подключения.",
     },
     graph: {
         title: "Приходы и продукты",

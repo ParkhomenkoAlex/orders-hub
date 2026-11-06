@@ -1,0 +1,28 @@
+.offlineFallback {
+    align-items: center;
+    background: var(--canvas);
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+    text-align: center;
+}
+
+.offlineFallback__content {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    max-width: 440px;
+    padding: 32px;
+}
+
+.offlineFallback h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.offlineFallback p {
+    color: var(--muted);
+    margin: 12px 0 0;
+}
