@@ -15,6 +15,7 @@ import {
 import { useAppSelector } from "@/state/hooks";
 import type { Order, Product, ProductType } from "@/types/domain";
 import { DeleteProductModal } from "./DeleteProductModal";
+import { InventoryAnalytics } from "./InventoryAnalytics";
 import { ProductTypeChart } from "./ProductTypeChart";
 import formStyles from "@/components/ui/FormDialog.module.scss";
 import iconStyles from "@/components/ui/IconButton.module.scss";
@@ -309,6 +310,12 @@ export function ProductsWorkspace() {
                 isLoading={productsQuery.isLoading && productsQuery.data === undefined}
                 isError={productsQuery.isError}
                 onTypeSelect={setActiveType}
+            />
+            <InventoryAnalytics
+                orders={orders}
+                products={products}
+                isLoading={isInitialLoading}
+                isError={productsQuery.isError || ordersQuery.isError}
             />
             {pendingProduct && (
                 <DeleteProductModal
