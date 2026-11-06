@@ -114,6 +114,15 @@ export const en = {
         selected: "Selected filter: {type}",
         barLabel: "{type}: {count}",
     },
+    analytics: {
+        title: "Inventory analytics",
+        description: "Calculated in a Web Worker from the current inventory data.",
+        loading: "Calculating inventory analytics",
+        unavailable: "Inventory analytics are unavailable.",
+        totalOrders: "Total orders",
+        totalProducts: "Total products",
+        productsByStatus: "Products by status",
+    },
     graph: {
         title: "Orders and products",
         description: "Select an order or product to inspect its relationships.",
@@ -334,6 +343,15 @@ const ru = {
         empty: "Пока нет данных о продуктах для диаграммы.",
         selected: "Выбран фильтр: {type}",
         barLabel: "{type}: {count}",
+    },
+    analytics: {
+        title: "Аналитика инвентаря",
+        description: "Рассчитывается в Web Worker на основе текущих данных инвентаря.",
+        loading: "Расчёт аналитики инвентаря",
+        unavailable: "Аналитика инвентаря недоступна.",
+        totalOrders: "Всего приходов",
+        totalProducts: "Всего продуктов",
+        productsByStatus: "Продукты по статусу",
     },
     graph: {
         title: "Приходы и продукты",
