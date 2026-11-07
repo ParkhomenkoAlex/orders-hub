@@ -1,5 +1,6 @@
 import { failure, success } from "@/lib/api-response";
 import { validateCreateOrder } from "@/lib/api-validation";
+import { publishOrderCreated } from "@/events/order-events";
 import { createOrder, listOrders } from "@/server/inventory";
 
 export async function GET() {
@@ -34,7 +35,9 @@ export async function POST(request: Request) {
     }
 
     try {
-        return success(await createOrder(validation.data), 201);
+        const order = await createOrder(validation.data);
+        await publishOrderCreated(order);
+        return success(order, 201);
     } catch {
         return failure(500, "INTERNAL_ERROR", "Unable to create the order.");
     }

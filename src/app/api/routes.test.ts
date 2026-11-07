@@ -10,7 +10,12 @@ const inventory = vi.hoisted(() => ({
     listProducts: vi.fn(),
 }));
 
+const orderEvents = vi.hoisted(() => ({
+    publishOrderCreated: vi.fn(),
+}));
+
 vi.mock("@/server/inventory", () => inventory);
+vi.mock("@/events/order-events", () => orderEvents);
 
 import { DELETE as deleteOrder } from "./orders/[orderId]/route";
 import { GET as getOrders, POST as createOrder } from "./orders/route";
@@ -87,6 +92,36 @@ describe("Orders and Products API routes", () => {
         await expect(response.json()).resolves.toEqual({
             error: { code: "INVALID_JSON", message: "Request body must be valid JSON." },
         });
+    });
+
+    it("publishes order.created only after persistence succeeds", async () => {
+        inventory.createOrder.mockResolvedValue(order);
+        orderEvents.publishOrderCreated.mockResolvedValue(undefined);
+
+        const response = await createOrder(
+            new Request("http://localhost/api/orders", {
+                method: "POST",
+                body: JSON.stringify({ title: order.title, createdAt: order.createdAt }),
+            }),
+        );
+
+        expect(response.status).toBe(201);
+        await expect(response.json()).resolves.toEqual({ data: order });
+        expect(orderEvents.publishOrderCreated).toHaveBeenCalledWith(order);
+    });
+
+    it("does not publish order.created when persistence fails", async () => {
+        inventory.createOrder.mockRejectedValue(new Error("database unavailable"));
+
+        const response = await createOrder(
+            new Request("http://localhost/api/orders", {
+                method: "POST",
+                body: JSON.stringify({ title: order.title, createdAt: order.createdAt }),
+            }),
+        );
+
+        expect(response.status).toBe(500);
+        expect(orderEvents.publishOrderCreated).not.toHaveBeenCalled();
     });
 
     it("returns 201 and the created product response shape", async () => {
