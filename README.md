@@ -60,6 +60,20 @@ Open a second browser tab to confirm that both TopMenus show `Sessions: 2`; clos
 
 `/orders` is a dynamic App Router Server Component: it waits for a request with `connection()`, reads initial Orders and Products through the existing server-only Drizzle helpers, and renders the existing workspace content into the initial HTML. Those values are an initial visual fallback, not RTK Query cache hydration; after hydration, RTK Query still owns its client queries, mutations, invalidation, and refetching. If the server read fails, the existing client loading and error flow remains available.
 
+### Frontend optimization
+
+The project applies focused delivery and runtime optimizations without adding a separate performance feature:
+
+- Request-time rendering in [orders/page.tsx](<src/app/(dashboard)/orders/page.tsx>) supplies meaningful initial Orders HTML while preserving interactive RTK Query behavior after hydration.
+- `next/image` is used for local layout imagery, allowing Next.js to serve appropriately optimized image output.
+- `next/dynamic` defers client-only, on-demand features: the Order Details panel, Orders-to-Products graph, and Leaflet service-location map each load with a layout-preserving fallback rather than increasing the initial page bundle.
+- Memoized domain transforms in the Orders and Products workspaces avoid recalculating grouped, filtered, and derived display data when their inputs are unchanged.
+- RTK Query caches Orders and Products queries and invalidates the relevant tags after mutations, avoiding a separate client data layer while keeping persisted inventory current.
+- Inventory Analytics transfers compact serializable records to a native Web Worker so its aggregates run outside the main UI thread.
+- The production Service Worker caches only same-origin static resources and the offline shell. It excludes API and Socket.IO traffic, so authenticated data, mutations, and real-time connections remain network-driven.
+
+These mechanisms are implemented and covered by feature-focused tests, but the project does not claim a Lighthouse or Core Web Vitals benchmark. Deferred features still download on first use, and RTK Query invalidation intentionally favors fresh data over retaining potentially stale results.
+
 ### GraphQL API demonstration
 
 `POST /api/graphql` is a read-only GraphQL API alongside the existing REST API. It exposes `orders`, `order(id: ID!)`, `products`, and `product(id: ID!)`; `Order.products` resolves the existing `Product.orderId` relationship. It uses the same server-only MySQL repository helpers as REST, while a request-scoped cache avoids repeated collection reads for nested order-product queries.
