@@ -10,10 +10,13 @@
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "test:unit": "vitest run",
+        "test:integration": "tsx scripts/run-integration-tests.ts",
+        "test:browser": "playwright test",
         "realtime:dev": "node --watch --import tsx src/realtime/server.ts",
         "realtime:start": "tsx src/realtime/server.ts",
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",
+        "db:migrate:test": "tsx scripts/run-test-migrations.ts",
         "db:migrate:aiven": "drizzle-kit migrate --config=drizzle.aiven.config.ts"
     },
     "dependencies": {
@@ -36,6 +39,7 @@
         "tsx": "^4.23.15"
     },
     "devDependencies": {
+        "@playwright/test": "^1.65.0",
         "@types/leaflet": "^1.9.22",
         "@types/node": "^20",
         "@types/react": "^19",
