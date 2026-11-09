@@ -74,6 +74,14 @@ The project applies focused delivery and runtime optimizations without adding a 
 
 These mechanisms are implemented and covered by feature-focused tests, but the project does not claim a Lighthouse or Core Web Vitals benchmark. Deferred features still download on first use, and RTK Query invalidation intentionally favors fresh data over retaining potentially stale results.
 
+### Scalability architecture proposal
+
+The current application is a focused single-instance demonstration, not a
+measured 100,000-user or 1,000,000-message deployment. The proposed evolution
+to horizontally scaled application and Socket.IO tiers, shared ephemeral
+presence, durable events, workers, observability, and resilient MySQL
+operations is documented in [the scalability architecture proposal](docs/scalability-architecture.md).
+
 ### GraphQL API demonstration
 
 `POST /api/graphql` is a read-only GraphQL API alongside the existing REST API. It exposes `orders`, `order(id: ID!)`, `products`, and `product(id: ID!)`; `Order.products` resolves the existing `Product.orderId` relationship. It uses the same server-only MySQL repository helpers as REST, while a request-scoped cache avoids repeated collection reads for nested order-product queries.
