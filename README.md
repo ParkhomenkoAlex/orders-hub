@@ -10,7 +10,7 @@ The `/orders` route renders its initial Orders and related Products data from My
 - Redux Toolkit, React Redux, and RTK Query
 - Bootstrap, Sass, and BEM-oriented styling
 - Drizzle ORM, mysql2, and MySQL 8.4
-- Vitest
+- Vitest and Playwright
 
 ## Prerequisites
 
@@ -108,6 +108,33 @@ curl http://localhost:3000/api/graphql \
 ### Local database lifecycle
 
 `compose.yaml` binds MySQL only to `127.0.0.1:3307` and stores data in the `mysql_data` named volume. Local Docker data is independent of the Aiven Preview database. Do not use the Aiven connection string in `.env` when working locally.
+
+### Automated integration and browser tests
+
+Integration and browser tests use a separate local MySQL service, database, credentials, port, and Docker volume. They never read `DATABASE_URL` as a fallback: both runners require `TEST_DATABASE_URL` to target exactly `orders_hub_test`.
+
+Create the ignored test environment file from the committed example and replace both password placeholders. Use the same test application password in `MYSQL_TEST_PASSWORD` and `TEST_DATABASE_URL`.
+
+```bash
+cp test.env.example .env.test
+docker compose --env-file .env.test -f compose.test.yaml up -d mysql-test
+npm run db:migrate:test
+```
+
+Run the database-backed integration test:
+
+```bash
+npm run test:integration
+```
+
+Install Chromium once for Playwright, then run the browser workflow. The runner starts a local Next.js server on `127.0.0.1:3100` configured only with the test database URL and an isolated `.next-browser-tests` directory, so it does not reuse or stop the normal local development server.
+
+```bash
+npx playwright install chromium
+npm run test:browser
+```
+
+Both tests create uniquely named Orders and Products and remove their test Order in cleanup. The browser test also verifies the database cascade through the Products API after deleting its Order. Do not point `TEST_DATABASE_URL` at local development, Aiven, Vercel Preview, or production data.
 
 ## Environment variables
 
@@ -222,10 +249,13 @@ Configure `AUTH_DEMO_USERNAME`, `AUTH_DEMO_PASSWORD`, and `AUTH_JWT_SECRET` as s
 | `npm run lint`                            | Run ESLint.                                                            |
 | `npm run format` / `npm run format:check` | Format files / verify formatting.                                      |
 | `npm run test:unit`                       | Run Vitest.                                                            |
+| `npm run test:integration`                | Run the MySQL-backed Orders/Products API integration test.             |
+| `npm run test:browser`                    | Run the Playwright Orders/Products browser workflow.                   |
 | `npm run realtime:dev`                    | Run the standalone Socket.IO service with watch mode.                  |
 | `npm run realtime:start`                  | Run the standalone Socket.IO service once.                             |
 | `npm run db:generate`                     | Generate a Drizzle migration from schema changes.                      |
 | `npm run db:migrate`                      | Apply committed migrations to local `DATABASE_URL`.                    |
+| `npm run db:migrate:test`                 | Apply committed migrations to the explicit test database only.         |
 | `npm run db:migrate:aiven`                | Apply committed migrations to explicit Aiven-only migration variables. |
 
 ## Verification
