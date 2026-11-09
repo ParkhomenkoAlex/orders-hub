@@ -230,7 +230,7 @@ Local Docker MySQL and remote Preview MySQL are separate environments. The deplo
 
 ## Phase F — Middle+ demonstrations
 
-- [ ] Document an architecture proposal for **1,000,000 messages and 100,000 users per 24 hours**, including assumptions, independently scalable boundaries, observability, and failure handling. Capacity math, brokers, and production deployment are optional depth.
+- [x] Scalability architecture proposal: [`docs/scalability-architecture.md`](docs/scalability-architecture.md) documents explicit capacity assumptions and illustrative throughput math for 100,000 users and 1,000,000 messages in 24 hours; verified current limits; a proposed horizontally scalable Next.js, Socket.IO/Redis, MySQL, transactional-outbox, broker, and worker architecture; observability, security, recovery, failure handling, and phased migration trade-offs. It is a proposal only—none of that target infrastructure is claimed as deployed.
 - [x] Minimal real microservice boundary: the separately deployed C.5 Socket.IO service has an independently runnable process, typed `sessions:update` contract, health endpoint, and Vercel Preview integration.
 - [ ] Minimal real microfrontend: independently built/deployed feature integrated through a clear interface, not merely another React component.
 - [ ] Actual WebAssembly module invoked from the frontend, including what it computes and why.
