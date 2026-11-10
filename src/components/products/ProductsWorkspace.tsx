@@ -17,6 +17,7 @@ import type { Order, Product, ProductType } from "@/types/domain";
 import { DeleteProductModal } from "./DeleteProductModal";
 import { InventoryAnalytics } from "./InventoryAnalytics";
 import { ProductTypeChart } from "./ProductTypeChart";
+import { WasmInventoryValue } from "./WasmInventoryValue";
 import formStyles from "@/components/ui/FormDialog.module.scss";
 import iconStyles from "@/components/ui/IconButton.module.scss";
 import statusStyles from "@/components/ui/Status.module.scss";
@@ -316,6 +317,11 @@ export function ProductsWorkspace() {
                 products={products}
                 isLoading={isInitialLoading}
                 isError={productsQuery.isError || ordersQuery.isError}
+            />
+            <WasmInventoryValue
+                products={products}
+                isLoading={productsQuery.isLoading && productsQuery.data === undefined}
+                isError={productsQuery.isError}
             />
             {pendingProduct && (
                 <DeleteProductModal

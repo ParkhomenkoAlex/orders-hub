@@ -70,6 +70,7 @@ The project applies focused delivery and runtime optimizations without adding a 
 - Memoized domain transforms in the Orders and Products workspaces avoid recalculating grouped, filtered, and derived display data when their inputs are unchanged.
 - RTK Query caches Orders and Products queries and invalidates the relevant tags after mutations, avoiding a separate client data layer while keeping persisted inventory current.
 - Inventory Analytics transfers compact serializable records to a native Web Worker so its aggregates run outside the main UI thread.
+- The Products Inventory Value summary transfers fixed-point USD cents to a native WebAssembly module, which sums them in linear memory. It loads on demand and explicitly falls back to the equivalent JavaScript calculation if the module is unavailable; see the [WebAssembly inventory-value demonstration](docs/webassembly-inventory-value.md).
 - The production Service Worker caches only same-origin static resources and the offline shell. It excludes API and Socket.IO traffic, so authenticated data, mutations, and real-time connections remain network-driven.
 
 These mechanisms are implemented and covered by feature-focused tests, but the project does not claim a Lighthouse or Core Web Vitals benchmark. Deferred features still download on first use, and RTK Query invalidation intentionally favors fresh data over retaining potentially stale results.
@@ -271,6 +272,7 @@ Configure `AUTH_DEMO_USERNAME`, `AUTH_DEMO_PASSWORD`, and `AUTH_JWT_SECRET` as s
 | `npm run test:integration`                | Run the MySQL-backed Orders/Products API integration test.             |
 | `npm run test:browser`                    | Run the Playwright Orders/Products browser workflow.                   |
 | `npm run build:microfrontend`             | Build the standalone Order Status Summary static module.               |
+| `npm run build:wasm`                      | Rebuild the browser-loaded Inventory Value WebAssembly module.         |
 | `npm run realtime:dev`                    | Run the standalone Socket.IO service with watch mode.                  |
 | `npm run realtime:start`                  | Run the standalone Socket.IO service once.                             |
 | `npm run db:generate`                     | Generate a Drizzle migration from schema changes.                      |

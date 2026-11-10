@@ -123,6 +123,15 @@ export const en = {
         totalProducts: "Total products",
         productsByStatus: "Products by status",
     },
+    wasm: {
+        title: "Inventory value",
+        description: "Sums current product USD prices with a WebAssembly fixed-point module.",
+        loading: "Loading inventory value",
+        unavailable: "Inventory value is unavailable.",
+        empty: "No products to value yet.",
+        calculated: "Calculated with WebAssembly",
+        fallback: "Calculated with JavaScript fallback",
+    },
     microfrontend: {
         title: "Inventory status",
         description: "Rendered by the independently loaded Order Status Summary microfrontend.",
@@ -365,6 +374,16 @@ const ru = {
         totalOrders: "Всего приходов",
         totalProducts: "Всего продуктов",
         productsByStatus: "Продукты по статусу",
+    },
+    wasm: {
+        title: "Стоимость инвентаря",
+        description:
+            "Суммирует текущие цены продуктов в USD с помощью WebAssembly-модуля фиксированной точки.",
+        loading: "Загрузка стоимости инвентаря",
+        unavailable: "Стоимость инвентаря недоступна.",
+        empty: "Нет продуктов для расчёта стоимости.",
+        calculated: "Рассчитано с помощью WebAssembly",
+        fallback: "Рассчитано резервным JavaScript-вычислением",
     },
     microfrontend: {
         title: "Статус инвентаря",
