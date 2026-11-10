@@ -8,5 +8,6 @@ coverage/
 .vercel/
 .turbo/
 *.tsbuildinfo
+*.wat
 package-lock.json
 next-env.d.ts

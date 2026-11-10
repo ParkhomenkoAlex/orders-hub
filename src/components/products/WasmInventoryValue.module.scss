@@ -1,0 +1,45 @@
+.wasmInventoryValue {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    margin-top: 24px;
+    padding: 24px;
+}
+
+.wasmInventoryValue h2,
+.wasmInventoryValue p {
+    margin: 0;
+}
+
+.wasmInventoryValue h2 {
+    font-size: 18px;
+}
+
+.wasmInventoryValue__description,
+.wasmInventoryValue__message,
+.wasmInventoryValue__source {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 6px;
+}
+
+.wasmInventoryValue__amount {
+    color: var(--ink);
+    display: block;
+    font-size: 28px;
+    margin-top: 18px;
+}
+
+.wasmInventoryValue__source--wasm {
+    color: #568e22;
+}
+
+.wasmInventoryValue__source--fallback {
+    color: #8a6d3b;
+}
+
+@media (max-width: 760px) {
+    .wasmInventoryValue {
+        padding: 20px 15px;
+    }
+}
