@@ -22,6 +22,7 @@ import { OrderDetailsSkeleton } from "./OrderDetailsSkeleton";
 import { OrderList } from "./OrderList";
 import { OrdersListSkeleton } from "./OrdersListSkeleton";
 import { OrdersProductsGraphSkeleton } from "./OrdersProductsGraphSkeleton";
+import { OrderStatusSummaryMicrofrontendSkeleton } from "./OrderStatusSummaryMicrofrontendSkeleton";
 import { DeleteProductModal } from "../products/DeleteProductModal";
 import formStyles from "@/components/ui/FormDialog.module.scss";
 import workspaceStyles from "@/components/ui/Workspace.module.scss";
@@ -44,6 +45,17 @@ const OrdersProductsGraph = dynamic(
         ),
     {
         loading: OrdersProductsGraphSkeleton,
+        ssr: false,
+    },
+);
+const OrderStatusSummaryMicrofrontend = dynamic(
+    () =>
+        import("./OrderStatusSummaryMicrofrontend").then(
+            ({ OrderStatusSummaryMicrofrontend: LoadedOrderStatusSummaryMicrofrontend }) =>
+                LoadedOrderStatusSummaryMicrofrontend,
+        ),
+    {
+        loading: OrderStatusSummaryMicrofrontendSkeleton,
         ssr: false,
     },
 );
@@ -274,6 +286,12 @@ export function OrdersWorkspace({ initialOrders, initialProducts }: OrdersWorksp
                         )}
                     </div>
                     <OrdersProductsGraph orders={orders} products={products} />
+                    <OrderStatusSummaryMicrofrontend
+                        orders={orders}
+                        products={products}
+                        isLoading={isInitialLoading}
+                        isError={ordersQuery.isError || productsQuery.isError}
+                    />
                 </>
             )}
             {pendingOrder && (

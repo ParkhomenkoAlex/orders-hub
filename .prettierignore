@@ -3,6 +3,7 @@ node_modules/
 out/
 build/
 dist/
+/public/microfrontends/
 coverage/
 .vercel/
 .turbo/
