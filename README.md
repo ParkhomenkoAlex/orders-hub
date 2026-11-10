@@ -82,6 +82,16 @@ to horizontally scaled application and Socket.IO tiers, shared ephemeral
 presence, durable events, workers, observability, and resilient MySQL
 operations is documented in [the scalability architecture proposal](docs/scalability-architecture.md).
 
+### Microfrontend demonstration
+
+The Orders page includes a read-only Inventory Status widget implemented as an
+independently built Shadow DOM web component. The host passes only live,
+aggregate RTK Query data and localized labels through a versioned property; the
+microfrontend has no React runtime, database access, or credentials. Build the
+local static fallback with `npm run build:microfrontend`, or configure
+`NEXT_PUBLIC_ORDER_STATUS_SUMMARY_MFE_URL` to load a separately deployed HTTPS
+module. See the [microfrontend contract and deployment guide](docs/microfrontend-order-status-summary.md).
+
 ### GraphQL API demonstration
 
 `POST /api/graphql` is a read-only GraphQL API alongside the existing REST API. It exposes `orders`, `order(id: ID!)`, `products`, and `product(id: ID!)`; `Order.products` resolves the existing `Product.orderId` relationship. It uses the same server-only MySQL repository helpers as REST, while a request-scoped cache avoids repeated collection reads for nested order-product queries.
@@ -162,12 +172,13 @@ Local Docker does not use `DATABASE_SSL_CA`, `AIVEN_DATABASE_URL`, or `AIVEN_DAT
 
 ### Local real-time environment
 
-| Variable                   | Used by           | Purpose                                                                |
-| -------------------------- | ----------------- | ---------------------------------------------------------------------- |
-| `NEXT_PUBLIC_REALTIME_URL` | Browser TopMenu   | Socket.IO URL, normally `http://localhost:3001` locally.               |
-| `REALTIME_PORT`            | Local service     | Local listening-port fallback; defaults to `3001`.                     |
-| `PORT`                     | Render service    | Render-provided listening port; takes precedence over `REALTIME_PORT`. |
-| `REALTIME_ALLOWED_ORIGINS` | Socket.IO service | Comma-separated exact browser origins; defaults to localhost:3000.     |
+| Variable                                   | Used by               | Purpose                                                                        |
+| ------------------------------------------ | --------------------- | ------------------------------------------------------------------------------ |
+| `NEXT_PUBLIC_REALTIME_URL`                 | Browser TopMenu       | Socket.IO URL, normally `http://localhost:3001` locally.                       |
+| `NEXT_PUBLIC_ORDER_STATUS_SUMMARY_MFE_URL` | Browser Orders widget | Optional HTTPS URL for the independently deployed Order Status Summary module. |
+| `REALTIME_PORT`                            | Local service         | Local listening-port fallback; defaults to `3001`.                             |
+| `PORT`                                     | Render service        | Render-provided listening port; takes precedence over `REALTIME_PORT`.         |
+| `REALTIME_ALLOWED_ORIGINS`                 | Socket.IO service     | Comma-separated exact browser origins; defaults to localhost:3000.             |
 
 The active-tab service is deliberately separate from Next.js so that it has one long-lived, in-memory connection set. It counts anonymous browser tabs, not users or devices. It is single-instance only: if it is scaled later, shared presence infrastructure is required for a globally accurate count. Render Free may suspend an inactive service; during wake-up the client displays its reconnecting/unavailable state rather than a stale count.
 
@@ -259,6 +270,7 @@ Configure `AUTH_DEMO_USERNAME`, `AUTH_DEMO_PASSWORD`, and `AUTH_JWT_SECRET` as s
 | `npm run test:unit`                       | Run Vitest.                                                            |
 | `npm run test:integration`                | Run the MySQL-backed Orders/Products API integration test.             |
 | `npm run test:browser`                    | Run the Playwright Orders/Products browser workflow.                   |
+| `npm run build:microfrontend`             | Build the standalone Order Status Summary static module.               |
 | `npm run realtime:dev`                    | Run the standalone Socket.IO service with watch mode.                  |
 | `npm run realtime:start`                  | Run the standalone Socket.IO service once.                             |
 | `npm run db:generate`                     | Generate a Drizzle migration from schema changes.                      |

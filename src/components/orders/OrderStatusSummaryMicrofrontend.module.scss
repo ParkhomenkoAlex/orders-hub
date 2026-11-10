@@ -1,0 +1,55 @@
+.orderStatusSummaryMicrofrontend {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    margin-top: 24px;
+    padding: 24px;
+}
+
+.orderStatusSummaryMicrofrontend__header h2,
+.orderStatusSummaryMicrofrontend__header p {
+    margin: 0;
+}
+
+.orderStatusSummaryMicrofrontend__header h2 {
+    font-size: 18px;
+}
+
+.orderStatusSummaryMicrofrontend__header p,
+.orderStatusSummaryMicrofrontend__message {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 6px;
+}
+
+.orderStatusSummaryMicrofrontend__mount {
+    margin-top: 20px;
+    min-height: 82px;
+}
+
+.orderStatusSummaryMicrofrontend__message {
+    margin-bottom: 0;
+}
+
+.orderStatusSummaryMicrofrontend__retry {
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--ink);
+    cursor: pointer;
+    font: inherit;
+    margin-top: 12px;
+    padding: 8px 12px;
+}
+
+.orderStatusSummaryMicrofrontend__retry:hover,
+.orderStatusSummaryMicrofrontend__retry:focus-visible {
+    border-color: #537082;
+    color: #537082;
+}
+
+@media (max-width: 760px) {
+    .orderStatusSummaryMicrofrontend {
+        padding: 20px 15px;
+    }
+}

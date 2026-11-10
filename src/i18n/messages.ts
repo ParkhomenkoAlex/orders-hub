@@ -123,6 +123,15 @@ export const en = {
         totalProducts: "Total products",
         productsByStatus: "Products by status",
     },
+    microfrontend: {
+        title: "Inventory status",
+        description: "Rendered by the independently loaded Order Status Summary microfrontend.",
+        loading: "Loading inventory status",
+        unavailable: "Inventory status summary is unavailable.",
+        totalOrders: "Total orders",
+        totalProducts: "Total products",
+        availableProducts: "Available products",
+    },
     pwa: {
         offlineTitle: "You are offline",
         offlineDescription: "Orders Hub will be available again when your connection is restored.",
@@ -356,6 +365,15 @@ const ru = {
         totalOrders: "Всего приходов",
         totalProducts: "Всего продуктов",
         productsByStatus: "Продукты по статусу",
+    },
+    microfrontend: {
+        title: "Статус инвентаря",
+        description: "Отображается независимо загружаемым микрофронтендом сводки статуса заказов.",
+        loading: "Загрузка статуса инвентаря",
+        unavailable: "Сводка статуса инвентаря недоступна.",
+        totalOrders: "Всего приходов",
+        totalProducts: "Всего продуктов",
+        availableProducts: "Доступные продукты",
     },
     pwa: {
         offlineTitle: "Нет подключения к сети",

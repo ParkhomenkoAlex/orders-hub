@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "lib": ["DOM", "ES2022"],
+        "strict": true,
+        "module": "ES2022",
+        "moduleResolution": "bundler",
+        "noEmit": false,
+        "outDir": "../../public/microfrontends/order-status-summary",
+        "rootDir": "src",
+        "skipLibCheck": true
+    },
+    "include": ["src/contract.ts", "src/index.ts"]
+}

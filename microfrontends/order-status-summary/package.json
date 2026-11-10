@@ -1,0 +1,9 @@
+{
+    "name": "@orders-hub/order-status-summary",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "build": "tsc -p tsconfig.json"
+    }
+}

@@ -12,6 +12,7 @@
         "test:unit": "vitest run",
         "test:integration": "tsx scripts/run-integration-tests.ts",
         "test:browser": "playwright test",
+        "build:microfrontend": "tsc -p microfrontends/order-status-summary/tsconfig.json",
         "realtime:dev": "node --watch --import tsx src/realtime/server.ts",
         "realtime:start": "tsx src/realtime/server.ts",
         "db:generate": "drizzle-kit generate",
