@@ -128,6 +128,118 @@ curl http://localhost:3000/api/graphql \
 
 `compose.yaml` binds MySQL only to `127.0.0.1:3307` and stores data in the `mysql_data` named volume. Local Docker data is independent of the Aiven Preview database. Do not use the Aiven connection string in `.env` when working locally.
 
+### Docker application container
+
+The production-oriented application image uses Next.js standalone output, a
+multi-stage Node 22 build, and a non-root runtime user. It contains the Next.js
+server, traced runtime dependencies, `.next/static`, and `public` assets,
+including the PWA Service Worker and icons, the WebAssembly module, and the
+local microfrontend bundle. It does not include a database, migrations, the
+standalone Socket.IO service, or development/test tooling.
+
+Docker Desktop with Docker Compose is required. Create the ignored `.env` from
+`.env.example`, replace the local password placeholders, and keep
+`DOCKER_DATABASE_URL` aligned with `MYSQL_PASSWORD`. `DATABASE_URL` is for an
+application running on the host and therefore uses `127.0.0.1:3307`.
+`DOCKER_DATABASE_URL` is for the app container and uses `mysql:3306`: inside
+the Compose network, `mysql` resolves to the MySQL container, while
+`127.0.0.1` would resolve to the app container itself.
+
+Build the application image directly when needed. The Socket.IO URL is public
+browser configuration, so supply it at image build time:
+
+```bash
+docker build \
+  --build-arg NEXT_PUBLIC_REALTIME_URL=http://localhost:3001 \
+  -t orders-hub:local .
+```
+
+Start the existing MySQL service. Only initialize a newly created local
+database; do not rerun migrations merely to start the container:
+
+```bash
+docker compose up -d mysql
+```
+
+For a new local database only, apply the committed migration once:
+
+```bash
+npm run db:migrate
+```
+
+Start Orders Hub with the optional application overlay. It adds the app service
+without changing the existing MySQL configuration:
+
+```bash
+docker compose -f compose.yaml -f compose.app.yaml up --build app
+```
+
+The overlay waits for MySQL's existing healthcheck. Check service status, then
+open [http://localhost:3000/orders](http://localhost:3000/orders):
+
+```bash
+docker compose -f compose.yaml -f compose.app.yaml ps
+```
+
+Stop the app and MySQL without deleting the persisted `mysql_data` volume:
+
+```bash
+docker compose -f compose.yaml -f compose.app.yaml down
+```
+
+After source code or either `NEXT_PUBLIC_*` value changes, rebuild and recreate
+only the app service:
+
+```bash
+docker compose -f compose.yaml -f compose.app.yaml build app
+docker compose -f compose.yaml -f compose.app.yaml up -d --force-recreate app
+```
+
+Verify the running container from the host. `GET /api/orders` should return
+`HTTP/1.1 200` and its JSON body should contain the records in the local
+database:
+
+```bash
+curl -i http://localhost:3000/api/orders
+curl -I http://localhost:3000/sw.js
+curl -I http://localhost:3000/manifest.webmanifest
+curl -I http://localhost:3000/wasm/inventory-value.wasm
+curl -I http://localhost:3000/microfrontends/order-status-summary/index.js
+```
+
+Open [http://localhost:3000/products](http://localhost:3000/products) and
+confirm that the Inventory Value UI renders. With Products present, it should
+load the WebAssembly calculation normally.
+
+`NEXT_PUBLIC_REALTIME_URL` and
+`NEXT_PUBLIC_ORDER_STATUS_SUMMARY_MFE_URL` are browser-visible build arguments.
+Compose passes their current `.env` values into `docker build`; changing either
+one requires rebuilding the image. `DOCKER_DATABASE_URL`, `DATABASE_SSL_CA`,
+and the three `AUTH_*` variables are server-only runtime values. Never use a
+`NEXT_PUBLIC_` prefix for database, certificate, or JWT secrets.
+
+The Socket.IO service remains external: run it on the host with
+`npm run realtime:dev` for local use, and retain
+`http://localhost:3000` in its allowed origins. For a manually run app
+container on Docker Desktop, use `host.docker.internal` rather than `localhost`
+to reach a MySQL port published by the host; on Linux add the equivalent
+`--add-host=host.docker.internal:host-gateway` mapping.
+
+#### Docker troubleshooting
+
+- **`DOCKER_DATABASE_URL` is required:** add it to `.env` with the same
+  credentials as `MYSQL_PASSWORD`, but use the `mysql:3306` host and port from
+  `.env.example`.
+- **Port 3000 is already in use:** stop the existing local Next.js process or
+  change the host side of `compose.app.yaml`'s `3000:3000` mapping before
+  starting the app service.
+- **Docker Hub pull timeout:** Docker must download `node:22-bookworm-slim`
+  before the first image build. Check Docker Desktop's network access, then
+  retry `docker build` or the Compose command.
+- **A changed public URL appears unchanged:** `NEXT_PUBLIC_*` values are
+  inlined into the browser bundle during `docker build`; rebuild the image.
+  Database, TLS, and JWT variables remain server-only runtime configuration.
+
 ### Automated integration and browser tests
 
 Integration and browser tests use a separate local MySQL service, database, credentials, port, and Docker volume. They never read `DATABASE_URL` as a fallback: both runners require `TEST_DATABASE_URL` to target exactly `orders_hub_test`.
@@ -162,6 +274,7 @@ Both tests create uniquely named Orders and Products and remove their test Order
 | Variable                | Used by                        | Purpose                                                                                                      |
 | ----------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------ |
 | `DATABASE_URL`          | Local app / Vercel Preview app | Local MySQL URI, or an Aiven URI targeting `/orders_hub` with `ssl-mode=REQUIRED`.                           |
+| `DOCKER_DATABASE_URL`   | Compose app container          | Local MySQL URI targeting the Compose `mysql` hostname on port `3306`; used only by `compose.app.yaml`.      |
 | `DATABASE_SSL_CA`       | Vercel Preview app             | Aiven project CA PEM for verified TLS. Use escaped `\n` characters when storing it as one environment value. |
 | `AIVEN_DATABASE_URL`    | `db:migrate:aiven` only        | Aiven URI targeting `/orders_hub` with `ssl-mode=REQUIRED`.                                                  |
 | `AIVEN_DATABASE_SSL_CA` | `db:migrate:aiven` only        | Aiven project CA PEM for verified TLS migrations.                                                            |
