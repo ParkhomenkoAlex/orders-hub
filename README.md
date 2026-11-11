@@ -12,6 +12,46 @@ The `/orders` route renders its initial Orders and related Products data from My
 - Drizzle ORM, mysql2, and MySQL 8.4
 - Vitest and Playwright
 
+## Assignment coverage and scope
+
+Orders Hub uses focused, working demonstrations for the cumulative dZENcode
+requirements. They are intentionally small examples, not claims that every
+technology is a production-scale implementation.
+
+### Core
+
+- Component-based React UI with separate Orders and Products routes, Bootstrap
+  and BEM-oriented SCSS Modules, form validation, transitions, Redux state,
+  RTK Query (`fetchBaseQuery`) calls to Next.js REST route handlers, and Socket.IO
+  active-tab counting.
+- Drizzle/MySQL persistence, Dockerized local MySQL, a production-oriented
+  application container, and the MySQL Workbench-compatible
+  [`database/schema.sql`](database/schema.sql) artifact.
+
+### Junior+
+
+- Request-time Next.js rendering for `/orders`, TypeScript, Vitest tests,
+  EN/RU localization, a cookie-backed JWT demonstration, native Web Storage,
+  on-demand component loading, a Products chart, and a Leaflet map.
+
+### Middle
+
+- An Orders-to-Products graph, read-only GraphQL endpoint, native Web Worker
+  analytics, installable PWA/offline fallback, in-process `order.created`
+  event flow, documented frontend optimizations, npm task scripts, MySQL-backed
+  integration testing, and Playwright browser testing.
+
+### Middle+
+
+- A separately runnable Socket.IO service, independently buildable Order
+  Status Summary web-component microfrontend, and browser-loaded WebAssembly
+  inventory-value calculation.
+- The [scalability architecture document](docs/scalability-architecture.md) is
+  a proposal for the 100,000-user / 1,000,000-message scenario; its Redis,
+  broker, outbox, and multi-instance infrastructure is **not** deployed.
+
+See [WORKFLOW.md](WORKFLOW.md) for implementation and verification history.
+
 ## Prerequisites
 
 - Node.js 22+
@@ -304,14 +344,14 @@ Deploy the Socket.IO service as a separate **Render Web Service** from this repo
 
 Create the service in the Render dashboard with these settings:
 
-| Setting           | Value                                                          |
-| ----------------- | -------------------------------------------------------------- |
-| Runtime           | Node                                                           |
-| Branch            | The branch being verified (currently `feature/realtime-local`) |
-| Build command     | `npm ci`                                                       |
-| Start command     | `npm run realtime:start`                                       |
-| Health check path | `/health`                                                      |
-| Instance type     | Free                                                           |
+| Setting           | Value                                                                       |
+| ----------------- | --------------------------------------------------------------------------- |
+| Runtime           | Node                                                                        |
+| Branch            | The selected deployment branch (currently `develop` for the merged service) |
+| Build command     | `npm ci`                                                                    |
+| Start command     | `npm run realtime:start`                                                    |
+| Health check path | `/health`                                                                   |
+| Instance type     | Free                                                                        |
 
 Set the following Render environment variables:
 
@@ -359,7 +399,11 @@ Use `npm run db:migrate` only for the local Docker database.
 
 ## Vercel Preview deployment
 
-Vercel Preview deployments are verified for this project. Configure these server-only variables in Vercel's **Preview** environment scope:
+Recorded Vercel Preview verification succeeded for the MySQL-backed application,
+JWT demonstration, and Render-hosted active-session service. A current public
+deployment URL and final production verification are intentionally not claimed
+here; recheck the deployment from a private/incognito window before handoff.
+Configure these server-only variables in Vercel's **Preview** environment scope:
 
 ```text
 DATABASE_URL=mysql://<user>:<password>@<host>:<port>/orders_hub?ssl-mode=REQUIRED
@@ -368,7 +412,10 @@ DATABASE_SSL_CA=-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----
 
 Do not configure `AIVEN_DATABASE_URL` or `AIVEN_DATABASE_SSL_CA` in Vercel: those variables exist only for manual migrations. Do not add a migration command to Vercel's build or deploy settings.
 
-Each pushed Git branch or pull request receives its own Vercel Preview URL. Open the deployment URL shown by Vercel for that branch; it serves the same Next.js application and connects to the configured persistent Preview database. Production deployment remains a separate pending task.
+Each pushed Git branch or pull request receives its own Vercel Preview URL. Open
+the deployment URL shown by Vercel for that branch; it serves the same Next.js
+application and connects to the configured persistent Preview database.
+Production deployment remains a separate pending task.
 
 Configure `AUTH_DEMO_USERNAME`, `AUTH_DEMO_PASSWORD`, and `AUTH_JWT_SECRET` as separate server-only variables in Vercel's **Preview** environment scope to test `/login` and the protected `/settings` route. Do not use `NEXT_PUBLIC_` prefixes or commit real authentication values. The Preview JWT flow has been verified; Orders, Products, and their APIs remain intentionally public.
 
@@ -407,6 +454,23 @@ npm run build
 
 For Preview verification, confirm Orders and Products load from Aiven, create and delete Orders/Products, reload to confirm persistence, verify order-deletion cascades, and exercise global search, Product filters, error states, and custom specifications.
 
-## Pending deliverables
+## Known limitations and final handoff
 
-Docker application packaging and production deployment remain pending. The Render-hosted Socket.IO active-tab service is verified with Vercel Preview; its Render Free inactivity behavior remains an operational caveat. The completed MySQL Workbench-compatible schema artifact is [`database/schema.sql`](database/schema.sql); the repository does not include a native `.mwb` model or EER diagram.
+- The JWT feature is a single configured demonstration account. Orders, Products,
+  and their APIs intentionally remain public; logout clears the browser cookie
+  but cannot revoke a copied stateless token before its expiry.
+- Active-session presence and `order.created` dispatch are intentionally
+  single-process, in-memory demonstrations. The former can be suspended on the
+  Render Free tier; the latter is synchronous, non-durable, and at-most-once.
+- The microfrontend was verified from independent local static hosting. Its
+  optional public remote deployment has not been verified.
+- The PWA caches only safe static resources and its offline shell. It does not
+  provide offline CRUD, authenticated data, API, GraphQL, or Socket.IO caching.
+- The completed MySQL Workbench-compatible schema artifact is
+  [`database/schema.sql`](database/schema.sql); no native `.mwb` model or EER
+  diagram is provided.
+- Before submission: reproduce the project from a clean clone, run final
+  checks, verify a public deployment in a private/incognito window, perform a
+  repository-wide secrets review, and record the walkthrough video. Docker
+  application containerization is complete and was locally verified; production
+  deployment is still pending.
