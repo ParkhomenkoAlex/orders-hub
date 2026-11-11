@@ -239,7 +239,7 @@ Local Docker MySQL and remote Preview MySQL are separate environments. The deplo
 ## Phase G — Delivery artifacts
 
 - [~] Git repository and remote were previously reported; confirm branch history and the final repository URL before handoff.
-- [~] Docker Compose includes a manually verified local MySQL 8 service with persistent storage; Dockerfile(s) and a containerized application are still missing.
+- [x] Docker containerization: the multi-stage, non-root Next.js standalone image, Docker build context, and optional Compose application overlay use the existing persistent MySQL service without changing it. Manual verification passed: image build, app startup, MySQL connectivity, `GET /api/orders` with HTTP 200 and persisted records, PWA Service Worker/manifest, WebAssembly, and microfrontend static assets all returned HTTP 200, and `/products` rendered correctly. The external Socket.IO service remains independently deployed/configured.
 - [x] MySQL-compatible Drizzle migration and the exported `database/schema.sql` artifact are manually verified for orders, products, relationships, indexes, and checks; the SQL opens in MySQL Workbench 26.10. No native `.mwb` model or EER diagram is provided.
 - [~] Replace the default README with project architecture, prerequisites, setup, commands, verified deployment URL, features, and trade-offs; local and Preview setup is documented, while final production handoff details remain pending.
 - [ ] Perform the assignment self-check: start the project from a clean clone by following the finished README.

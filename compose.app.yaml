@@ -1,0 +1,20 @@
+services:
+    app:
+        build:
+            context: .
+            args:
+                NEXT_PUBLIC_REALTIME_URL: ${NEXT_PUBLIC_REALTIME_URL:-http://localhost:3001}
+                NEXT_PUBLIC_ORDER_STATUS_SUMMARY_MFE_URL: ${NEXT_PUBLIC_ORDER_STATUS_SUMMARY_MFE_URL:-}
+        environment:
+            DATABASE_URL: ${DOCKER_DATABASE_URL:?Set DOCKER_DATABASE_URL in .env.}
+            DATABASE_SSL_CA: ${DATABASE_SSL_CA:-}
+            AUTH_DEMO_USERNAME: ${AUTH_DEMO_USERNAME:-}
+            AUTH_DEMO_PASSWORD: ${AUTH_DEMO_PASSWORD:-}
+            AUTH_JWT_SECRET: ${AUTH_JWT_SECRET:-}
+            HOSTNAME: 0.0.0.0
+            PORT: 3000
+        ports:
+            - "3000:3000"
+        depends_on:
+            mysql:
+                condition: service_healthy
