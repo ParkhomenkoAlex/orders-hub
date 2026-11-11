@@ -14,16 +14,20 @@ The written requirements in `REQUIREMENTS.md` are cumulative and mandatory acros
 - Local directory: ~/orders-hub
 - Framework: Next.js 16.4.2 (App Router), React 19, TypeScript
 - Package manager: npm; Node.js 22.23.2
-- Styling: Bootstrap 5.3.8, Sass, BEM-oriented global styles, and SCSS Modules for layout components
+- Styling: Bootstrap 5.3.8, Sass, camelCase BEM-oriented SCSS Modules for component styles, and a small global Bootstrap/token layer
 - Formatting: Prettier configured with four-space indentation and 100-character print width
-- Current UI architecture: root layout provides document metadata and global SCSS; the (dashboard) route group provides StoreProvider, TopMenu, Sidebar, PageTransition, and the shared main-content shell
+- Current UI architecture: root layout resolves the locale, provides document metadata, global SCSS, i18n, and PWA registration; the (dashboard) route group provides StoreProvider, TopMenu, Sidebar, PageTransition, and the shared main-content shell
 - State: Redux Toolkit retains global search state; RTK Query loads and mutates persisted Orders and Products through the server-side Drizzle/MySQL REST API
 - Localization: cookie-initialized React Context provides English and Russian UI catalogs without locale-prefixed routes; the Products Type filter is the documented native Web Storage example.
 - Routes: /orders, /products, /groups, /users, /settings; Groups and Users intentionally render an under-construction page, while Settings is the protected JWT demonstration route.
-- Repository workflow: main is stable, develop is integration, and feature/* branches are implementation branches. PR #6 merged `feature/dev-deployment` into develop at `db4b96c`; local develop was fast-forwarded to that commit with a clean working tree.
-- Deployment: an initial Vercel production deployment was previously reported as public; its current availability was not rechecked in this audit.
+- Repository workflow: main is stable, develop is integration, and feature/* branches are implementation branches. Historical PR and commit references are retained in the verification record below.
+- Deployment: Vercel Preview, Aiven MySQL, and the Render Socket.IO service were verified at their recorded milestones. No current public URL or final production/incognito verification is recorded.
 
 ## Verification record
+
+> Historical test counts below describe the suite at the named milestone, not a
+> current total. The latest recorded complete unit-test run passed 134 tests;
+> final handoff checks remain pending.
 
 ### Recorded 2026-10-19
 
@@ -108,14 +112,14 @@ npm audit previously reported five high-severity findings through the developmen
 - [x] REST API: Next.js App Router route handlers provide validated Orders and Products listing, creation, and deletion through Drizzle/MySQL; RTK Query connects the UI to those endpoints.
 - [x] Forms and validation: Add Order and Add Product dialogs validate required fields, prices, and warranty dates before sending RTK Query mutations; custom product specifications are supported and blank values normalize to `Standard`.
 - [x] Git workflow: PR #6 verified the feature-to-develop merge path; local develop was confirmed at `db4b96c` with a clean working tree.
-- [~] Docker: the local MySQL 8 Compose service was manually verified healthy. It runs on 127.0.0.1:3307 with the dedicated application user, InnoDB, and persistent named volume; the application container is still missing.
+- [x] Docker: the local MySQL 8 Compose service and the separate application container were manually verified. MySQL runs on 127.0.0.1:3307 with the dedicated application user, InnoDB, and a persistent named volume; the app image is documented and verified in Phase G.
 - [x] WebSocket active-tab counter: the standalone Render Socket.IO service and Vercel Preview TopMenu client are manually verified; see the recorded Free-tier single-instance caveat.
 - [~] Screenshot-based HTML/CSS: desktop UI structure and local assets are implemented; visual parity and all responsive breakpoints still need browser review.
 
 ### Baseline deliverables still missing
 
 - [x] Socket.IO active-session counter: Render/Vercel Preview verification passed; Free-tier inactivity and single-instance limitations remain documented.
-- [ ] Docker environment.
+- [x] Docker environment: local MySQL and the production-oriented application container are documented and manually verified.
 - [x] MySQL Workbench-compatible SQL schema artifact: `database/schema.sql` and `database/README.md` document the exported Orders/Products structure and Workbench import procedure; no native `.mwb` model or EER diagram is provided.
 - [~] README documents local Docker, Aiven TLS, manual migration, and Vercel Preview setup; final handoff documentation and production deployment details remain pending.
 - [~] Public deployment was reported earlier but needs a final private/incognito verification before handoff.
@@ -186,7 +190,7 @@ npm audit previously reported five high-severity findings through the developmen
 
 ### C.4a Preview deployment and remote database
 
-Local Docker MySQL and remote Preview MySQL are separate environments. The deployed application must use real, persistent database storage rather than mock data. Do not add temporary database fallbacks or disable API routes to make deployment succeed, and do not run database migrations automatically during Vercel builds. Production deployment, WebSocket active-tab counting, and Docker application packaging remain separate pending tasks. Mark an item complete only after manual verification.
+Local Docker MySQL and remote Preview MySQL are separate environments. The deployed application must use real, persistent database storage rather than mock data. Do not add temporary database fallbacks or disable API routes to make deployment succeed, and do not run database migrations automatically during Vercel builds. Production deployment remains a separate pending task; active-tab counting and Docker application packaging are completed deliverables. Mark an item complete only after manual verification.
 
 - [x] Implement lazy, cached MySQL initialization using `getDb()`.
 - [x] Verify TypeScript, ESLint, formatting, tests, local API behavior, and a Next.js production build without `DATABASE_URL`.
@@ -234,14 +238,14 @@ Local Docker MySQL and remote Preview MySQL are separate environments. The deplo
 - [x] Minimal real microservice boundary: the separately deployed C.5 Socket.IO service has an independently runnable process, typed `sessions:update` contract, health endpoint, and Vercel Preview integration.
 - [x] Minimal real microfrontend: the read-only Order Status Summary is an independently buildable TypeScript/Shadow DOM web component, dynamically loaded by the Orders host through a versioned aggregate-count and localized-label contract. It has no shared React runtime, database/API access, or credentials; host loading and registration failures show localized fallback/retry states. `npm run build:microfrontend` produces a deployable static module, and `NEXT_PUBLIC_ORDER_STATUS_SUMMARY_MFE_URL` supports a separately hosted HTTPS bundle. Automated and browser verification passed: live counts update after data changes; a separate local HTTP server on port 4173 served `index.js` and `contract.js` with CORS; and an invalid remote URL showed the localized unavailable/Retry state without disrupting Orders Hub. Public remote deployment has not been performed.
 - [x] WebAssembly demonstration: Products includes a localized, read-only Inventory Value summary that passes real RTK Query Product USD prices as fixed-point cents into a browser-loaded WebAssembly `sum_cents` module. The readable WAT source, dependency-free reproducible build command, committed static `.wasm` asset, typed JavaScript boundary, and explicit JavaScript fallback are implemented. It complements rather than duplicates the Web Worker count/status analytics. Focused calculation/equivalence and UI-state tests passed with TypeScript, ESLint, 134 unit tests, Prettier, diff, and production-build verification. Chrome verification confirmed the real module loads and calculates the displayed value, product changes update it, a blocked module uses the correct JavaScript fallback, restored access returns to WebAssembly, and EN/RU currency formatting works. No performance improvement is claimed without benchmarks.
-- [ ] Distinguish implemented code from architecture proposals and partial demos.
+- [x] Documentation distinguishes implemented demonstrations from proposals and partial boundaries: the scalability document is explicitly not deployed; the microfrontend has local independent-hosting verification but no public remote verification; and JWT, Socket.IO presence, EDA, and PWA scope limits are documented in README.
 
 ## Phase G — Delivery artifacts
 
 - [~] Git repository and remote were previously reported; confirm branch history and the final repository URL before handoff.
 - [x] Docker containerization: the multi-stage, non-root Next.js standalone image, Docker build context, and optional Compose application overlay use the existing persistent MySQL service without changing it. Manual verification passed: image build, app startup, MySQL connectivity, `GET /api/orders` with HTTP 200 and persisted records, PWA Service Worker/manifest, WebAssembly, and microfrontend static assets all returned HTTP 200, and `/products` rendered correctly. The external Socket.IO service remains independently deployed/configured.
 - [x] MySQL-compatible Drizzle migration and the exported `database/schema.sql` artifact are manually verified for orders, products, relationships, indexes, and checks; the SQL opens in MySQL Workbench 26.10. No native `.mwb` model or EER diagram is provided.
-- [~] Replace the default README with project architecture, prerequisites, setup, commands, verified deployment URL, features, and trade-offs; local and Preview setup is documented, while final production handoff details remain pending.
+- [~] Replace the default README with project architecture, prerequisites, setup, commands, features, implementation/proposal boundaries, and trade-offs; local and Preview setup is documented, while a current verified public URL and final production handoff details remain pending.
 - [ ] Perform the assignment self-check: start the project from a clean clone by following the finished README.
 - [ ] Record a final reviewer walkthrough video showing working features and candidly explaining deliberately omitted or partial details.
 - [ ] Review production deployment from a private/incognito window.
@@ -282,9 +286,12 @@ Add unit, integration, E2E, API, Socket.IO, and Docker commands only when their 
 
 ## Next actionable task
 
-**Phase D — implement the interactive map demonstration with a documented inventory/service-location use case.**
+**Final handoff — reproduce the project from a clean clone using the README.**
 
-The database schema deliverable, C.5 active-session counter, SSR, i18n, Web Storage, JWT, Lazy Loading, and Charts implementation deliverables are complete. The remaining Junior+ demonstrations follow.
+Then run the final automated checks and repository-wide secrets review, verify a
+current public deployment from a private/incognito window, record its URL, and
+create the walkthrough video explaining the implemented demonstrations and
+intentional limitations.
 
 ## Progress update template
 
