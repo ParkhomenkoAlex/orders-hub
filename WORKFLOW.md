@@ -20,8 +20,8 @@ The written requirements in `REQUIREMENTS.md` are cumulative and mandatory acros
 - State: Redux Toolkit retains global search state; RTK Query loads and mutates persisted Orders and Products through the server-side Drizzle/MySQL REST API
 - Localization: cookie-initialized React Context provides English and Russian UI catalogs without locale-prefixed routes; the Products Type filter is the documented native Web Storage example.
 - Routes: /orders, /products, /groups, /users, /settings; Groups and Users intentionally render an under-construction page, while Settings is the protected JWT demonstration route.
-- Repository workflow: main is stable, develop is integration, and feature/* branches are implementation branches. Historical PR and commit references are retained in the verification record below.
-- Deployment: Vercel Preview, Aiven MySQL, and the Render Socket.IO service were verified at their recorded milestones. No current public URL or final production/incognito verification is recorded.
+- Repository workflow: main is stable, `develop` is the final handoff branch for this assignment, and feature/* branches are implementation branches. Historical PR and commit references are retained in the verification record below.
+- Deployment: the reviewer-facing Vercel Preview is https://orders-hub-git-develop-alex-team16.vercel.app; it uses Aiven MySQL and is recorded as publicly accessible in an incognito browser on 2026-11-18. The separate Render Socket.IO endpoint is https://orders-hub-realtime.onrender.com and was verified with the Preview origin on the same date.
 
 ## Verification record
 
@@ -121,15 +121,15 @@ npm audit previously reported five high-severity findings through the developmen
 - [x] Socket.IO active-session counter: Render/Vercel Preview verification passed; Free-tier inactivity and single-instance limitations remain documented.
 - [x] Docker environment: local MySQL and the production-oriented application container are documented and manually verified.
 - [x] MySQL Workbench-compatible SQL schema artifact: `database/schema.sql` and `database/README.md` document the exported Orders/Products structure and Workbench import procedure; no native `.mwb` model or EER diagram is provided.
-- [~] README documents local Docker, Aiven TLS, manual migration, and Vercel Preview setup; final handoff documentation and production deployment details remain pending.
-- [~] Public deployment was reported earlier but needs a final private/incognito verification before handoff.
+- [x] README and the reviewer guide document local Docker, Aiven TLS, manual migration, the public Vercel Preview, Render Socket.IO endpoint, environment boundaries, and QA steps. A separate production deployment is not claimed.
+- [x] Public Vercel Preview was rechecked privately/incognito on 2026-11-18 with Vercel Authentication disabled; Aiven-backed Order persistence and Render-origin WebSocket behavior were verified.
 
 ## Phase A — Foundation, GitHub, Vercel
 
 - [x] Project scaffold, TypeScript, ESLint, Sass, Bootstrap, src directory, and @/* alias are present.
 - [x] GitHub remote and initial Vercel deployment were reported as configured.
 - [x] Branch strategy (main, develop, feature/*) is documented and verified through the merged PR #6 feature-to-develop workflow.
-- [~] Reconfirm the public deployment URL and its production build before final delivery.
+- [x] Reconfirmed the public Preview URL and reviewer access on 2026-11-18. A separate production deployment is not required or claimed.
 
 **Done when:** the GitHub repository, branch workflow, and public deployment are rechecked from the actual remote and a documented deployment URL is available in the finished README.
 
@@ -190,7 +190,7 @@ npm audit previously reported five high-severity findings through the developmen
 
 ### C.4a Preview deployment and remote database
 
-Local Docker MySQL and remote Preview MySQL are separate environments. The deployed application must use real, persistent database storage rather than mock data. Do not add temporary database fallbacks or disable API routes to make deployment succeed, and do not run database migrations automatically during Vercel builds. Production deployment remains a separate pending task; active-tab counting and Docker application packaging are completed deliverables. Mark an item complete only after manual verification.
+Local Docker MySQL and remote Preview MySQL are separate environments. The deployed application must use real, persistent database storage rather than mock data. Do not add temporary database fallbacks or disable API routes to make deployment succeed, and do not run database migrations automatically during Vercel builds. The reviewer-facing Preview is verified; a separately managed production deployment is not required or claimed. Active-tab counting and Docker application packaging are completed deliverables. Mark an item complete only after manual verification.
 
 - [x] Implement lazy, cached MySQL initialization using `getDb()`.
 - [x] Verify TypeScript, ESLint, formatting, tests, local API behavior, and a Next.js production build without `DATABASE_URL`.
@@ -242,13 +242,13 @@ Local Docker MySQL and remote Preview MySQL are separate environments. The deplo
 
 ## Phase G — Delivery artifacts
 
-- [~] Git repository and remote were previously reported; confirm branch history and the final repository URL before handoff.
+- [x] Final repository handoff target is the `develop` branch at https://github.com/ParkhomenkoAlex/orders-hub/tree/develop; no merge to `main` is required by the assignment.
 - [x] Docker containerization: the multi-stage, non-root Next.js standalone image, Docker build context, and optional Compose application overlay use the existing persistent MySQL service without changing it. Manual verification passed: image build, app startup, MySQL connectivity, `GET /api/orders` with HTTP 200 and persisted records, PWA Service Worker/manifest, WebAssembly, and microfrontend static assets all returned HTTP 200, and `/products` rendered correctly. The external Socket.IO service remains independently deployed/configured.
 - [x] MySQL-compatible Drizzle migration and the exported `database/schema.sql` artifact are manually verified for orders, products, relationships, indexes, and checks; the SQL opens in MySQL Workbench 26.10. No native `.mwb` model or EER diagram is provided.
-- [~] Replace the default README with project architecture, prerequisites, setup, commands, features, implementation/proposal boundaries, and trade-offs; local and Preview setup is documented, while a current verified public URL and final production handoff details remain pending.
-- [ ] Perform the assignment self-check: start the project from a clean clone by following the finished README.
+- [x] README and `docs/reviewer-guide.md` provide project architecture, final-branch/public URLs, prerequisites, local/Docker setup, environment boundaries, commands, feature QA steps, implementation/proposal boundaries, and recorded verification evidence. They do not expose credentials.
+- [x] Assignment self-check: a separate clean checkout of `develop` completed `npm ci`, lint, TypeScript after Next.js type generation, 134 unit tests across 53 files, and the production build. Bootstrap Sass deprecation warnings were nonblocking; `npm audit --omit=dev` reported zero production dependency vulnerabilities.
 - [ ] Record a final reviewer walkthrough video showing working features and candidly explaining deliberately omitted or partial details.
-- [ ] Review production deployment from a private/incognito window.
+- [x] Public deployment check: on 2026-11-18 the Vercel Preview was accessible from an incognito browser with Vercel Authentication disabled; an externally created Order persisted after refresh through Aiven MySQL. The Render service accepted an allowed-origin WebSocket upgrade with HTTP 101/CORS, rejected an unapproved origin, and displayed an active-session count of three tabs. Its root `404` and polling `400 Transport unknown` are expected for the WebSocket-only service.
 - [ ] Confirm no secrets, credentials, or personal data are committed.
 
 ## Final verification commands
@@ -286,12 +286,13 @@ Add unit, integration, E2E, API, Socket.IO, and Docker commands only when their 
 
 ## Next actionable task
 
-**Final handoff — reproduce the project from a clean clone using the README.**
+**Final handoff — record the reviewer walkthrough video and complete the final
+repository-wide secrets/personal-data review.**
 
-Then run the final automated checks and repository-wide secrets review, verify a
-current public deployment from a private/incognito window, record its URL, and
-create the walkthrough video explaining the implemented demonstrations and
-intentional limitations.
+The clean-clone, Docker, incognito Preview, Aiven persistence, and Render
+WebSocket checks are recorded above. The video must explain the implemented
+demonstrations and intentional limitations without claiming the scalability
+proposal or unverified public microfrontend hosting is deployed.
 
 ## Progress update template
 

@@ -1,6 +1,6 @@
 # Orders Hub
 
-Orders Hub is a Next.js application for managing Orders and their Products. It uses RTK Query to call Next.js REST route handlers, which persist data through Drizzle ORM and MySQL.
+Orders Hub is a Next.js application for managing Orders and their Products. It is a dZENcode Middle+ technical assignment that uses RTK Query to call Next.js REST route handlers, which persist data through Drizzle ORM and MySQL.
 
 The `/orders` route renders its initial Orders and related Products data from MySQL at request time. After hydration, the existing RTK Query hooks continue to manage browser-side queries, mutations, invalidation, and updates.
 
@@ -11,6 +11,18 @@ The `/orders` route renders its initial Orders and related Products data from My
 - Bootstrap, Sass, and BEM-oriented styling
 - Drizzle ORM, mysql2, and MySQL 8.4
 - Vitest and Playwright
+
+## Quick links
+
+- [GitHub repository](https://github.com/ParkhomenkoAlex/orders-hub)
+- [Final submission branch (`develop`)](https://github.com/ParkhomenkoAlex/orders-hub/tree/develop)
+- [Public Vercel Preview](https://orders-hub-git-develop-alex-team16.vercel.app)
+- [Orders on the public Preview](https://orders-hub-git-develop-alex-team16.vercel.app/orders)
+- [Render Socket.IO endpoint](https://orders-hub-realtime.onrender.com) — an API/WebSocket service, not a conventional web page
+- [Reviewer guide](docs/reviewer-guide.md)
+- [Original assignment requirements](REQUIREMENTS.md)
+- [Implementation and verification workflow](WORKFLOW.md)
+- [Database schema artifact guide](database/README.md)
 
 ## Assignment coverage and scope
 
@@ -50,7 +62,7 @@ technology is a production-scale implementation.
   a proposal for the 100,000-user / 1,000,000-message scenario; its Redis,
   broker, outbox, and multi-instance infrastructure is **not** deployed.
 
-See [WORKFLOW.md](WORKFLOW.md) for implementation and verification history.
+See [the reviewer guide](docs/reviewer-guide.md) for installation, environment-specific QA steps, and recorded verification evidence. See [WORKFLOW.md](WORKFLOW.md) for the implementation and verification history.
 
 ## Prerequisites
 
@@ -58,12 +70,56 @@ See [WORKFLOW.md](WORKFLOW.md) for implementation and verification history.
 - npm
 - Docker Desktop with Docker Compose, for local MySQL
 
-## Local setup
+## Quick start from a fresh clone
+
+The final submission branch is `develop`, not `main`. The following starts the
+application against a reviewer-owned local MySQL database; it does not require
+access to Aiven or any author credentials.
+
+```bash
+git clone https://github.com/ParkhomenkoAlex/orders-hub.git
+cd orders-hub
+git checkout develop
+npm ci
+cp .env.example .env
+```
+
+Set non-placeholder values for `MYSQL_PASSWORD` and `MYSQL_ROOT_PASSWORD` in
+the ignored `.env` file. Keep the password in `DATABASE_URL` aligned with
+`MYSQL_PASSWORD`. To exercise the protected Settings demonstration locally,
+also set the three server-only `AUTH_*` variables described below. Do not
+commit `.env`.
+
+Start MySQL, wait for its health check, then apply the committed migration to a
+new local database:
+
+```bash
+docker compose up -d mysql
+npm run db:migrate
+```
+
+Start the Next.js app and the local Socket.IO service in separate terminals:
+
+```bash
+# Terminal 1
+npm run dev
+```
+
+```bash
+# Terminal 2
+npm run realtime:dev
+```
+
+Open [http://localhost:3000/orders](http://localhost:3000/orders). For the
+full local setup, Docker workflow, test-database isolation, and troubleshooting
+instructions, see the [reviewer guide](docs/reviewer-guide.md).
+
+## Local development details
 
 Install dependencies and create the ignored local environment file:
 
 ```bash
-npm install
+npm ci
 cp .env.example .env
 ```
 
@@ -353,19 +409,21 @@ Create the service in the Render dashboard with these settings:
 | Health check path | `/health`                                                                   |
 | Instance type     | Free                                                                        |
 
+The deployed service endpoint is [https://orders-hub-realtime.onrender.com](https://orders-hub-realtime.onrender.com). It is a Socket.IO/health endpoint rather than a web application, so `GET /` returning `404` is expected. The service accepts the WebSocket transport only; a polling request is not a supported health or connectivity check.
+
 Set the following Render environment variables:
 
 ```text
 NODE_ENV=production
-REALTIME_ALLOWED_ORIGINS=https://<vercel-preview-host>
+REALTIME_ALLOWED_ORIGINS=https://orders-hub-git-develop-alex-team16.vercel.app
 ```
 
 Render supplies `PORT`; the service binds to `0.0.0.0` and uses that value before the local `REALTIME_PORT` fallback. `REALTIME_ALLOWED_ORIGINS` must contain exact origins without trailing slashes. To test the deployed service from local Next.js as well, add `http://localhost:3000` as a second comma-separated origin. Never use `*` in a public deployment.
 
-After Render assigns a public HTTPS URL, configure this Vercel **Preview** environment variable and redeploy the Preview frontend:
+Configure this Vercel **Preview** environment variable for the deployed frontend:
 
 ```text
-NEXT_PUBLIC_REALTIME_URL=https://<render-service-host>
+NEXT_PUBLIC_REALTIME_URL=https://orders-hub-realtime.onrender.com
 ```
 
 The browser negotiates secure WebSockets through the Render HTTPS endpoint, avoiding mixed-content requests. C.5 Preview verification confirmed `/health`, cross-tab count updates, navigation without duplicate sessions, reconnect behavior, and the Vercel Preview connection.
@@ -399,10 +457,10 @@ Use `npm run db:migrate` only for the local Docker database.
 
 ## Vercel Preview deployment
 
-Recorded Vercel Preview verification succeeded for the MySQL-backed application,
-JWT demonstration, and Render-hosted active-session service. A current public
-deployment URL and final production verification are intentionally not claimed
-here; recheck the deployment from a private/incognito window before handoff.
+The reviewer-facing Preview is [https://orders-hub-git-develop-alex-team16.vercel.app](https://orders-hub-git-develop-alex-team16.vercel.app), with the primary workflow at [/orders](https://orders-hub-git-develop-alex-team16.vercel.app/orders). It was verified in an incognito browser on November 18, 2026 with Vercel Authentication disabled: an externally created order persisted after refresh through the remote Aiven MySQL database. The Preview is a test deployment, not a claim of a separately managed production environment.
+
+The public active-session service at [https://orders-hub-realtime.onrender.com](https://orders-hub-realtime.onrender.com) was verified on the same date with the Preview origin: a WebSocket upgrade returned `101 Switching Protocols` and the expected CORS origin header. The service rejects an unapproved origin. See the [reviewer guide](docs/reviewer-guide.md) for browser-based real-time checks and the distinction between the service endpoint and a web page.
+
 Configure these server-only variables in Vercel's **Preview** environment scope:
 
 ```text
@@ -452,6 +510,21 @@ npm run test:unit
 npm run build
 ```
 
+For an explicit TypeScript-only check in a clean checkout, generate the Next.js
+route types first, then run TypeScript:
+
+```bash
+npx next typegen
+npx tsc --noEmit
+```
+
+Clean-clone QA on November 18, 2026 recorded successful `npm ci`, lint,
+TypeScript validation after type generation, `npm run test:unit` (**134 tests
+in 53 files**), and `npm run build`. Bootstrap Sass deprecation warnings during
+the build were nonblocking. `npm audit --omit=dev` reported zero production
+dependency vulnerabilities; that result must not be conflated with a
+development-inclusive audit.
+
 For Preview verification, confirm Orders and Products load from Aiven, create and delete Orders/Products, reload to confirm persistence, verify order-deletion cascades, and exercise global search, Product filters, error states, and custom specifications.
 
 ## Known limitations and final handoff
@@ -469,8 +542,7 @@ For Preview verification, confirm Orders and Products load from Aiven, create an
 - The completed MySQL Workbench-compatible schema artifact is
   [`database/schema.sql`](database/schema.sql); no native `.mwb` model or EER
   diagram is provided.
-- Before submission: reproduce the project from a clean clone, run final
-  checks, verify a public deployment in a private/incognito window, perform a
-  repository-wide secrets review, and record the walkthrough video. Docker
-  application containerization is complete and was locally verified; production
-  deployment is still pending.
+- Clean-clone, Docker Compose, public Preview, Aiven persistence, and public
+  real-time verification are recorded in the [reviewer guide](docs/reviewer-guide.md).
+  A final walkthrough video and a final repository-wide secrets review remain
+  handoff items; do not infer either from the implementation alone.

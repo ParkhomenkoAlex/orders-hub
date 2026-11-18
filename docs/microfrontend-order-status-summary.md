@@ -97,7 +97,7 @@ unavailable state with Retry if it cannot be fetched or does not register the
 expected custom element. Existing Orders functionality stays usable in either
 case.
 
-The locally generated fallback lets one repository demonstrate the boundary,
-but it is not proof of an independently hosted deployment. Remote deployment,
-browser verification, CDN headers, and remote rollout/versioning remain manual
-verification steps.
+The locally generated fallback demonstrates the boundary and was browser-verified
+from independent local static hosting. It is not proof of an independently
+hosted public deployment. Public remote deployment, its CDN headers, and remote
+rollout/versioning remain manual verification steps.
